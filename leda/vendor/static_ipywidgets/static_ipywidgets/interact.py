@@ -47,7 +47,9 @@ class FileImageManager(ImageManager):
         div_name = div_name.replace("<", "").replace(">", "").replace(":", "")
         img_filename = div_name + ".png"
 
-        # Save to disk; to be uploaded to S3 later
+        # Save to disk; to be uploaded somewhere else later
+        if not os.path.exists(self.path):
+            os.mkdir(self.path)
         img_path = os.path.join(self.path, img_filename)
         with open(img_path, "wb") as fh:
             fh.write(obj)
