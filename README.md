@@ -82,3 +82,24 @@ With the default dynamic widget library:
 And with these static widget libraries:
 - [`static_ipywidgets`](https://github.com/jakevdp/ipywidgets-static) (vendored and modified)
 - [`panel`](https://panel.holoviz.org/)
+
+## Testing
+
+These are the version constraint bundle we're currently testing. Our primary goal is to add newer versions
+of libraries ASAP.
+
+(All of these environments are tested against Linux/macOS/Windows and various python versions.)
+
+| Library          | Bundle 1: ✅ |
+|------------------|-------------|
+| `ipykernel`      | `== 5.1.*`  |
+| `ipython`        | `== 7.16.*` |
+| `ipywidgets`     | `== 7.5.*`  |
+| `jupyter_client` | `== 6.0.*`  |
+| `jupyter_core`   | `== 4.6.*`  |
+| `matplotlib`     | `== 2.2.*`  |
+| `nbclient`       | N/A         |
+| `nbconvert`      | `== 5.6.*`  |
+| `nbformat`       | `== 5.0.*`  |
+| `notebook`       | `== 6.0.*`  |
+| `plotly`         | `== 4.6.*`  |
