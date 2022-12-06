@@ -37,7 +37,7 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
 
         import panel as pn
 
-        pn.extension(pn_extension)
+        pn.extension(pn_extension, safe_embed=True)
 
     def interact(self, func: Callable, **kwargs) -> Any:
         import panel as pn
