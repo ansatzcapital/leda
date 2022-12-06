@@ -69,6 +69,10 @@ def _get_html(
     # Prevent trying to load Tkinter at import time
     import matplotlib.pyplot as plt
 
+    # Note that figures in plotly>=4.8.0 do have _repr_html_()
+    if isinstance(obj, go.Figure):
+        return static_plotly_utils.figure_to_html(obj, display=disp)
+
     # TODO: use displaypub to make this more general
     # We want to short-circuit this function if we get e.g. a DataFrame
     # TODO: Note that the JS below isn't great because it hides all divs,
@@ -77,9 +81,6 @@ def _get_html(
         return obj._repr_html_().replace("<div>", "").replace("</div>", "")
     elif hasattr(obj, "_repr_markdown_"):
         return markdown2.Markdown().convert(obj._repr_markdown_())
-
-    if isinstance(obj, go.Figure):
-        return static_plotly_utils.figure_to_html(obj, display=disp)
 
     ip = IPython.get_ipython()
 
