@@ -85,10 +85,12 @@ And with these static widget libraries:
 
 ## Testing
 
-These are the version constraint bundle we're currently testing. Our primary goal is to add newer versions
-of libraries ASAP.
+These are the version constraint bundles we're currently testing. The most important next task for leda
+development would be to (1) automate testing generating reports (reports may contain many random
+strs that don't affect the output but make it impossible to do a simple `diff`), and (2) expand
+the number of bundles being tested (especially to the newer versions).
 
-(All of these environments are tested against Linux/macOS/Windows and various python versions.)
+(All of these bundles are tested against Linux/macOS/Windows and various python versions.)
 
 | Library          | Bundle 1: ✅ |
 |------------------|-------------|
