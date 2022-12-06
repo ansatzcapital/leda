@@ -22,7 +22,10 @@ This will automatically include formatting tweaks, including, e.g., hiding all i
 
 `-i` (`--inject`) is used to inject user code via a new cell prepended to the notebook during generation.
 
-**Note**: `leda` assumes that all code is run in a trusted environment, so please be aware.
+Think of it like [`voila`](https://voila.readthedocs.io/en/stable/using.html)
+or [nbviewer](https://nbviewer.org/) but with widgets.
+
+**Note**: `leda` assumes that all code is run in a trusted environment, so please be careful.
 
 ### Interaction/Widgets
 
@@ -46,7 +49,12 @@ and then render a static HTML report that contains widgets that look and feel li
 ### Report Web UI Server
 
 Unlike [`voila`](https://voila.readthedocs.io/en/stable/using.html), because all report output is **static HTML**,
-you can stand up a report web UI server that suits your needs very easily.
+you can stand up a report web UI server that suits your needs very easily. That means:
+- It's trivial to set up in many cases.
+- It's as scalable as your web server.
+- It's more cost-efficient because there are no runtimes whatsoever.
+- You don't have to worry about old versions no longer working due to code or data changes, so the historical
+archive of old reports never expire or change or break.
 
 For example, you can generate the report to a file, upload that file to a shared location, and then stand
 up a bare-bones `nginx` server to serve the files. (Instead of having a two-step of generation + upload,
@@ -100,8 +108,12 @@ the number of bundles being tested (especially to the newer versions).
 | `jupyter_client` | `== 6.0.*`  | `== 6.0.*`  |
 | `jupyter_core`   | `== 4.6.*`  | `== 4.6.*`  |
 | `matplotlib`     | `== 2.2.*`  | `== 2.2.*`  |
-| `nbclient`       | N/A         | N/A         |
+| `nbclient`       | -           | -           |
 | `nbconvert`      | `== 5.6.*`  | `== 5.6.*`  |
 | `nbformat`       | `== 5.0.*`  | `== 5.0.*`  |
 | `notebook`       | `== 6.0.*`  | `== 6.0.*`  |
 | `plotly`         | `== 4.6.*`  | `== 5.10.*` |
+
+## Known Issues
+
+- Not all widget states of `matplotlib` update when using `panel` static interact mode: https://github.com/holoviz/panel/issues/1222
