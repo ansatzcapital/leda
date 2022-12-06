@@ -46,5 +46,5 @@ class FileReportPublisher(leda.gen.base.ReportPublisher):
             (image_path / image_filename).write_bytes(image_body)
 
         report_url = str(index_path)
-        log_loudly(report_url)
+        log_loudly("file://" + report_url)
         return report_url
