@@ -25,8 +25,15 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
             # Turn off interactive mode
             # (see https://stackoverflow.com/a/15713545)
             plt.ioff()
-        else:
+        elif self._plot_lib == "plotly":
             pn_extension = self._plot_lib
+
+            import plotly.offline
+
+            # Set online mode (i.e., load plotly.js from web)
+            plotly.offline.init_notebook_mode(connected=True)
+        else:
+            raise ValueError(self._plot_lib)
 
         import panel as pn
 

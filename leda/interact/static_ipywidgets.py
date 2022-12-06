@@ -1,5 +1,6 @@
+import dataclasses
 import html
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 import ipywidgets
 
@@ -9,9 +10,23 @@ from leda.vendor.static_ipywidgets import static_ipywidgets
 
 
 class StaticIpywidgetsInteractMode(leda.interact.base.InteractMode):
+    _plot_lib: Optional[str] = dataclasses.field(default=None, init=False)
+
     @property
     def dynamic(self) -> bool:
         return False
+
+    def init(self, plot_lib: str):
+        self._plot_lib = plot_lib.lower()
+        if self._plot_lib == "matplotlib":
+            pass
+        elif self._plot_lib == "plotly":
+            import plotly.offline
+
+            # Set online mode (i.e., load plotly.js from web)
+            plotly.offline.init_notebook_mode(connected=True)
+        else:
+            raise ValueError(self._plot_lib)
 
     def interact(self, func: Callable, **kwargs) -> Any:
         new_value: static_ipywidgets.widgets.StaticWidget
