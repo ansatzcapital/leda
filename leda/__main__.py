@@ -55,9 +55,10 @@ def main():
         help="Timeout for each cell in secs",
     )
     parser.add_argument(
-        "--use-static-ipywidgets",
-        action="store_true",
-        help="Use vendored static_ipywidgets instead of panel",
+        "--static-interact-mode",
+        default="static_ipywidgets",
+        choices=["static_ipywidgets", "panel"],
+        help="Set static interact mode. Choices: static_ipywidgets [default], panel",
     )
     args = parser.parse_args()
 
@@ -73,9 +74,9 @@ def main():
     leda.MainReportRunner.get_default_main_runner(
         report,
         args.output_dir,
+        static_interact_mode_alias=args.static_interact_mode,
         kernel_name=args.kernel,
         progress=True,
-        use_static_ipywidgets=args.use_static_ipywidgets,
     ).run(
         report=report,
     )

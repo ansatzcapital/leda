@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import dataclasses
-import datetime
 import logging
 import pathlib
 from typing import Optional, Union
@@ -38,29 +37,35 @@ class MainReportRunner(leda.gen.base.ReportRunner):
         cls,
         report: Union[pathlib.Path, leda.gen.base.Report],
         local_dir_path: pathlib.Path,
+        static_interact_mode_alias: str,
         kernel_name: Optional[str] = None,
         progress: bool = False,
-        use_static_ipywidgets: bool = False,
     ) -> MainReportRunner:
         if isinstance(report, pathlib.Path):
             report = leda.gen.base.FileReport(name=report.stem, nb_path=report)
 
         output_dir_path = local_dir_path / report.full_name
-        if use_static_ipywidgets:
+        if static_interact_mode_alias == "static_ipywidgets":
             modifier = leda.gen.modifiers.StaticIpywidgetsReportModifier(
                 output_dir_path
             )
+        elif static_interact_mode_alias == "panel":
+            modifier = leda.gen.modifiers.StaticPanelReportModifier()
         else:
-            modifier = leda.gen.modifiers.MainReportModifier()
+            raise ValueError(f"Unknown static interact mode: {static_interact_mode_alias!r}")
+
+        generator = leda.gen.generators.MainStaticReportGenerator(
+            cell_timeout=report.cell_timeout,
+            kernel_name=kernel_name,
+            progress=progress,
+        )
+
+        publisher = leda.gen.publishers.FileReportPublisher(
+            output_dir=output_dir_path
+        )
 
         return MainReportRunner(
             modifier=modifier,
-            generator=leda.gen.generators.MainStaticReportGenerator(
-                cell_timeout=report.cell_timeout,
-                kernel_name=kernel_name,
-                progress=progress,
-            ),
-            publisher=leda.gen.publishers.FileReportPublisher(
-                output_dir=output_dir_path
-            ),
+            generator=generator,
+            publisher=publisher,
         )

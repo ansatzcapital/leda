@@ -14,7 +14,6 @@ from leda.gen.base import (
 from leda.gen.generators import MainStaticReportGenerator
 from leda.gen.html import show_input_toggle, show_std_output_toggle
 from leda.gen.modifiers import (
-    MainReportModifier,
     StaticIpywidgetsReportModifier,
     StaticPanelReportModifier,
 )

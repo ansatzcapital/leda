@@ -77,8 +77,8 @@ def insert_toc(cells: List[nbformat.NotebookNode]):
 
 
 @dataclasses.dataclass()
-class StaticPanelReportModifier(leda.gen.base.ReportModifier):
-    static_interact_mode_cls_name: ClassVar[str] = "StaticPanelInteractMode"
+class StaticReportModifier(leda.gen.base.ReportModifier):
+    static_interact_mode_cls_name: ClassVar[str]
 
     inject_code: Optional[str] = None
 
@@ -138,7 +138,11 @@ leda.show_std_output_toggle()"""
         insert_toc(nb_contents["cells"])
 
 
-MainReportModifier = StaticPanelReportModifier
+@dataclasses.dataclass()
+class StaticPanelReportModifier(StaticReportModifier):
+    static_interact_mode_cls_name: ClassVar[str] = "StaticPanelInteractMode"
+
+    inject_code: Optional[str] = None
 
 
 @dataclasses.dataclass()
@@ -148,7 +152,7 @@ class _StaticIpywidgetsReportModifier:
 
 @dataclasses.dataclass()
 class StaticIpywidgetsReportModifier(
-    MainReportModifier, _StaticIpywidgetsReportModifier
+    StaticReportModifier, _StaticIpywidgetsReportModifier
 ):
     static_interact_mode_cls_name: ClassVar[
         str
