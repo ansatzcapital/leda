@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import dataclasses
 import datetime
-import functools
 import logging
 import pathlib
 from typing import IO, Any, List, Mapping, MutableMapping, Optional, Union
+
+import cached_property
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -22,7 +23,7 @@ class Report:
 
     cell_timeout: Optional[datetime.timedelta] = None
 
-    @functools.cached_property
+    @cached_property.cached_property
     def full_name(self) -> str:
         if self.tag:
             parts = [self.name, self.tag]
@@ -37,7 +38,7 @@ class Report:
     def handle(self) -> Union[str, IO]:
         raise NotImplementedError
 
-    @functools.cached_property
+    @cached_property.cached_property
     def inject_code(self) -> Optional[str]:
         if not self.params and not self.additional_inject_code:
             return None
