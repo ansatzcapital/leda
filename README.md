@@ -93,26 +93,14 @@ And with these static widget libraries:
 
 ## Testing
 
-These are the version constraint bundles we're currently testing (manually). The most important next task for leda
-development would be to (1) automate testing generating reports (reports may contain many random
+See the `requirements-bundle*.txt` for version bundles that we currently test manually.
+
+he most important next task for leda  development would be to 
+(1) automate testing generating reports (reports may contain many random
 strs that don't affect the output but make it impossible to do a simple `diff`), and (2) expand
 the number of bundles being tested (especially to the newer versions).
 
 (All of these bundles will be tested against Linux/macOS/Windows and various python versions.)
-
-| Library          | Bundle 1: ✅ | Bundle 2: ✅ |
-|------------------|-------------|-------------|
-| `ipykernel`      | `== 5.1.*`  | `== 5.1.*`  |
-| `ipython`        | `== 7.16.*` | `== 7.16.*` |
-| `ipywidgets`     | `== 7.5.*`  | `== 7.5.*`  |
-| `jupyter_client` | `== 6.0.*`  | `== 6.0.*`  |
-| `jupyter_core`   | `== 4.6.*`  | `== 4.6.*`  |
-| `matplotlib`     | `== 2.2.*`  | `== 2.2.*`  |
-| `nbclient`       | -           | -           |
-| `nbconvert`      | `== 5.6.*`  | `== 5.6.*`  |
-| `nbformat`       | `== 5.0.*`  | `== 5.0.*`  |
-| `notebook`       | `== 6.0.*`  | `== 6.0.*`  |
-| `plotly`         | `== 4.6.*`  | `== 5.10.*` |
 
 ## Known Issues
 
