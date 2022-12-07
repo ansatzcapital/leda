@@ -56,11 +56,15 @@ def main():
         default=DEFAULT_CELL_TIMEOUT.total_seconds(),
         help="Timeout for each cell in secs",
     )
+    static_interact_mode_aliases_str = ",".join(
+        leda.interact.helpers.STATIC_INTERACT_MODE_ALIASES
+    )
     parser.add_argument(
         "--static-interact-mode",
         default="static_ipywidgets",
         choices=leda.interact.helpers.STATIC_INTERACT_MODE_ALIASES,
-        help=f"Set static interact mode. Choices: {','.join(leda.interact.helpers.STATIC_INTERACT_MODE_ALIASES)}",
+        help=f"Set static interact mode. "
+        f"Choices: {static_interact_mode_aliases_str}",
     )
     args = parser.parse_args()
 
