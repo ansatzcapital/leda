@@ -22,11 +22,14 @@ def test_simple():
             func, x=widgets.DropDownWidget([1, 2])
         )
         html = static_interact.html()
-        assert """
+        assert (
+            """
     <div name="subdiv-x1" style="display:block">
       2
     </div>
     
     <div name="subdiv-x2" style="display:none">
       4
-    </div>""" in html
+    </div>"""
+            in html
+        )
