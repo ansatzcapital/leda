@@ -7,8 +7,17 @@ def is_matplotlib(obj: Any) -> bool:
     except ImportError:
         return False
 
+    try:
+        import matplotlib.artist
+    except ImportError:
+        return False
+
     return isinstance(
-        obj, (matplotlib.axes.SubplotBase, matplotlib.axes._base._AxesBase)
+        obj,
+        (
+            matplotlib.axes.SubplotBase,
+            matplotlib.artist.Artist,
+        ),
     )
 
 
