@@ -76,15 +76,14 @@ def main():
         additional_inject_code=args.inject,
         cell_timeout=datetime.timedelta(seconds=args.cell_timeout),
     )
-    leda.gen.runners.MainReportRunner.get_default_main_runner(
+    runner = leda.gen.runners.MainReportRunner.get_default_runner(
         report,
         args.output_dir,
         static_interact_mode_alias=args.static_interact_mode,
         kernel_name=args.kernel,
         progress=True,
-    ).run(
-        report=report,
     )
+    runner.run(report=report)
 
     logger.info("Done")
 

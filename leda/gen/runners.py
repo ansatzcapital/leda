@@ -33,7 +33,7 @@ class MainReportRunner(leda.gen.base.ReportRunner):
         return self.publisher.publish(report, artifact)
 
     @classmethod
-    def get_default_main_runner(
+    def get_default_runner(
         cls,
         report: Union[pathlib.Path, leda.gen.base.Report],
         local_dir_path: pathlib.Path,
@@ -52,7 +52,9 @@ class MainReportRunner(leda.gen.base.ReportRunner):
         elif static_interact_mode_alias == "panel":
             modifier = leda.gen.modifiers.StaticPanelReportModifier()
         else:
-            raise ValueError(f"Unknown static interact mode: {static_interact_mode_alias!r}")
+            raise ValueError(
+                f"Unknown static interact mode: {static_interact_mode_alias!r}"
+            )
 
         generator = leda.gen.generators.MainStaticReportGenerator(
             cell_timeout=report.cell_timeout,
