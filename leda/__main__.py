@@ -9,7 +9,9 @@ import datetime
 import logging
 import pathlib
 
-import leda
+import leda.gen.base
+import leda.gen.runners
+import leda.interact.helpers
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -57,8 +59,8 @@ def main():
     parser.add_argument(
         "--static-interact-mode",
         default="static_ipywidgets",
-        choices=["static_ipywidgets", "panel"],
-        help="Set static interact mode. Choices: static_ipywidgets [default], panel",
+        choices=leda.interact.helpers.STATIC_INTERACT_MODE_ALIASES,
+        help=f"Set static interact mode. Choices: {','.join(leda.interact.helpers.STATIC_INTERACT_MODE_ALIASES)}",
     )
     args = parser.parse_args()
 
@@ -67,14 +69,14 @@ def main():
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
 
-    report = leda.FileReport(
+    report = leda.gen.base.FileReport(
         nb_path=args.nb_path,
         name=args.nb_path.stem,
         tag=args.tag,
         additional_inject_code=args.inject,
         cell_timeout=datetime.timedelta(seconds=args.cell_timeout),
     )
-    leda.MainReportRunner.get_default_main_runner(
+    leda.gen.runners.MainReportRunner.get_default_main_runner(
         report,
         args.output_dir,
         static_interact_mode_alias=args.static_interact_mode,

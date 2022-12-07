@@ -29,6 +29,7 @@ from leda.interact.dynamic import (
     DynamicIpywidgetsInteractMode,
     to_dynamic_ipywidgets,
 )
+from leda.interact.helpers import STATIC_INTERACT_MODE_ALIASES
 from leda.interact.panel import StaticPanelInteractMode
 from leda.interact.params import get_param
 from leda.interact.static_ipywidgets import StaticIpywidgetsInteractMode
