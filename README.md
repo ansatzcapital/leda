@@ -60,6 +60,8 @@ For example, you can generate the report to a file, upload that file to a shared
 up a bare-bones `nginx` server to serve the files. (Instead of having a two-step of generation + upload,
 you could alternatively implement your own `leda.gen.base.ReportPublisher` and create a generation script of your own).
 
+Another example is you can simply host a static S3 bucket, enable website hosting and then either use S3 as a web server publically or via locked down S3 endpoint.
+
 ### Params
 
 Reports can be parametrized so that the user can set different values for each report run.
@@ -95,10 +97,9 @@ And with these static widget libraries:
 
 See the `requirements-bundle*.txt` for version bundles that we currently test manually.
 
-he most important next task for leda  development would be to 
-(1) automate testing generating reports (reports may contain many random
-strs that don't affect the output but make it impossible to do a simple `diff`), and (2) expand
-the number of bundles being tested (especially to the newer versions).
+The most important next task for leda development would be to
+(1) automate testing generating reports (reports may contain many random strs that don't affect the output but make it impossible to do a simple `diff`),
+and (2) expand the number of bundles being tested (especially to the newer versions).
 
 (All of these bundles will be tested against Linux/macOS/Windows and various python versions.)
 
