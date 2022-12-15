@@ -147,7 +147,8 @@ class StaticPanelReportModifier(StaticReportModifier):
 
 @dataclasses.dataclass()
 class _StaticIpywidgetsReportModifier:
-    local_dir_path: pathlib.Path
+    # Set to None to use inline images
+    local_dir_path: Optional[pathlib.Path]
 
 
 @dataclasses.dataclass()
@@ -159,11 +160,23 @@ class StaticIpywidgetsReportModifier(
     ] = "StaticIpywidgetsInteractMode"
 
     def __post_init__(self):
-        local_img_dir_path = self.local_dir_path / "images"
-        local_img_dir_path.mkdir(parents=True, exist_ok=True)
+        if self.local_dir_path:
+            local_img_dir_path = self.local_dir_path / "images"
+            local_img_dir_path.mkdir(parents=True, exist_ok=True)
 
     def _get_new_cells_top(self) -> List[nbformat.NotebookNode]:
         new_cells = super()._get_new_cells_top()
+
+        if self.local_dir_path:
+            set_image_manager_str = """
+static_interact.IMAGE_MANAGER = static_interact.FileImageManager(
+    path=os.path.join({str(self.local_dir_path)!r}, "images"),
+)
+"""
+        else:
+            set_image_manager_str = """
+static_interact.IMAGE_MANAGER = static_interact.InlineImageManager()
+"""
 
         new_cells.append(
             nbformat.v4.new_code_cell(
@@ -174,9 +187,7 @@ import os
 from leda.vendor.static_ipywidgets.static_ipywidgets \
     import interact as static_interact
 
-static_interact.IMAGE_MANAGER = static_interact.FileImageManager(
-    path=os.path.join({str(self.local_dir_path)!r}, "images"),
-)
+{set_image_manager_str}
 """
             ),
         )

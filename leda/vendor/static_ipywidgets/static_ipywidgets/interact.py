@@ -183,7 +183,7 @@ class StaticInteract:
          // Preload the image and show when it's ready
          // From https://stackoverflow.com/a/19396463
          imgs = newDiv.getElementsByTagName("img");
-         if(imgs.length > 0){{
+         if(imgs.length > 1){{
            for(j=0; j<imgs.length; j++){{
              var newImgSrc = imgs[j].getAttribute("data_src");
 
