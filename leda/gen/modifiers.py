@@ -168,7 +168,7 @@ class StaticIpywidgetsReportModifier(
         new_cells = super()._get_new_cells_top()
 
         if self.local_dir_path:
-            set_image_manager_str = """
+            set_image_manager_str = f"""
 static_interact.IMAGE_MANAGER = static_interact.FileImageManager(
     path=os.path.join({str(self.local_dir_path)!r}, "images"),
 )
