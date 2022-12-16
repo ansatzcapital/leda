@@ -69,7 +69,7 @@ def main():
     parser.add_argument(
         "--template-name",
         type=str,
-        choices=[None, "classic", "lab"],
+        choices=[None, "classic", "lab", "lab_narrow"],
         help="nbconvert template name",
     )
     parser.add_argument(

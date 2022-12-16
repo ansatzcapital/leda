@@ -4,6 +4,7 @@ import dataclasses
 import datetime
 import logging
 import os
+import pathlib
 from typing import Mapping, Optional, Tuple
 
 import jupyter_client.kernelspec
@@ -122,6 +123,22 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
             progress=self.progress, **kwargs
         )
 
+    def _get_exporter_kwargs(self) -> Mapping:
+        # See https://nbconvert.readthedocs.io/en/latest/customizing.html#adding-additional-template-paths  # noqa
+        exporter_kwargs = {
+            "extra_template_basedirs": str(
+                pathlib.Path(__file__).parent.parent / "templates"
+            )
+        }
+
+        if self.template_name:
+            exporter_kwargs["template_name"] = self.template_name
+
+        if self.theme:
+            exporter_kwargs["theme"] = self.theme
+
+        return exporter_kwargs
+
     def generate(
         self,
         nb_contents: Mapping,
@@ -134,12 +151,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
         )
 
         logger.info("Generating HTML")
-        exporter_kwargs = {}
-        if self.template_name:
-            exporter_kwargs["template_name"] = self.template_name
-        if self.theme:
-            exporter_kwargs["theme"] = self.theme
-        exporter = nbconvert.HTMLExporter(**exporter_kwargs)
+        exporter = nbconvert.HTMLExporter(**self._get_exporter_kwargs())
         body, _ = exporter.from_notebook_node(nb_contents)
 
         logger.info("Modifying HTML")
