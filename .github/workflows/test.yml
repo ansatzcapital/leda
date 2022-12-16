@@ -25,7 +25,7 @@ jobs:
           - macos-latest
           - windows-latest
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', 'pypy-3.8']
-        bundle-name: ['none', 'bundle0']
+        bundle-name: ['none', 'bundle0', 'bundle1']
 
     steps:
       - uses: actions/checkout@v3
