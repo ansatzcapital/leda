@@ -204,6 +204,8 @@ def main():
             level=getattr(logging, args.log_level),
             format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         )
+        # Suppress a log message that seems to have no effect
+        logging.getLogger("traitlets").setLevel(logging.ERROR)
 
     if args.output_dir:
         ctxt = contextlib.nullcontext(args.output_dir)

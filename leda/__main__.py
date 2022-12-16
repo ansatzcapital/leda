@@ -84,6 +84,8 @@ def main():
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
+    # Suppress a log message that seems to have no effect
+    logging.getLogger("traitlets").setLevel(logging.ERROR)
 
     report = leda.gen.base.FileReport(
         nb_path=args.nb_path,
