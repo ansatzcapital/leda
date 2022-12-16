@@ -45,6 +45,7 @@ class MainReportRunner(leda.gen.base.ReportRunner):
             report = leda.gen.base.FileReport(name=report.stem, nb_path=report)
 
         output_dir_path = local_dir_path / report.full_name
+
         if static_interact_mode_alias == "static_ipywidgets":
             modifier = leda.gen.modifiers.StaticIpywidgetsReportModifier(
                 output_dir_path
