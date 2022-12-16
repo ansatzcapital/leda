@@ -201,24 +201,32 @@ class StaticInteract:
          // Preload the image and show when it's ready
          // From https://stackoverflow.com/a/19396463
          imgs = newDiv.getElementsByTagName("img");
-         if(imgs.length > 1){{
+         if(imgs.length > 0){{
            for(j=0; j<imgs.length; j++){{
-             var newImgSrc = imgs[j].getAttribute("data_src");
-
-             // For more on closures in loops and let keyword:
-             // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
-             let newDivCapture = newDiv;
-             let oldDivsCapture = oldDivs;
-             let oldImg = imgs[j];
-             let newImg = new Image;
-             newImg.onload = function(){{
-               oldImg.src = newImgSrc;
-               newDivCapture.style.display = 'block';
-               for(k=0; k<oldDivsCapture.length; k++){{
-                 oldDivsCapture[k].style.display = 'none';
+             // External images have data_src; inline images do not
+             if(imgs[j].hasAttribute("data_src")) {{
+               var newImgSrc = imgs[j].getAttribute("data_src");
+    
+               // For more on closures in loops and let keyword:
+               // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
+               let newDivCapture = newDiv;
+               let oldDivsCapture = oldDivs;
+               let oldImg = imgs[j];
+               let newImg = new Image;
+               newImg.onload = function(){{
+                 oldImg.src = newImgSrc;
+                 newDivCapture.style.display = 'block';
+                 for(k=0; k<oldDivsCapture.length; k++){{
+                   oldDivsCapture[k].style.display = 'none';
+                 }}
+               }};
+               newImg.src = newImgSrc;
+             }} else {{
+               newDiv.style.display = 'block';
+               for(k=0; k<oldDivs.length; k++){{
+                 oldDivs[k].style.display = 'none';
                }}
-             }};
-             newImg.src = newImgSrc;
+             }}
            }}
          }} else {{
            newDiv.style.display = 'block';
