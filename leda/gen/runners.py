@@ -40,6 +40,8 @@ class MainReportRunner(leda.gen.base.ReportRunner):
         static_interact_mode_alias: str,
         kernel_name: Optional[str] = None,
         progress: bool = False,
+        template_name: Optional[str] = None,
+        theme: Optional[str] = None,
     ) -> MainReportRunner:
         if isinstance(report, pathlib.Path):
             report = leda.gen.base.FileReport(name=report.stem, nb_path=report)
@@ -61,6 +63,8 @@ class MainReportRunner(leda.gen.base.ReportRunner):
             cell_timeout=report.cell_timeout,
             kernel_name=kernel_name,
             progress=progress,
+            template_name=template_name,
+            theme=theme,
         )
 
         publisher = leda.gen.publishers.FileReportPublisher(

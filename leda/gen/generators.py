@@ -9,6 +9,7 @@ from typing import Mapping, Optional, Tuple
 import jupyter_client.kernelspec
 import nbconvert
 import nbformat
+import packaging.version
 import termcolor
 import tqdm
 import traitlets
@@ -84,6 +85,23 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
     kernel_name: Optional[str] = None
     progress: bool = False
 
+    template_name: Optional[str] = None
+    theme: Optional[str] = None
+
+    def __post_init__(self):
+        is_classic = self.template_name == "classic" or (
+            not self.template_name
+            and packaging.version.parse(nbconvert.__version__)
+            < packaging.version.parse("6.0.0")
+        )
+        if is_classic and self.theme == "dark":
+            raise ValueError(
+                f"Unsupported theme in 'classic' template: {self.theme!r}"
+            )
+
+        if self.theme not in (None, "light", "dark"):
+            raise ValueError(f"Unsupported theme: {self.theme!r}")
+
     def _get_preprocessor(self) -> nbconvert.preprocessors.ExecutePreprocessor:
         kwargs = {}
 
@@ -116,7 +134,12 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
         )
 
         logger.info("Generating HTML")
-        exporter = nbconvert.HTMLExporter()
+        exporter_kwargs = {}
+        if self.template_name:
+            exporter_kwargs["template_name"] = self.template_name
+        if self.theme:
+            exporter_kwargs["theme"] = self.theme
+        exporter = nbconvert.HTMLExporter(**exporter_kwargs)
         body, _ = exporter.from_notebook_node(nb_contents)
 
         logger.info("Modifying HTML")
