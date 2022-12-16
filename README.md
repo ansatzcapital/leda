@@ -23,7 +23,7 @@ This will automatically include formatting tweaks, including, e.g., hiding all i
 `-i` (`--inject`) is used to inject user code via a new cell prepended to the notebook during generation.
 
 Think of it like [`voila`](https://voila.readthedocs.io/en/stable/using.html)
-or [nbviewer](https://nbviewer.org/) but with widgets.
+but static, or [nbviewer](https://nbviewer.org/) but with interactive widgets.
 
 **Note**: `leda` assumes that all code is run in a trusted environment, so please be careful.
 
@@ -33,9 +33,9 @@ or [nbviewer](https://nbviewer.org/) but with widgets.
 that makes it easy to create outputs based on widgets, like:
 
 ```python
-%%interact mult0=[1,2,3],mult1=[10,100,1000]
-df = pd.DataFrame({"a": [1, 2, 3]}) * mult0 * mult1
-df.plot(title=f"Foo: {mult0}, {mult1}")
+%%interact column=list("abcdefghij");mult=[1, 2, 3]
+df = pd.DataFrame(np.random.RandomState(42).rand(100, 10), columns=list("abcdefghij"))
+(df[[column]] * mult).plot(figsize=(15, 8), lw=2, title=f\"column={column!r}, mult={mult}\")
 ```
 
 There are two types of interact modes: dynamic and static. Dynamic mode is when you're running the Jupyter notebook
@@ -95,14 +95,9 @@ And with these static widget libraries:
 
 ## Testing
 
-See the `requirements-bundle*.txt` for version bundles that we currently test manually.
-
-The most important next task for leda development would be to
-(1) automate testing generating reports (reports may contain many random strs that don't affect the output but make it impossible to do a simple `diff`),
-and (2) expand the number of bundles being tested (especially to the newer versions).
-
-(All of these bundles will be tested against Linux/macOS/Windows and various python versions.)
+See the `requirements-bundle*.txt` for version bundles that we currently test systematically.
 
 ## Known Issues
 
 - Not all widget states of `matplotlib` update when using `panel` static interact mode: https://github.com/holoviz/panel/issues/1222
+- When using `matplotlib`, if you see the cell outputs all sequentially visible, try setting `plt.gcf()` as the last cell line
