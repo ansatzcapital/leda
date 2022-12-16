@@ -10,7 +10,14 @@ Selectors = List[Selector]
 # with both "classic" (old default) and "lab" (new default) templates.
 
 INPUT_SELECTORS_CLASSIC: Selectors = ["div.input"]
-INPUT_SELECTORS_LAB: Selectors = ["div.jp-InputArea-editor"]
+# In 'lab' templates, the input cell and prompt are included in "jp-InputArea",
+# but that would also include Markdown output, so we select the
+# editor and prompt separately, to match the behavior of the "input"
+# class in the 'classic" template.
+INPUT_SELECTORS_LAB: Selectors = [
+    "div.jp-InputArea-editor",
+    "div.jp-InputArea-prompt",
+]
 INPUT_SELECTORS: Selectors = INPUT_SELECTORS_CLASSIC + INPUT_SELECTORS_LAB
 
 # In 'classic' template, divs for stdout and stderr are clearly labeled
