@@ -22,8 +22,10 @@ This will automatically include formatting tweaks, including, e.g., hiding all i
 
 `-i` (`--inject`) is used to inject user code via a new cell prepended to the notebook during generation.
 
-Think of it like [`voila`](https://voila.readthedocs.io/en/stable/using.html)
-but static, or [nbviewer](https://nbviewer.org/) but with interactive widgets.
+Think of it like:
+- [`voila`](https://voila.readthedocs.io/en/stable/using.html) but static, with no need for live kernels
+- [nbconvert](https://github.com/jupyter/nbconvert)/[nbviewer](https://nbviewer.org/) but with interactive widgets
+- [pretty-jupyter](https://github.com/JanPalasek/pretty-jupyter) but with interactive widgets
 
 **Note**: `leda` assumes that all code is run in a trusted environment, so please be careful.
 
