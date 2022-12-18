@@ -10,7 +10,8 @@ import leda
 
 logger = logging.getLogger(__name__)
 
-DEMO_DIR = pathlib.Path(__file__).parent.parent / "demos"
+# NB: This only works in editable install
+DEMO_DIR = pathlib.Path(leda.__file__) / "demos"
 TEST_DIR = pathlib.Path(__file__).parent
 
 
