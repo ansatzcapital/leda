@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 import logging
 import pathlib
-from typing import ClassVar, List, MutableMapping, Optional
+from typing import ClassVar, List, Optional
 
 import nbformat
 
@@ -82,6 +82,14 @@ class StaticReportModifier(leda.gen.base.ReportModifier):
 
     inject_code: Optional[str] = None
 
+    def _check_nb(self, nb_contents: nbformat.NotebookNode):
+        nb_version = nb_contents["nbformat"]
+        if nb_version != 4:
+            raise RuntimeError(
+                "Only compatible with nbformat v4 notebooks. "
+                "Use, e.g., nbformat.v4.upgrade() to upgrade from v3 to v4."
+            )
+
     def _get_new_cells_top(self) -> List[nbformat.NotebookNode]:
         new_cells = [
             nbformat.v4.new_code_cell(
@@ -126,8 +134,9 @@ leda.show_std_output_toggle()"""
             ),
         ]
 
-    def modify(self, nb_contents: MutableMapping):
+    def modify(self, nb_contents: nbformat.NotebookNode):
         logger.info("Modifying notebook")
+        self._check_nb(nb_contents)
 
         new_cells_top = self._get_new_cells_top()
         new_cells_bottom = self._get_new_cells_bottom()
@@ -136,6 +145,15 @@ leda.show_std_output_toggle()"""
         )
 
         insert_toc(nb_contents["cells"])
+
+        # This will always upgrade the intermediate nb format to the
+        # current nbformat version, even if the original nb
+        # is older. E.g., it will add cell ids when upgrading
+        # from v4.4 to v4.5. See
+        # https://nbformat.readthedocs.io/en/latest/format_description.html
+        # for more. Note that this updates the nb inplace but leaves
+        # the original file untouched.
+        nbformat.v4.upgrade(nb_contents)
 
 
 @dataclasses.dataclass()
