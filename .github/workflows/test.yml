@@ -42,7 +42,7 @@ jobs:
           python -m pip install --upgrade setuptools pip wheel
           python -m pip install tox-gh-actions
       - name: Test with tox
-        run: tox
+        run: tox -vv
 
   # Test building and publishing
   # See:
