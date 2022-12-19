@@ -20,31 +20,12 @@ jobs:
       fail-fast: false
       matrix:
         # See https://help.github.com/articles/virtual-environments-for-github-actions
-#        platform:
-#          - ubuntu-latest
-#          - macos-latest
-#          - windows-latest
-#        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', 'pypy-3.8']
-#        bundle-name: ['none']
-#        include:
-#          - python-version: '3.7'
-#            bundle-name: 'bundle0'
-#          - python-version: '3.8'
-#            bundle-name: 'bundle1'
-#          - python-version: '3.8'
-#            bundle-name: 'bundle2'
-#          - python-version: '3.10'
-#            bundle-name: 'bundle3'
-#          - python-version: '3.11'
-#            bundle-name: 'bundle4'
-        # FIXME: Temporary, for testing
         platform:
           - ubuntu-latest
-        python-version: ['3.7']
-        bundle-name: ['none']
-        include:
-          - python-version: '3.7'
-            bundle-name: 'bundle0'
+          - macos-latest
+          - windows-latest
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', 'pypy-3.8']
+        bundle-name: ['none', 'bundle0', 'bundle1', 'ubndle2', 'bundle3', 'bundle4']
 
     steps:
       - uses: actions/checkout@v3
@@ -64,9 +45,21 @@ jobs:
       - name: Test with tox
         run: tox
         if: ${{ matrix.bundle-name == 'none' }}
-      - name: Integration test with tox
+      - name: Integration test with tox (bundle0)
         run: tox -e integration_test_${{ matrix.bundle-name }}
-        if: ${{ matrix.bundle-name != 'none' }}
+        if: ${{ matrix.bundle-name == 'bundle0' && matrix.python-version == '3.7' }}
+      - name: Integration test with tox (bundle1)
+        run: tox -e integration_test_${{ matrix.bundle-name }}
+        if: ${{ matrix.bundle-name == 'bundle1' && matrix.python-version == '3.8' }}
+      - name: Integration test with tox (bundle2)
+        run: tox -e integration_test_${{ matrix.bundle-name }}
+        if: ${{ matrix.bundle-name == 'bundle2' && matrix.python-version == '3.8' }}
+      - name: Integration test with tox (bundle3)
+        run: tox -e integration_test_${{ matrix.bundle-name }}
+        if: ${{ matrix.bundle-name == 'bundle3' && matrix.python-version == '3.10' }}
+      - name: Integration test with tox (bundle4)
+        run: tox -e integration_test_${{ matrix.bundle-name }}
+        if: ${{ matrix.bundle-name == 'bundle4' && matrix.python-version == '3.11' }}
 
   # Test building and publishing
   # See:
