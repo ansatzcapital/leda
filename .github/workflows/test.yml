@@ -28,7 +28,7 @@ jobs:
 #        bundle-name: ['none', 'bundle0', 'bundle1', 'bundle2', bundle3', 'bundle4']
         # FIXME: Temporary, for testing
         platform:
-          - windows-latest
+          - ubuntu-latest
         python-version: ['3.8']
         bundle-name: ['none', 'bundle0']
 
