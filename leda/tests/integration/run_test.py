@@ -30,7 +30,7 @@ def check_env(bundle_name: str):
 
     assert req_lines[0].split("python")[1].strip() == ".".join(
         map(str, [sys.version_info.major, sys.version_info.minor])
-    ), "Python version mismsatch"
+    ), "Python version mismatch"
 
     installed_pkgs = {}
     pip_freeze_lines = (
@@ -67,7 +67,7 @@ def check_env(bundle_name: str):
         logger.debug("Checking %r", req_name)
         assert (
             installed_version == req_version
-        ), f"Version mismatch: {req_name!r}"
+        ), f"Package version mismatch: {req_name!r}"
 
 
 def generate_test_report(
