@@ -6,10 +6,10 @@ import pathlib
 import subprocess
 import sys
 import tempfile
+from typing import Optional, Sequence
 
 import nbconvert
 import packaging.version
-from typing import Optional, Sequence
 
 import leda
 
