@@ -3,7 +3,12 @@ import contextlib
 import difflib
 import logging
 import pathlib
+import subprocess
+import sys
 import tempfile
+
+import nbconvert
+import packaging.version
 from typing import Optional, Sequence
 
 import leda
@@ -11,8 +16,58 @@ import leda
 logger = logging.getLogger(__name__)
 
 # NB: This only works in editable install
-DEMO_DIR = pathlib.Path(leda.__file__) / "demos"
-TEST_DIR = pathlib.Path(__file__).parent
+DEMO_DIR = pathlib.Path(leda.__file__).parent / "demos"
+REF_DIR = pathlib.Path(__file__).parent / "refs"
+
+
+def check_env(bundle_name: str):
+    logger.info("Checking env against %r", bundle_name)
+    req_text = (
+        pathlib.Path(leda.__file__).parent.parent
+        / f"requirements-{bundle_name}.txt"
+    ).read_text()
+    req_lines = req_text.splitlines()
+
+    assert req_lines[0].split("python")[1].strip() == ".".join(
+        map(str, [sys.version_info.major, sys.version_info.minor])
+    ), "Python version mismsatch"
+
+    installed_pkgs = {}
+    pip_freeze_lines = (
+        subprocess.check_output(["pip", "freeze"]).decode().splitlines()
+    )
+    for pip_freeze_line in pip_freeze_lines:
+        if pip_freeze_line.startswith("-e"):
+            continue
+
+        pkg_name, pkg_version = map(str.strip, pip_freeze_line.split("=="))
+        installed_pkgs[pkg_name] = pkg_version
+
+    for req_line in req_lines:
+        req_line = req_line.split("#")[0].strip()
+        if not req_line:
+            continue
+
+        req_name, req_version = map(str.strip, req_line.split("=="))
+
+        installed_version = None
+        for req_name_alias in [
+            req_name,
+            req_name.replace("-", "_"),
+            req_name.replace("_", "-"),
+        ]:
+            try:
+                installed_version = installed_pkgs[req_name_alias]
+            except KeyError:
+                pass
+            else:
+                break
+        assert installed_version
+
+        logger.debug("Checking %r", req_name)
+        assert (
+            installed_version == req_version
+        ), f"Version mismatch: {req_name!r}"
 
 
 def generate_test_report(
@@ -20,6 +75,8 @@ def generate_test_report(
     output_dir: pathlib.Path,
     static_interact_mode_alias: str,
     tag: Optional[str] = None,
+    template_name: Optional[str] = None,
+    theme: Optional[str] = None,
 ) -> pathlib.Path:
     report = leda.FileReport(
         nb_path=nb_path,
@@ -42,6 +99,8 @@ def generate_test_report(
     generator = leda.MainStaticReportGenerator(
         cell_timeout=report.cell_timeout,
         progress=False,
+        template_name=template_name,
+        theme=theme,
     )
 
     publisher = leda.FileReportPublisher(output_dir=output_dir)
@@ -66,8 +125,15 @@ def clean_report_lines(lines: Sequence[str]) -> Sequence[str]:
 
     remove_divs = []
 
-    # Remove stderr output
+    # Remove stderr output in 'classic' template
     remove_divs.extend(soup.find_all("div", {"class": "output_stderr"}))
+
+    # Remove stderr output in 'lab'-based templates
+    remove_divs.extend(
+        soup.find_all(
+            "div", {"data-mime-type": "application/vnd.jupyter.stderr"}
+        )
+    )
 
     # Remove Jupyter widget state
     remove_divs.extend(
@@ -111,80 +177,96 @@ def run_tests(
     if generate_html_diffs and write_refs_mode:
         raise ValueError("Can't both compare and write")
 
+    nb_names = ["basic_demo", "matplotlib_demo", "plotly_demo"]
     # TODO: Enable panel
     static_interact_mode_aliases = [
         alias
         for alias in leda.STATIC_INTERACT_MODE_ALIASES
         if alias != "panel"
     ]
+    if packaging.version.parse(nbconvert.__version__).major < 6:
+        template_options = [(None, None)]
+    else:
+        template_options = [
+            ("classic", "light"),
+            ("lab", "light"),
+            ("lab_narrow", "dark"),
+        ]
 
     errors = []
-    for nb_name in ["basic_demo", "matplotlib_demo", "plotly_demo"]:
+    for nb_name in nb_names:
         for static_interact_mode_alias in static_interact_mode_aliases:
-            name_token = "-".join(
-                [nb_name, static_interact_mode_alias, bundle_name]
-            )
-            logger.info("Running: %r", name_token)
+            for template_name, theme in template_options:
+                tag_parts = [nb_name, static_interact_mode_alias, bundle_name]
+                if template_name or theme:
+                    tag_parts.extend([template_name, theme])
+                tag = "-".join(tag_parts)
+                logger.info("Running: %r", tag)
 
-            nb_path = DEMO_DIR / f"{nb_name}.ipynb"
-            ref_result_path = TEST_DIR / f"{name_token}.html"
+                nb_path = DEMO_DIR / f"{nb_name}.ipynb"
+                ref_result_path = REF_DIR / f"{tag}.html"
 
-            test_result_path = generate_test_report(
-                nb_path,
-                tmp_path,
-                static_interact_mode_alias=static_interact_mode_alias,
-                tag=f"{static_interact_mode_alias}-{bundle_name}",
-            )
-
-            if write_refs_mode:
-                logger.info("Writing to %s", ref_result_path)
-                # Not necessary to clean when writing ref, but it's
-                # a good way to sanity check the logic by hand
-                ref_result_path.write_text(
-                    clean_report(test_result_path.read_text())
+                test_result_path = generate_test_report(
+                    nb_path,
+                    tmp_path,
+                    static_interact_mode_alias=static_interact_mode_alias,
+                    tag=tag,
+                    template_name=template_name,
+                    theme=theme,
                 )
-                logger.info("Wrote: file://%s", ref_result_path.absolute())
-                continue
 
-            ref_result_lines = clean_report_lines(
-                ref_result_path.read_text().splitlines()
-            )
-            test_result_lines = clean_report_lines(
-                test_result_path.read_text().splitlines()
-            )
+                if write_refs_mode:
+                    logger.info("Writing to %s", ref_result_path)
+                    # Not necessary to clean when writing ref, but it's
+                    # a good way to sanity check the logic by hand
+                    ref_result_path.write_text(
+                        clean_report(test_result_path.read_text())
+                    )
+                    logger.info("Wrote: file://%s", ref_result_path.absolute())
+                    continue
 
-            logger.info(
-                "Comparing %s vs. %s",
-                ref_result_path.absolute(),
-                test_result_path.absolute(),
-            )
-            context_diffs = list(
-                difflib.context_diff(
-                    ref_result_lines,
-                    test_result_lines,
-                    fromfile=str(ref_result_path),
-                    tofile=str(test_result_path),
+                ref_result_lines = clean_report_lines(
+                    ref_result_path.read_text().splitlines()
                 )
-            )
-            if context_diffs:
-                logger.info("Found some diffs")
-                errors.append(name_token)
-                if verbose:
-                    print("\n".join(context_diffs))
+                test_result_lines = clean_report_lines(
+                    test_result_path.read_text().splitlines()
+                )
 
-                if generate_html_diffs:
-                    logger.info("Generating HTML diff")
-                    with (
-                        pathlib.Path.cwd() / f"{name_token}-diff.html"
-                    ) as diff_html_path:
-                        html = difflib.HtmlDiff(wrapcolumn=79).make_file(
-                            ref_result_lines, test_result_lines, context=True
-                        )
-                        diff_html_path.write_text(html)
-                        logger.info(
-                            "Generated HTML diff: file://%s", diff_html_path
-                        )
-                        print(f"file://{diff_html_path}")
+                logger.info(
+                    "Comparing %s vs. %s",
+                    ref_result_path.absolute(),
+                    test_result_path.absolute(),
+                )
+                context_diffs = list(
+                    difflib.context_diff(
+                        ref_result_lines,
+                        test_result_lines,
+                        fromfile=str(ref_result_path),
+                        tofile=str(test_result_path),
+                    )
+                )
+                if context_diffs:
+                    logger.info("Found some diffs")
+                    errors.append(tag)
+                    if verbose:
+                        print("\n".join(context_diffs))
+
+                    if generate_html_diffs:
+                        logger.info("Generating HTML diff")
+                        with (
+                            pathlib.Path.cwd() / f"{tag}-diff.html"
+                        ) as diff_html_path:
+                            html = difflib.HtmlDiff(wrapcolumn=79).make_file(
+                                ref_result_lines,
+                                test_result_lines,
+                                context=True,
+                            )
+                            diff_html_path.write_text(html)
+                            logger.info(
+                                "Generated HTML diff: file://%s",
+                                diff_html_path,
+                            )
+                            print(f"file://{diff_html_path}")
 
     if errors:
         raise RuntimeError(f"{len(errors)} errors")
@@ -212,6 +294,8 @@ def main():
         ctxt = contextlib.nullcontext(args.output_dir)
     else:
         ctxt = tempfile.TemporaryDirectory(prefix="leda_integration_test_")
+
+    check_env(args.bundle_name)
 
     with ctxt as tmp_path:
         run_tests(

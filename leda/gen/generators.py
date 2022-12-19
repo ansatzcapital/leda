@@ -92,8 +92,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
     def __post_init__(self):
         is_classic = self.template_name == "classic" or (
             not self.template_name
-            and packaging.version.parse(nbconvert.__version__)
-            < packaging.version.parse("6.0.0")
+            and packaging.version.parse(nbconvert.__version__).major < 6
         )
         if is_classic and self.theme == "dark":
             raise ValueError(
