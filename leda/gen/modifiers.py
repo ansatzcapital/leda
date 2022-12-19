@@ -146,6 +146,12 @@ leda.show_std_output_toggle()"""
 
         insert_toc(nb_contents["cells"])
 
+        # NB: Newer versions of nbformat (the Python library) automatically
+        # get the nb versions, but for the older versions, we need to get
+        # it manually.
+        nb_version = nb_contents["nbformat"]
+        nb_version_minor = nb_contents["nbformat_minor"]
+
         # This will always upgrade the intermediate nb format to the
         # current nbformat version, even if the original nb
         # is older. E.g., it will add cell ids when upgrading
@@ -153,7 +159,9 @@ leda.show_std_output_toggle()"""
         # https://nbformat.readthedocs.io/en/latest/format_description.html
         # for more. Note that this updates the nb inplace but leaves
         # the original file untouched.
-        nbformat.v4.upgrade(nb_contents)
+        nbformat.v4.upgrade(
+            nb_contents, from_version=nb_version, from_minor=nb_version_minor
+        )
 
 
 @dataclasses.dataclass()
