@@ -1,6 +1,7 @@
 from typing import Any, Callable
 
 
+# noinspection PyProtectedMember
 def is_matplotlib(obj: Any) -> bool:
     try:
         import matplotlib.axes._base

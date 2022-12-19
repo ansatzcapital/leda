@@ -28,6 +28,7 @@ class StaticIpywidgetsInteractMode(leda.interact.base.InteractMode):
         else:
             raise ValueError(self._plot_lib)
 
+    # noinspection PyProtectedMember
     def interact(self, func: Callable, **kwargs) -> Any:
         new_value: static_ipywidgets.widgets.StaticWidget
 
