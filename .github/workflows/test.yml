@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  # Run pytest and linters
+  # Run pytest, integration tests, and linters
   test:
     runs-on: ${{ matrix.platform }}
 
@@ -25,7 +25,6 @@ jobs:
           - macos-latest
           - windows-latest
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', 'pypy-3.8']
-        bundle-name: ['none', 'bundle0', 'bundle1', 'ubndle2', 'bundle3', 'bundle4']
 
     steps:
       - uses: actions/checkout@v3
@@ -44,22 +43,6 @@ jobs:
           python -m pip install tox-gh-actions
       - name: Test with tox
         run: tox
-        if: ${{ matrix.bundle-name == 'none' }}
-      - name: Integration test with tox (bundle0)
-        run: tox -e integration_test_${{ matrix.bundle-name }}
-        if: ${{ matrix.bundle-name == 'bundle0' && matrix.python-version == '3.7' }}
-      - name: Integration test with tox (bundle1)
-        run: tox -e integration_test_${{ matrix.bundle-name }}
-        if: ${{ matrix.bundle-name == 'bundle1' && matrix.python-version == '3.8' }}
-      - name: Integration test with tox (bundle2)
-        run: tox -e integration_test_${{ matrix.bundle-name }}
-        if: ${{ matrix.bundle-name == 'bundle2' && matrix.python-version == '3.8' }}
-      - name: Integration test with tox (bundle3)
-        run: tox -e integration_test_${{ matrix.bundle-name }}
-        if: ${{ matrix.bundle-name == 'bundle3' && matrix.python-version == '3.10' }}
-      - name: Integration test with tox (bundle4)
-        run: tox -e integration_test_${{ matrix.bundle-name }}
-        if: ${{ matrix.bundle-name == 'bundle4' && matrix.python-version == '3.11' }}
 
   # Test building and publishing
   # See:
