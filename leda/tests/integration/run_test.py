@@ -40,6 +40,10 @@ def check_env(bundle_name: str):
         if pip_freeze_line.startswith("-e"):
             continue
 
+        if "==" not in pip_freeze_line:
+            logger.warning(pip_freeze_line)
+            continue
+
         pkg_name, pkg_version = map(str.strip, pip_freeze_line.split("=="))
         installed_pkgs[pkg_name] = pkg_version
 
