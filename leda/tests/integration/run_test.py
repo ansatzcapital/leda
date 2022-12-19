@@ -37,11 +37,8 @@ def check_env(bundle_name: str):
         subprocess.check_output(["pip", "freeze"]).decode().splitlines()
     )
     for pip_freeze_line in pip_freeze_lines:
-        if pip_freeze_line.startswith("-e"):
-            continue
-
-        if "==" not in pip_freeze_line:
-            logger.warning(pip_freeze_line)
+        # Skip editable and wheel installs
+        if pip_freeze_line.startswith("-e") or "@" in pip_freeze_line:
             continue
 
         pkg_name, pkg_version = map(str.strip, pip_freeze_line.split("=="))
