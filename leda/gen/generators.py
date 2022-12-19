@@ -5,7 +5,7 @@ import datetime
 import logging
 import os
 import pathlib
-from typing import Mapping, Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 import jupyter_client.kernelspec
 import nbconvert
@@ -37,9 +37,9 @@ class ExecutePreprocessorWithProgressBar(
     def preprocess(
         self,
         nb: nbformat.NotebookNode,
-        resources: Optional[Mapping] = None,
+        resources: Optional[Dict] = None,
         km: Optional[jupyter_client.KernelManager] = None,
-    ) -> Tuple[nbformat.NotebookNode, Mapping]:
+    ) -> Tuple[nbformat.NotebookNode, Dict]:
         self._num_cells = len(nb["cells"])
 
         result = super(ExecutePreprocessorWithProgressBar, self).preprocess(
@@ -48,15 +48,16 @@ class ExecutePreprocessorWithProgressBar(
         if self._pbar is not None:
             self._pbar.close()
 
+        # noinspection PyTypeChecker
         return result
 
     def preprocess_cell(
         self,
         cell: nbformat.NotebookNode,
-        resources: Mapping,
+        resources: Dict,
         cell_index: int,
         store_history: bool = True,
-    ) -> Tuple[nbformat.NotebookNode, Mapping]:
+    ) -> Tuple[nbformat.NotebookNode, Dict]:
         if self._pbar is None:
             self._pbar = tqdm.tqdm(
                 desc="Executing notebook",
@@ -122,7 +123,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
             progress=self.progress, **kwargs
         )
 
-    def _get_exporter_kwargs(self) -> Mapping:
+    def _get_exporter_kwargs(self) -> Dict:
         # See https://nbconvert.readthedocs.io/en/latest/customizing.html#adding-additional-template-paths  # noqa
         exporter_kwargs = {
             "extra_template_basedirs": str(
@@ -140,7 +141,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
 
     def generate(
         self,
-        nb_contents: Mapping,
+        nb_contents: nbformat.NotebookNode,
         nb_name: Optional[str] = None,
     ) -> bytes:
         logger.info("Generating notebook")

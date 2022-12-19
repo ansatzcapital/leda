@@ -7,6 +7,7 @@ import pathlib
 from typing import IO, Any, List, Mapping, MutableMapping, Optional, Union
 
 import cached_property
+import nbformat
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -97,7 +98,7 @@ class ReportArtifact:
 @dataclasses.dataclass()
 class ReportGenerator:
     def generate(
-        self, nb_contents: Mapping, nb_name: Optional[str] = None
+        self, nb_contents: nbformat.NotebookNode, nb_name: Optional[str] = None
     ) -> bytes:
         raise NotImplementedError
 
