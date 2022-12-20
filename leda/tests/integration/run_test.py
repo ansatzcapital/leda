@@ -1,5 +1,6 @@
 import argparse
 import contextlib
+import datetime
 import difflib
 import logging
 import pathlib
@@ -89,6 +90,8 @@ def generate_test_report(
         nb_path=nb_path,
         name=nb_path.stem,
         tag=tag,
+        # Expanded cell timeout for slower CI workers
+        cell_timeout=datetime.timedelta(minutes=5),
     )
 
     output_dir = output_dir / report.full_name
