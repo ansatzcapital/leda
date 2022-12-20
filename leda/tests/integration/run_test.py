@@ -233,7 +233,13 @@ def _run_test(
     logger.info("Running: %r", tag)
 
     nb_path = DEMO_DIR / f"{nb_name}.ipynb"
-    ref_result_path = REF_DIR / f"{tag}.html"
+
+    ref_result_path = None
+    for ref_result_filename in [f"{tag}-{sys.platform}.html", f"{tag}.html"]:
+        if (REF_DIR / ref_result_filename).exists():
+            ref_result_path = REF_DIR / ref_result_filename
+            break
+    assert ref_result_path is not None
 
     test_result_path = generate_test_report(
         nb_path,
