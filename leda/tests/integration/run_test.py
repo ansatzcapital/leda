@@ -346,6 +346,7 @@ def main():
     parser.add_argument("--verbose", action="store_true")
     parser.add_argument("--gen-html-diffs", action="store_true")
     parser.add_argument("--write-refs-mode", action="store_true")
+    parser.add_argument("--cleanup", action="store_true")
     args = parser.parse_args()
 
     if args.log_level:
@@ -360,8 +361,12 @@ def main():
     if args.output_dir:
         output_dir: pathlib.Path = args.output_dir
         ctxt = contextlib.nullcontext(output_dir)
-    else:
+    elif args.cleanup:
         ctxt = tempfile.TemporaryDirectory(prefix="leda_integration_test_")
+    else:
+        ctxt = contextlib.nullcontext(
+            tempfile.mkdtemp(prefix="leda_integration_test_")
+        )
 
     check_env(args.bundle_name)
 
