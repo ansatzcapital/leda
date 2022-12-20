@@ -16,7 +16,7 @@ def is_matplotlib(obj: Any) -> bool:
     return isinstance(
         obj,
         (
-            matplotlib.axes.SubplotBase,
+            matplotlib.axes.SubplotBase,  # type: ignore
             matplotlib.artist.Artist,
         ),
     )

@@ -53,7 +53,7 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
                 )
 
         interact_view = pn.interact(func, **kwargs)
-        return interact_view.embed(
+        return interact_view.embed(  # type: ignore
             max_states=500, max_opts=500, progress=self.progress
         )
 

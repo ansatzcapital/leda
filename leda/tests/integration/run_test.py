@@ -7,7 +7,7 @@ import pathlib
 import subprocess
 import sys
 import tempfile
-from typing import ContextManager, List, Optional, Sequence, Union, Tuple
+from typing import ContextManager, List, Optional, Sequence, Union, Tuple, cast
 
 import nbconvert
 import packaging.version
@@ -94,7 +94,7 @@ def generate_test_report(
         cell_timeout=datetime.timedelta(minutes=5),
     )
 
-    output_dir = output_dir / report.full_name
+    output_dir = output_dir / cast(str, report.full_name)
 
     modifier: leda.ReportModifier
     if static_interact_mode_alias == "static_ipywidgets":
@@ -358,7 +358,8 @@ def main():
 
     ctxt: ContextManager[Union[str, pathlib.Path]]
     if args.output_dir:
-        ctxt = contextlib.nullcontext(args.output_dir)
+        output_dir: pathlib.Path = args.output_dir
+        ctxt = contextlib.nullcontext(output_dir)
     else:
         ctxt = tempfile.TemporaryDirectory(prefix="leda_integration_test_")
 

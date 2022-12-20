@@ -6,6 +6,7 @@ import ipywidgets
 
 import leda.interact.base
 import leda.interact.core
+import leda.interact.dynamic
 from leda.vendor.static_ipywidgets import static_ipywidgets
 
 
@@ -32,7 +33,7 @@ class StaticIpywidgetsInteractMode(leda.interact.base.InteractMode):
     def interact(self, func: Callable, **kwargs) -> Any:
         new_value: static_ipywidgets.widgets.StaticWidget
 
-        kwargs = dict(leda.to_dynamic_ipywidgets(kwargs))
+        kwargs = dict(leda.interact.dynamic.to_dynamic_ipywidgets(kwargs))
 
         for key, value in kwargs.items():
             if isinstance(value, ipywidgets.widgets.IntSlider):

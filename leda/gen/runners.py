@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 import logging
 import pathlib
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 import nbformat
 
@@ -46,7 +46,7 @@ class MainReportRunner(leda.gen.base.ReportRunner):
         if isinstance(report, pathlib.Path):
             report = leda.gen.base.FileReport(name=report.stem, nb_path=report)
 
-        output_dir_path = local_dir_path / report.full_name
+        output_dir_path = local_dir_path / cast(str, report.full_name)
 
         modifier: leda.gen.base.ReportModifier
         if static_interact_mode_alias == "static_ipywidgets":

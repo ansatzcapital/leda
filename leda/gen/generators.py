@@ -26,7 +26,9 @@ class ExecutePreprocessorWithProgressBar(
 ):
     """Small extension to provide progress bar."""
 
-    progress = traitlets.Bool(default_value=False).tag(config=True)
+    progress = traitlets.Bool(default_value=False).tag(  # type: ignore
+        config=True,
+    )
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -38,7 +40,7 @@ class ExecutePreprocessorWithProgressBar(
         self,
         nb: nbformat.NotebookNode,
         resources: Optional[Dict] = None,
-        km: Optional[jupyter_client.KernelManager] = None,
+        km: Optional[jupyter_client.KernelManager] = None,  # type: ignore
     ) -> Tuple[nbformat.NotebookNode, Dict]:
         self._num_cells = len(nb["cells"])
 
