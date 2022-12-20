@@ -230,16 +230,19 @@ def run_tests(
                     # Not necessary to clean when writing ref, but it's
                     # a good way to sanity check the logic by hand
                     ref_result_path.write_text(
-                        clean_report(test_result_path.read_text())
+                        clean_report(
+                            test_result_path.read_text(encoding="utf-8")
+                        ),
+                        encoding="utf-8",
                     )
                     logger.info("Wrote: file://%s", ref_result_path.absolute())
                     continue
 
                 ref_result_lines = clean_report_lines(
-                    ref_result_path.read_text().splitlines()
+                    ref_result_path.read_text(encoding="utf-8").splitlines()
                 )
                 test_result_lines = clean_report_lines(
-                    test_result_path.read_text().splitlines()
+                    test_result_path.read_text(encoding="utf-8").splitlines()
                 )
 
                 logger.info(
@@ -271,7 +274,7 @@ def run_tests(
                                 test_result_lines,
                                 context=True,
                             )
-                            diff_html_path.write_text(html)
+                            diff_html_path.write_text(html, encoding="utf-8")
                             logger.info(
                                 "Generated HTML diff: file://%s",
                                 diff_html_path,
