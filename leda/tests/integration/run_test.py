@@ -3,6 +3,7 @@ import contextlib
 import datetime
 import difflib
 import logging
+import os
 import pathlib
 import subprocess
 import sys
@@ -214,7 +215,7 @@ def _handle_diffs(
 
 
 def _run_test(
-    tmp_path: pathlib.Path,
+    output_dir: pathlib.Path,
     bundle_name: str,
     errors: List[str],
     nb_name: str,
@@ -236,7 +237,7 @@ def _run_test(
 
     test_result_path = generate_test_report(
         nb_path,
-        tmp_path,
+        output_dir,
         static_interact_mode_alias=static_interact_mode_alias,
         tag=tag,
         template_name=template_name,
@@ -286,7 +287,7 @@ def _run_test(
 
 
 def run_tests(
-    tmp_path: pathlib.Path,
+    output_dir: pathlib.Path,
     bundle_name: str,
     verbose: bool = False,
     generate_html_diffs: bool = False,
@@ -317,7 +318,7 @@ def run_tests(
         for static_interact_mode_alias in static_interact_mode_aliases:
             for template_name, theme in template_options:
                 _run_test(
-                    tmp_path=tmp_path,
+                    output_dir=output_dir,
                     bundle_name=bundle_name,
                     errors=errors,
                     nb_name=nb_name,
@@ -359,8 +360,16 @@ def main():
 
     ctxt: ContextManager[Union[str, pathlib.Path]]
     if args.output_dir:
+        if args.cleanup:
+            raise ValueError("Can only clean up tmp dirs")
+
         output_dir: pathlib.Path = args.output_dir
         ctxt = contextlib.nullcontext(output_dir)
+    elif os.environ.get("LEDA_TEST_OUTPUT_DIR", None):
+        if args.cleanup:
+            raise ValueError("Can only clean up tmp dirs")
+
+        ctxt = contextlib.nullcontext(os.environ["LEDA_TEST_OUTPUT_DIR"])
     elif args.cleanup:
         ctxt = tempfile.TemporaryDirectory(prefix="leda_integration_test_")
     else:
@@ -370,9 +379,10 @@ def main():
 
     check_env(args.bundle_name)
 
-    with ctxt as tmp_path:
+    with ctxt as output_dir:
+        logger.info("Using output dir: %s", output_dir)
         run_tests(
-            pathlib.Path(tmp_path),
+            pathlib.Path(output_dir),
             args.bundle_name,
             verbose=args.verbose,
             generate_html_diffs=args.gen_html_diffs,

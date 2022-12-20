@@ -41,25 +41,15 @@ jobs:
           python -m pip install tox
       - name: Test with tox
         run: tox -m ${{ matrix.python-version }}
-        if: ${{ ! (matrix.platform == 'macos-latest' && matrix.python-version == 'pypy-3.8') }}
-      - name: Test with tox (Windows, py3.8)
-        # Skip integration tests on macOS for now (very slow)
-        run: tox -e pypy3
-        if: ${{ matrix.platform == 'macos-latest' && matrix.python-version == 'pypy-3.8' }}
-      - name: Upload failed outputs (windows-latest)
+        env:
+          LEDA_TEST_OUTPUT_DIR: ~/leda_outputs/
+      - name: Upload failed outputs
         uses: actions/upload-artifact@v3
         with:
-          name: leda-output-${{ matrix.platform }}-${{ matrix.python-version}}
-          path: C:/Users/RUNNER~1/AppData/Local/Temp/
+          name: leda-outputs-${{ matrix.platform }}-${{ matrix.python-version}}
+          path: ~/leda_outputs/
           retention-days: 1
-        if: ${{ failure() && matrix.platform == 'windows-latest' }}
-      - name: Upload failed outputs (unix)
-        uses: actions/upload-artifact@v3
-        with:
-          name: leda-output-${{ matrix.platform }}-${{ matrix.python-version}}
-          path: /tmp/
-          retention-days: 1
-        if: ${{ failure() && matrix.platform != 'windows-latest' }}
+        if: ${{ failure() }}
 
   # Test building and publishing
   # See:
