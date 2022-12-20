@@ -14,6 +14,9 @@ jobs:
   test:
     runs-on: ${{ matrix.platform }}
 
+    env:
+      LEDA_TEST_OUTPUT_DIR: ~/leda_outputs/
+
     strategy:
       fail-fast: false
       matrix:
@@ -41,8 +44,16 @@ jobs:
           python -m pip install tox
       - name: Test with tox
         run: tox -m ${{ matrix.python-version }}
-        env:
-          LEDA_TEST_OUTPUT_DIR: ~/leda_outputs/
+        if: ${{ ! (matrix.platform == 'windows-latest' && matrix.python-version == '3.8') && (matrix.python-version != 'pypy-3.8') }}
+      - name: Test with tox (Windows, py3.8)
+        # Skip integration tests on Windows/py3.8 because
+        # there are no pre-built Windows/py3.8/numpy1.6.6 wheels
+        run: tox -e black,docformatter,flake8,isort,mypy,pyright,py38
+        if: ${{ matrix.platform == 'windows-latest' && matrix.python-version == '3.8' }}
+      - name: Test with tox (pypy3.8)
+        # TODO: Skip integration tests on pypy; investigate issues
+        run: tox -e pypy3
+        if: ${{ matrix.python-version == 'pypy-3.8' }}
       - name: Upload failed outputs
         uses: actions/upload-artifact@v3
         with:
