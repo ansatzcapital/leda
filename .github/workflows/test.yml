@@ -49,14 +49,14 @@ jobs:
       - name: Upload failed outputs (windows-latest)
         uses: actions/upload-artifact@v3
         with:
-          name: leda-output-windows
+          name: leda-output-${{ matrix.platform }}-${{ matrix.python-version}}
           path: C:/Users/RUNNER~1/AppData/Local/Temp/leda_integration_test_*/**/*.html
           retention-days: 1
         if: ${{ failure() && matrix.platform == 'windows-latest' }}
       - name: Upload failed outputs (unix)
         uses: actions/upload-artifact@v3
         with:
-          name: leda-output-unix
+          name: leda-output-${{ matrix.platform }}-${{ matrix.python-version}}
           path: /tmp/leda_integration_test_*/**/*.html
           retention-days: 1
         if: ${{ failure() && matrix.platform != 'windows-latest' }}
