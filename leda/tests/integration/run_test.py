@@ -7,7 +7,7 @@ import pathlib
 import subprocess
 import sys
 import tempfile
-from typing import ContextManager, List, Optional, Sequence, Union, Tuple, cast
+from typing import ContextManager, List, Optional, Sequence, Tuple, Union, cast
 
 import nbconvert
 import packaging.version

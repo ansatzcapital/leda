@@ -48,6 +48,7 @@ module = [
     "nbconvert.*",
     "nbformat.*",
     "numpy.*",
+    "panel.*",
     "plotly.*",
 ]
 ignore_missing_imports = true

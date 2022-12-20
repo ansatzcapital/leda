@@ -80,7 +80,7 @@ class RangeWidget(StaticWidget):
 
     def values(self) -> Sequence[float]:
         min, max, step = self.datarange
-        return np.arange(min, max + step, step)
+        return list(np.arange(min, max + step, step))
 
     def html(self) -> str:
         style = ""
