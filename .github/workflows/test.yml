@@ -41,12 +41,20 @@ jobs:
           python -m pip install tox
       - name: Test with tox
         run: tox -m ${{ matrix.python-version }}
-      - uses: actions/upload-artifact@v3
+      - name: Upload failed outputs (windows-latest)
+        uses: actions/upload-artifact@v3
         with:
-          name: win-output
+          name: leda-output-windows
           path: C:/Users/RUNNER~1/AppData/Local/Temp/
           retention-days: 1
         if: ${{ failure() && matrix.platform == 'windows-latest' }}
+      - name: Upload failed outputs (unix)
+        uses: actions/upload-artifact@v3
+        with:
+          name: leda-output-unix
+          path: /tmp/
+          retention-days: 1
+        if: ${{ failure() && matrix.platform != 'windows-latest' }}
 
   # Test building and publishing
   # See:
