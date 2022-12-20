@@ -364,13 +364,13 @@ def main():
         if args.cleanup:
             raise ValueError("Can only clean up tmp dirs")
 
-        output_dir = args.output_dir
+        output_dir = args.output_dir.expanduser()
         ctxt = contextlib.nullcontext(output_dir)
     elif os.environ.get("LEDA_TEST_OUTPUT_DIR", None):
         if args.cleanup:
             raise ValueError("Can only clean up tmp dirs")
 
-        output_dir = os.environ["LEDA_TEST_OUTPUT_DIR"]
+        output_dir = os.path.expanduser(os.environ["LEDA_TEST_OUTPUT_DIR"])
         ctxt = contextlib.nullcontext(output_dir)
     elif args.cleanup:
         ctxt = tempfile.TemporaryDirectory(prefix="leda_integration_test_")
