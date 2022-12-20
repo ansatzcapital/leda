@@ -7,7 +7,7 @@ import pathlib
 import subprocess
 import sys
 import tempfile
-from typing import Optional, Sequence
+from typing import List, Optional, Sequence
 
 import nbconvert
 import packaging.version
@@ -177,6 +177,112 @@ def clean_report(text: str) -> str:
     return "\n".join(clean_report_lines(text.splitlines()))
 
 
+def _handle_diffs(
+    tag: str,
+    ref_result_lines: Sequence[str],
+    test_result_lines: Sequence[str],
+    context_diffs: Sequence[str],
+    errors: List[str],
+    generate_html_diffs: bool = False,
+    verbose: bool = False,
+):
+    if not context_diffs:
+        logger.info("Found no diffs")
+        return
+
+    logger.info("Found some diffs")
+    errors.append(tag)
+    if verbose:
+        print("\n".join(context_diffs))
+
+    if generate_html_diffs:
+        logger.info("Generating HTML diff")
+        with (pathlib.Path.cwd() / f"{tag}-diff.html") as diff_html_path:
+            html = difflib.HtmlDiff(wrapcolumn=79).make_file(
+                ref_result_lines,
+                test_result_lines,
+                context=True,
+            )
+            diff_html_path.write_text(html, encoding="utf-8")
+            logger.info(
+                "Generated HTML diff: file://%s",
+                diff_html_path,
+            )
+            print(f"file://{diff_html_path}")
+
+
+def _run_test(
+    tmp_path: pathlib.Path,
+    bundle_name: str,
+    errors: List[str],
+    nb_name: str,
+    static_interact_mode_alias: str,
+    template_name: Optional[str] = None,
+    theme: Optional[str] = None,
+    generate_html_diffs: bool = False,
+    write_refs_mode: bool = False,
+    verbose: bool = False,
+):
+    tag_parts = [nb_name, static_interact_mode_alias, bundle_name]
+    if template_name or theme:
+        tag_parts.extend([template_name, theme])
+    tag = "-".join(tag_parts)
+    logger.info("Running: %r", tag)
+
+    nb_path = DEMO_DIR / f"{nb_name}.ipynb"
+    ref_result_path = REF_DIR / f"{tag}.html"
+
+    test_result_path = generate_test_report(
+        nb_path,
+        tmp_path,
+        static_interact_mode_alias=static_interact_mode_alias,
+        tag=tag,
+        template_name=template_name,
+        theme=theme,
+    )
+
+    if write_refs_mode:
+        logger.info("Writing to %s", ref_result_path)
+        # Not necessary to clean when writing ref, but it's
+        # a good way to sanity check the logic by hand
+        ref_result_path.write_text(
+            clean_report(test_result_path.read_text(encoding="utf-8")),
+            encoding="utf-8",
+        )
+        logger.info("Wrote: file://%s", ref_result_path.absolute())
+        return
+
+    ref_result_lines = clean_report_lines(
+        ref_result_path.read_text(encoding="utf-8").splitlines()
+    )
+    test_result_lines = clean_report_lines(
+        test_result_path.read_text(encoding="utf-8").splitlines()
+    )
+
+    logger.info(
+        "Comparing %s vs. %s",
+        ref_result_path.absolute(),
+        test_result_path.absolute(),
+    )
+    context_diffs = list(
+        difflib.context_diff(
+            ref_result_lines,
+            test_result_lines,
+            fromfile=str(ref_result_path),
+            tofile=str(test_result_path),
+        )
+    )
+    _handle_diffs(
+        tag=tag,
+        ref_result_lines=ref_result_lines,
+        test_result_lines=test_result_lines,
+        context_diffs=context_diffs,
+        errors=errors,
+        generate_html_diffs=generate_html_diffs,
+        verbose=verbose,
+    )
+
+
 def run_tests(
     tmp_path: pathlib.Path,
     bundle_name: str,
@@ -207,79 +313,18 @@ def run_tests(
     for nb_name in nb_names:
         for static_interact_mode_alias in static_interact_mode_aliases:
             for template_name, theme in template_options:
-                tag_parts = [nb_name, static_interact_mode_alias, bundle_name]
-                if template_name or theme:
-                    tag_parts.extend([template_name, theme])
-                tag = "-".join(tag_parts)
-                logger.info("Running: %r", tag)
-
-                nb_path = DEMO_DIR / f"{nb_name}.ipynb"
-                ref_result_path = REF_DIR / f"{tag}.html"
-
-                test_result_path = generate_test_report(
-                    nb_path,
-                    tmp_path,
+                _run_test(
+                    tmp_path=tmp_path,
+                    bundle_name=bundle_name,
+                    errors=errors,
+                    nb_name=nb_name,
                     static_interact_mode_alias=static_interact_mode_alias,
-                    tag=tag,
                     template_name=template_name,
                     theme=theme,
+                    generate_html_diffs=generate_html_diffs,
+                    write_refs_mode=write_refs_mode,
+                    verbose=verbose,
                 )
-
-                if write_refs_mode:
-                    logger.info("Writing to %s", ref_result_path)
-                    # Not necessary to clean when writing ref, but it's
-                    # a good way to sanity check the logic by hand
-                    ref_result_path.write_text(
-                        clean_report(
-                            test_result_path.read_text(encoding="utf-8")
-                        ),
-                        encoding="utf-8",
-                    )
-                    logger.info("Wrote: file://%s", ref_result_path.absolute())
-                    continue
-
-                ref_result_lines = clean_report_lines(
-                    ref_result_path.read_text(encoding="utf-8").splitlines()
-                )
-                test_result_lines = clean_report_lines(
-                    test_result_path.read_text(encoding="utf-8").splitlines()
-                )
-
-                logger.info(
-                    "Comparing %s vs. %s",
-                    ref_result_path.absolute(),
-                    test_result_path.absolute(),
-                )
-                context_diffs = list(
-                    difflib.context_diff(
-                        ref_result_lines,
-                        test_result_lines,
-                        fromfile=str(ref_result_path),
-                        tofile=str(test_result_path),
-                    )
-                )
-                if context_diffs:
-                    logger.info("Found some diffs")
-                    errors.append(tag)
-                    if verbose:
-                        print("\n".join(context_diffs))
-
-                    if generate_html_diffs:
-                        logger.info("Generating HTML diff")
-                        with (
-                            pathlib.Path.cwd() / f"{tag}-diff.html"
-                        ) as diff_html_path:
-                            html = difflib.HtmlDiff(wrapcolumn=79).make_file(
-                                ref_result_lines,
-                                test_result_lines,
-                                context=True,
-                            )
-                            diff_html_path.write_text(html, encoding="utf-8")
-                            logger.info(
-                                "Generated HTML diff: file://%s",
-                                diff_html_path,
-                            )
-                            print(f"file://{diff_html_path}")
 
     if errors:
         raise RuntimeError(f"{len(errors)} errors")
