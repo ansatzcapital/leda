@@ -335,7 +335,7 @@ def run_tests(
         )
         raise RuntimeError(f"{len(errors)} errors")
     else:
-        logger.info("✅ Finished witih no errors")
+        logger.info("✅ Finished with no errors")
 
 
 def main():
