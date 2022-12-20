@@ -24,6 +24,6 @@ def init(plot_lib: str):
     # Register cell magics (dynamically, because we need to check
     # that we're in a ipython session)
     if IPython.get_ipython():
-        import leda.interact.magics
+        import leda.interact.magics  # noqa: F401
 
     get_interact_mode().init(plot_lib)

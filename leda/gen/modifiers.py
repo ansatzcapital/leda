@@ -15,7 +15,7 @@ logger.addHandler(logging.NullHandler())
 TOC_LEVELS = ["I", "A", "1", "a", "i"]
 
 
-def insert_toc(cells: List[nbformat.NotebookNode]):
+def insert_toc(cells: List[nbformat.NotebookNode]):  # noqa: C901
     """Inserts table of contents in-place."""
     toc_cell = None
     for cell in cells:

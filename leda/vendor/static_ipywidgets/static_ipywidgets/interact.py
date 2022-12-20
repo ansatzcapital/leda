@@ -206,7 +206,7 @@ class StaticInteract:
              // External images have data_src; inline images do not
              if(imgs[j].hasAttribute("data_src")) {{
                var newImgSrc = imgs[j].getAttribute("data_src");
-    
+
                // For more on closures in loops and let keyword:
                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
                let newDivCapture = newDiv;

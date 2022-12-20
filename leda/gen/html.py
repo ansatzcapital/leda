@@ -86,7 +86,7 @@ def show_toggle(
     # Load jQuery, since it's only automatically loaded in "classic" template
     return IPython.display.HTML(
         f"""
-<script 
+<script
   src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js">
 </script>
 
