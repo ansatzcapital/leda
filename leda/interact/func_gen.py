@@ -18,7 +18,7 @@ def gen_kwargs(
     parts = line.split(";")
     for part in parts:
         key, value = part.strip().split("=")
-        kwargs[key] = ipy.ev(value)  # type: ignore
+        kwargs[key] = ipy.ev(value)  # pyright: ignore
 
     return kwargs
 
@@ -60,5 +60,5 @@ def gen_func(
     ipy: Optional[IPython.InteractiveShell] = None,
 ) -> Callable:
     ipy = IPython.get_ipython() if not ipy else ipy
-    ipy.ex(func_cell)  # type: ignore
-    return ipy.ev(func_name)  # type: ignore
+    ipy.ex(func_cell)  # pyright: ignore
+    return ipy.ev(func_name)  # pyright: ignore

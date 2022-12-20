@@ -37,7 +37,7 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
 
         import panel as pn
 
-        pn.extension(pn_extension, safe_embed=True)
+        pn.extension(pn_extension, safe_embed=True)  # pyright: ignore
 
     def interact(self, func: Callable, **kwargs) -> Any:
         import panel as pn
@@ -52,8 +52,8 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
                     "*before* calling leda.init())"
                 )
 
-        interact_view = pn.interact(func, **kwargs)
-        return interact_view.embed(  # type: ignore
+        interact_view = pn.interact(func, **kwargs)  # pyright: ignore
+        return interact_view.embed(  # pyright: ignore
             max_states=500, max_opts=500, progress=self.progress
         )
 
@@ -64,9 +64,9 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
             # See https://panel.holoviz.org/reference/panes/Matplotlib.html
             import matplotlib.pyplot as plt
 
-            return pn.pane.Matplotlib(plt.gcf())
+            return pn.pane.Matplotlib(plt.gcf())  # pyright: ignore
         elif leda.interact.base.is_plotly(obj):
             # See https://panel.holoviz.org/reference/panes/Plotly.html
-            return pn.pane.Plotly(obj.to_dict())
+            return pn.pane.Plotly(obj.to_dict())  # pyright: ignore
 
         return super().process_result(obj)
