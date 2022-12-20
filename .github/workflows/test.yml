@@ -41,6 +41,11 @@ jobs:
           python -m pip install tox
       - name: Test with tox
         run: tox -m ${{ matrix.python-version }}
+        if: ${{ ! (matrix.platform == 'macos-latest' && matrix.python-version == 'pypy-3.8') }}
+      - name: Test with tox (Windows, py3.8)
+        # Skip integration tests on macOS for now (very slow)
+        run: tox -e pypy3
+        if: ${{ matrix.platform == 'macos-latest' && matrix.python-version == 'pypy-3.8' }}
       - name: Upload failed outputs (windows-latest)
         uses: actions/upload-artifact@v3
         with:
