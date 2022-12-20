@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Any, Optional, Sequence
+from typing import Any, Optional, Sequence, Union
 
 import numpy as np
 
@@ -112,7 +112,7 @@ class DropDownWidget(StaticWidget):
 
     def __init__(
         self,
-        values: Sequence[str],
+        values: Sequence[Union[str, int]],
         name: Optional[str] = None,
         labels=None,
         default=None,
@@ -137,7 +137,7 @@ class DropDownWidget(StaticWidget):
         else:
             raise ValueError("if specified, default must be in values")
 
-    def _single_option(self, label: str, value: str) -> str:
+    def _single_option(self, label: str, value: Union[str, int]) -> str:
         if value == self.default:
             selected = " selected "
         else:
@@ -146,7 +146,7 @@ class DropDownWidget(StaticWidget):
             label=label, value=get_choice_value_str(value), selected=selected
         )
 
-    def values(self) -> Sequence[str]:
+    def values(self) -> Sequence[Union[str, int]]:
         return self._values
 
     def html(self) -> str:

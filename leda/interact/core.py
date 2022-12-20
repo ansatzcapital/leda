@@ -5,7 +5,9 @@ import IPython
 import leda.interact.base
 import leda.interact.dynamic
 
-GLOBAL_INTERACT_MODE = leda.interact.dynamic.DynamicIpywidgetsInteractMode()
+GLOBAL_INTERACT_MODE: leda.interact.base.InteractMode = (
+    leda.interact.dynamic.DynamicIpywidgetsInteractMode()
+)
 GLOBAL_INTERACT_MODE.on_set()
 
 

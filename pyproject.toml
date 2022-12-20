@@ -34,6 +34,24 @@ use_parentheses = true
 line_length = 79
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
 
+[tool.mypy]
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "cached_property.*",
+    "IPython.*",
+    "ipywidgets.*",
+    "jupyter_client.*",
+    "markdown2.*",
+    "matplotlib.*",
+    "nbconvert.*",
+    "nbformat.*",
+    "numpy.*",
+    "plotly.*",
+]
+ignore_missing_imports = true
+
 [tool.pyright]
 include = ["**/*.py"]
 exclude = ["**/__pycache__", "**/.*"]

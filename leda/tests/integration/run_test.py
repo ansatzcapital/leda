@@ -7,7 +7,7 @@ import pathlib
 import subprocess
 import sys
 import tempfile
-from typing import List, Optional, Sequence
+from typing import ContextManager, List, Optional, Sequence, Union, Tuple
 
 import nbconvert
 import packaging.version
@@ -96,6 +96,7 @@ def generate_test_report(
 
     output_dir = output_dir / report.full_name
 
+    modifier: leda.ReportModifier
     if static_interact_mode_alias == "static_ipywidgets":
         # Set to use inline images
         modifier = leda.StaticIpywidgetsReportModifier(local_dir_path=None)
@@ -122,6 +123,7 @@ def generate_test_report(
     )
 
     report_url = runner.run(report=report)
+    assert report_url is not None
     return pathlib.Path(report_url.replace("file://", ""))
 
 
@@ -133,7 +135,7 @@ def clean_report_lines(lines: Sequence[str]) -> Sequence[str]:
 
     soup = bs4.BeautifulSoup(text, "html.parser")
 
-    remove_divs = []
+    remove_divs: List[bs4.Tag] = []
 
     # Remove stderr output in 'classic' template
     remove_divs.extend(soup.find_all("div", {"class": "output_stderr"}))
@@ -225,7 +227,7 @@ def _run_test(
 ):
     tag_parts = [nb_name, static_interact_mode_alias, bundle_name]
     if template_name or theme:
-        tag_parts.extend([template_name, theme])
+        tag_parts.extend(map(str, [template_name, theme]))
     tag = "-".join(tag_parts)
     logger.info("Running: %r", tag)
 
@@ -300,6 +302,7 @@ def run_tests(
         for alias in leda.STATIC_INTERACT_MODE_ALIASES
         if alias != "panel"
     ]
+    template_options: List[Tuple[Optional[str], Optional[str]]]
     if packaging.version.parse(nbconvert.__version__).major < 6:
         template_options = [(None, None)]
     else:
@@ -309,7 +312,7 @@ def run_tests(
             ("lab_narrow", "dark"),
         ]
 
-    errors = []
+    errors: List[str] = []
     for nb_name in nb_names:
         for static_interact_mode_alias in static_interact_mode_aliases:
             for template_name, theme in template_options:
@@ -348,6 +351,7 @@ def main():
         # Suppress a log message that seems to have no effect
         logging.getLogger("traitlets").setLevel(logging.ERROR)
 
+    ctxt: ContextManager[Union[str, pathlib.Path]]
     if args.output_dir:
         ctxt = contextlib.nullcontext(args.output_dir)
     else:

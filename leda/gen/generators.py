@@ -5,7 +5,7 @@ import datetime
 import logging
 import os
 import pathlib
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 import jupyter_client.kernelspec
 import nbconvert
@@ -104,7 +104,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
             raise ValueError(f"Unsupported theme: {self.theme!r}")
 
     def _get_preprocessor(self) -> nbconvert.preprocessors.ExecutePreprocessor:
-        kwargs = {}
+        kwargs: Dict[str, Any] = {}
 
         if self.cell_timeout:
             kwargs["timeout"] = int(self.cell_timeout.total_seconds())
