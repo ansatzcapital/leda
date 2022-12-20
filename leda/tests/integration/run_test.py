@@ -358,18 +358,20 @@ def main():
         # Suppress a log message that seems to have no effect
         logging.getLogger("traitlets").setLevel(logging.ERROR)
 
+    output_dir: Union[str, pathlib.Path]
     ctxt: ContextManager[Union[str, pathlib.Path]]
     if args.output_dir:
         if args.cleanup:
             raise ValueError("Can only clean up tmp dirs")
 
-        output_dir: pathlib.Path = args.output_dir
+        output_dir = args.output_dir
         ctxt = contextlib.nullcontext(output_dir)
     elif os.environ.get("LEDA_TEST_OUTPUT_DIR", None):
         if args.cleanup:
             raise ValueError("Can only clean up tmp dirs")
 
-        ctxt = contextlib.nullcontext(os.environ["LEDA_TEST_OUTPUT_DIR"])
+        output_dir = os.environ["LEDA_TEST_OUTPUT_DIR"]
+        ctxt = contextlib.nullcontext(output_dir)
     elif args.cleanup:
         ctxt = tempfile.TemporaryDirectory(prefix="leda_integration_test_")
     else:
