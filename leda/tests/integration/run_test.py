@@ -234,13 +234,6 @@ def _run_test(
 
     nb_path = DEMO_DIR / f"{nb_name}.ipynb"
 
-    ref_result_path = None
-    for ref_result_filename in [f"{tag}-{sys.platform}.html", f"{tag}.html"]:
-        if (REF_DIR / ref_result_filename).exists():
-            ref_result_path = REF_DIR / ref_result_filename
-            break
-    assert ref_result_path is not None
-
     test_result_path = generate_test_report(
         nb_path,
         output_dir,
@@ -250,7 +243,14 @@ def _run_test(
         theme=theme,
     )
 
+    possible_ref_result_filenames = [
+        f"{tag}-{sys.platform}.html",
+        f"{tag}.html",
+    ]
+
     if write_refs_mode:
+        ref_result_path = REF_DIR / possible_ref_result_filenames[-1]
+
         logger.info("Writing to %s", ref_result_path)
         # We don't clean the ref reports so that we get more natural-looking
         # code for the demo page
@@ -260,6 +260,13 @@ def _run_test(
         )
         logger.info("Wrote: file://%s", ref_result_path.absolute())
         return
+
+    ref_result_path = None
+    for ref_result_filename in possible_ref_result_filenames:
+        if (REF_DIR / ref_result_filename).exists():
+            ref_result_path = REF_DIR / ref_result_filename
+            break
+    assert ref_result_path is not None
 
     ref_result_lines = clean_report_lines(
         ref_result_path.read_text(encoding="utf-8").splitlines()
