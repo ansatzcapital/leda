@@ -252,10 +252,10 @@ def _run_test(
 
     if write_refs_mode:
         logger.info("Writing to %s", ref_result_path)
-        # Not necessary to clean when writing ref, but it's
-        # a good way to sanity check the logic by hand
+        # We don't clean the ref reports so that we get more natural-looking
+        # code for the demo page
         ref_result_path.write_text(
-            clean_report(test_result_path.read_text(encoding="utf-8")),
+            test_result_path.read_text(encoding="utf-8"),
             encoding="utf-8",
         )
         logger.info("Wrote: file://%s", ref_result_path.absolute())

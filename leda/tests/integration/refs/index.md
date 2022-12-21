@@ -1,12 +1,12 @@
-# leda: demos
+## Summary
 
 [GitHub](https://github.com/ansatzcapital/leda)
 
 [Packaging](https://pypi.org/project/leda)
 
-### Note
+This pages demonstrates how `leda` can transform Jupyter notebooks into static reports. 
 
-This site is being served by [GitHub Pages](https://pages.github.com/), which only serves *static* content, yet you can use the pre-defined widgets as if a live kernel were running.
+Note that this site is being served by [GitHub Pages](https://pages.github.com/), which only serves *static* content, yet you can interact with the pre-defined widgets as if a live kernel were running.
 
 All reports were generated via:
 
@@ -17,7 +17,7 @@ python -m leda ./leda/demos/${NAME}.ipynb \
   --template ${TEMPLATE} --theme ${THEME}
 ```
 
-## basic_demo.ipynb
+### basic_demo.ipynb
 
 [Original Notebook](https://github.com/ansatzcapital/leda/tree/main/leda/demos/basic_demo.ipynb)
 
@@ -27,7 +27,7 @@ python -m leda ./leda/demos/${NAME}.ipynb \
 | [Static Report](basic_demo-static_ipywidgets-bundle4-lab-light.html)       | lab        | light |
 | [Static Report](basic_demo-static_ipywidgets-bundle4-lab_narrow-dark.html) | lab_narrow | dark  |
 
-## matplotlib_demo.ipynb
+### matplotlib_demo.ipynb
 
 [Original Notebook](https://github.com/ansatzcapital/leda/tree/main/leda/demos/matplotlib_demo.ipynb)
 
@@ -37,7 +37,7 @@ python -m leda ./leda/demos/${NAME}.ipynb \
 | [Static Report](matplotlib_demo-static_ipywidgets-bundle4-lab-light.html)       | lab        | light |
 | [Static Report](matplotlib_demo-static_ipywidgets-bundle4-lab_narrow-dark.html) | lab_narrow | dark  |
 
-## plotly_demo.ipynb
+### plotly_demo.ipynb
 
 [Original Notebook](https://github.com/ansatzcapital/leda/tree/main/leda/demos/plotly_demo.ipynb)
 

@@ -20,14 +20,14 @@ python -m leda /path/to/nb.ipynb --output-dir ./outputs/ \
 
 This will automatically include formatting tweaks, including, e.g., hiding all input code.
 
-See the [static demos being served by GitHub Pages](https://ansatzcapital.github.io/leda/leda/tests/integration/refs).
+See the [**static demos** being served by GitHub Pages](leda/tests/integration/refs).
 
 Think of it like:
 - [`voila`](https://voila.readthedocs.io/en/stable/using.html) but static, with no need for live kernels
 - [nbconvert](https://github.com/jupyter/nbconvert)/[nbviewer](https://nbviewer.org/) but with interactive widgets
 - [pretty-jupyter](https://github.com/JanPalasek/pretty-jupyter) but with interactive widgets
 
-`-i` (`--inject`) arg is used to inject user code via a new cell prepended to the notebook during generation.
+`-i` (`--inject`) arg is used to inject user code (and set report params) via a new cell prepended to the notebook during generation.
 And `--template_name`/`--theme` args allow you to choose between `classic`, `lab` (`light`/`dark`), and `lab_narrow` (`light`/`dark`).
 
 **Note**: `leda` assumes that all code is run in a trusted environment, so please be careful.
@@ -66,6 +66,8 @@ up a bare-bones `nginx` server to serve the files. (Instead of having a two-step
 you could alternatively implement your own `leda.gen.base.ReportPublisher` and create a generation script of your own).
 
 Another example is you can simply host a static S3 bucket, enable website hosting and then either use S3 as a web server publically or via locked down S3 endpoint.
+
+You could also use [GitHub Pages](https://pages.github.com), much like the [static demos page](leda/tests/integration/refs).
 
 ### Params
 
