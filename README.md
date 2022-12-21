@@ -106,5 +106,6 @@ See the `requirements-bundle*.txt` for version bundles that we currently test sy
 
 ## Known Issues
 
-- Not all widget states of `matplotlib` update when using `panel` static interact mode: https://github.com/holoviz/panel/issues/1222
-- When using `matplotlib`, if you see the cell outputs all sequentially visible, try setting `plt.gcf()` as the last cell line
+- There are multiple issues using `matplotlib` with `panel`, including:
+  - The last widget output is not different from the penultimate one: https://github.com/holoviz/panel/issues/1222
+  - All the widget outputs show up sequentially, instead of being hidden until chosen. This seems to be a known issue per the [`panel` FAQ](https://panel.holoviz.org/FAQ.html); however, using the example fix provided does not work.
