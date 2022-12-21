@@ -20,7 +20,7 @@ python -m leda /path/to/nb.ipynb --output-dir ./outputs/ \
 
 This will automatically include formatting tweaks, including, e.g., hiding all input code.
 
-See the [static demos being served by GitHub Pages](https://github.com/ansatzcapital/leda/main/tests/integration/ref/index.html).
+See the [static demos being served by GitHub Pages](https://ansatzcapital.github.io/leda/leda/tests/integration/refs).
 
 Think of it like:
 - [`voila`](https://voila.readthedocs.io/en/stable/using.html) but static, with no need for live kernels
