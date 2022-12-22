@@ -249,16 +249,16 @@ def _run_test(
     ]
 
     if write_refs_mode:
-        ref_result_path = REF_DIR / possible_ref_result_filenames[-1]
+        write_ref_result_path = REF_DIR / possible_ref_result_filenames[-1]
 
-        logger.info("Writing to %s", ref_result_path)
+        logger.info("Writing to %s", write_ref_result_path)
         # We don't clean the ref reports so that we get more natural-looking
         # code for the demo page
-        ref_result_path.write_text(
+        write_ref_result_path.write_text(
             test_result_path.read_text(encoding="utf-8"),
             encoding="utf-8",
         )
-        logger.info("Wrote: file://%s", ref_result_path.absolute())
+        logger.info("Wrote: file://%s", write_ref_result_path.absolute())
         return
 
     ref_result_path = None
