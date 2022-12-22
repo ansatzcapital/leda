@@ -20,7 +20,7 @@ python -m leda /path/to/nb.ipynb --output-dir ./outputs/ \
 
 This will automatically include formatting tweaks, including, e.g., hiding all input code.
 
-See the [**static demos** being served by GitHub Pages](leda/tests/integration/refs).
+See the [**static demos** being served by GitHub Pages](https://ansatzcapital.github.io/leda/leda/tests/integration/refs/).
 
 Think of it like:
 - [`voila`](https://voila.readthedocs.io/en/stable/using.html) but static, with no need for live kernels
@@ -67,7 +67,7 @@ you could alternatively implement your own `leda.gen.base.ReportPublisher` and c
 
 Another example is you can simply host a static S3 bucket, enable website hosting and then either use S3 as a web server publically or via locked down S3 endpoint.
 
-You could also use [GitHub Pages](https://pages.github.com), much like the [static demos page](leda/tests/integration/refs).
+You could also use [GitHub Pages](https://pages.github.com), much like the [static demos page](https://ansatzcapital.github.io/leda/leda/tests/integration/refs/).
 
 ### Params
 
