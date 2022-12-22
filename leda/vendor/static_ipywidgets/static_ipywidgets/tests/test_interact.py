@@ -27,9 +27,11 @@ def test_simple():
     <div name="subdiv-x1" style="display:block">
       2
     </div>
-    
+    # noqa: W293
     <div name="subdiv-x2" style="display:none">
       4
-    </div>"""
+    </div>""".replace(
+                "# noqa: W293", ""
+            )
             in html
         )

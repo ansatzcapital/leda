@@ -1,6 +1,7 @@
 from typing import Any, Callable
 
 
+# noinspection PyProtectedMember
 def is_matplotlib(obj: Any) -> bool:
     try:
         import matplotlib.axes._base
@@ -15,7 +16,7 @@ def is_matplotlib(obj: Any) -> bool:
     return isinstance(
         obj,
         (
-            matplotlib.axes.SubplotBase,
+            matplotlib.axes.SubplotBase,  # pyright: ignore
             matplotlib.artist.Artist,
         ),
     )

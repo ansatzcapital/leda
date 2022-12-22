@@ -4,9 +4,10 @@ import dataclasses
 import datetime
 import logging
 import pathlib
-from typing import IO, Any, List, Mapping, MutableMapping, Optional, Union
+from typing import IO, Any, List, Mapping, Optional, Union
 
 import cached_property
+import nbformat
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -82,7 +83,7 @@ class ReportSet:
 
 @dataclasses.dataclass()
 class ReportModifier:
-    def modify(self, nb_contents: MutableMapping):
+    def modify(self, nb_contents: nbformat.NotebookNode):
         raise NotImplementedError
 
 
@@ -97,7 +98,7 @@ class ReportArtifact:
 @dataclasses.dataclass()
 class ReportGenerator:
     def generate(
-        self, nb_contents: Mapping, nb_name: Optional[str] = None
+        self, nb_contents: nbformat.NotebookNode, nb_name: Optional[str] = None
     ) -> bytes:
         raise NotImplementedError
 

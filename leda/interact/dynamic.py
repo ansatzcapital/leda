@@ -1,12 +1,11 @@
-import dataclasses
-from typing import Any, Callable, Mapping
+from typing import Any, Callable, Dict
 
 import ipywidgets
 
 import leda.interact.base
 
 
-def to_dynamic_ipywidgets(values: Mapping) -> Mapping:
+def to_dynamic_ipywidgets(values: Dict[str, Any]) -> Dict[str, Any]:
     new_values = {}
     for key, value in values.items():
         widget = ipywidgets.widgets.interactive.widget_from_abbrev(value)

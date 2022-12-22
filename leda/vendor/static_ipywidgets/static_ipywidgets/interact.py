@@ -1,7 +1,7 @@
 import base64
 import itertools
 import os
-from typing import Any
+from typing import Any, Union
 
 import IPython
 import markdown2
@@ -17,12 +17,14 @@ IMAGE_MANAGER = None
 
 
 class ImageManager:
-    def add_image(self, div_name: str, obj: bytes, disp: bool = False) -> str:
+    def add_image(
+        self, div_name: str, obj: Union[bytes, str], disp: bool = False
+    ) -> str:
         """Adds image and returns source to include in HTML.
 
         Args:
             div_name
-            obj: Image contents.
+            obj: Image contents (either bytes or in base64 str).
             disp: Whether to display this image or not.
 
         Returns:
@@ -32,8 +34,13 @@ class ImageManager:
 
 
 class InlineImageManager(ImageManager):
-    def add_image(self, div_name: str, obj: bytes, disp: bool = False) -> str:
-        encoded = base64.standard_b64encode(obj).decode("ascii")
+    def add_image(
+        self, div_name: str, obj: Union[bytes, str], disp: bool = False
+    ) -> str:
+        if isinstance(obj, bytes):
+            encoded = base64.standard_b64encode(obj).decode("ascii")
+        else:
+            encoded = obj
 
         return f'<img src="data:image/png;base64,{encoded}">'
 
@@ -42,7 +49,18 @@ class FileImageManager(ImageManager):
     def __init__(self, path: str):
         self.path = path
 
-    def add_image(self, div_name: str, obj: bytes, disp: bool = False) -> str:
+    def _get_bytes(self, obj: Union[bytes, str]) -> bytes:
+        if isinstance(obj, bytes):
+            return obj
+        else:
+            return base64.standard_b64decode(obj)
+
+    def add_image(
+        self, div_name: str, obj: Union[bytes, str], disp: bool = False
+    ) -> str:
+        # Get image bytes
+        obj = self._get_bytes(obj)
+
         # Clean image filename for S3
         div_name = div_name.replace("<", "").replace(">", "").replace(":", "")
         img_filename = div_name + ".png"
@@ -185,22 +203,30 @@ class StaticInteract:
          imgs = newDiv.getElementsByTagName("img");
          if(imgs.length > 0){{
            for(j=0; j<imgs.length; j++){{
-             var newImgSrc = imgs[j].getAttribute("data_src");
+             // External images have data_src; inline images do not
+             if(imgs[j].hasAttribute("data_src")) {{
+               var newImgSrc = imgs[j].getAttribute("data_src");
 
-             // For more on closures in loops and let keyword:
-             // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
-             let newDivCapture = newDiv;
-             let oldDivsCapture = oldDivs;
-             let oldImg = imgs[j];
-             let newImg = new Image;
-             newImg.onload = function(){{
-               oldImg.src = newImgSrc;
-               newDivCapture.style.display = 'block';
-               for(k=0; k<oldDivsCapture.length; k++){{
-                 oldDivsCapture[k].style.display = 'none';
+               // For more on closures in loops and let keyword:
+               // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
+               let newDivCapture = newDiv;
+               let oldDivsCapture = oldDivs;
+               let oldImg = imgs[j];
+               let newImg = new Image;
+               newImg.onload = function(){{
+                 oldImg.src = newImgSrc;
+                 newDivCapture.style.display = 'block';
+                 for(k=0; k<oldDivsCapture.length; k++){{
+                   oldDivsCapture[k].style.display = 'none';
+                 }}
+               }};
+               newImg.src = newImgSrc;
+             }} else {{
+               newDiv.style.display = 'block';
+               for(k=0; k<oldDivs.length; k++){{
+                 oldDivs[k].style.display = 'none';
                }}
-             }};
-             newImg.src = newImgSrc;
+             }}
            }}
          }} else {{
            newDiv.style.display = 'block';

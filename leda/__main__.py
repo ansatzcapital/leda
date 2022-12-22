@@ -66,12 +66,26 @@ def main():
         help=f"Set static interact mode. "
         f"Choices: {static_interact_mode_aliases_str}",
     )
+    parser.add_argument(
+        "--template-name",
+        type=str,
+        choices=[None, "classic", "lab", "lab_narrow"],
+        help="nbconvert template name",
+    )
+    parser.add_argument(
+        "--theme",
+        type=str,
+        choices=[None, "light", "dark"],
+        help="nbconvert template theme",
+    )
     args = parser.parse_args()
 
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
+    # Suppress a log message that seems to have no effect
+    logging.getLogger("traitlets").setLevel(logging.ERROR)
 
     report = leda.gen.base.FileReport(
         nb_path=args.nb_path,
@@ -86,6 +100,8 @@ def main():
         static_interact_mode_alias=args.static_interact_mode,
         kernel_name=args.kernel,
         progress=True,
+        template_name=args.template_name,
+        theme=args.theme,
     )
     runner.run(report=report)
 

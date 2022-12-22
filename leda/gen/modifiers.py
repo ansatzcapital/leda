@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 import logging
 import pathlib
-from typing import ClassVar, List, MutableMapping, Optional
+from typing import ClassVar, List, Optional
 
 import nbformat
 
@@ -15,7 +15,7 @@ logger.addHandler(logging.NullHandler())
 TOC_LEVELS = ["I", "A", "1", "a", "i"]
 
 
-def insert_toc(cells: List[nbformat.NotebookNode]):
+def insert_toc(cells: List[nbformat.NotebookNode]):  # noqa: C901
     """Inserts table of contents in-place."""
     toc_cell = None
     for cell in cells:
@@ -82,6 +82,14 @@ class StaticReportModifier(leda.gen.base.ReportModifier):
 
     inject_code: Optional[str] = None
 
+    def _check_nb(self, nb_contents: nbformat.NotebookNode):
+        nb_version = nb_contents["nbformat"]
+        if nb_version != 4:
+            raise RuntimeError(
+                "Only compatible with nbformat v4 notebooks. "
+                "Use, e.g., nbformat.v4.upgrade() to upgrade from v3 to v4."
+            )
+
     def _get_new_cells_top(self) -> List[nbformat.NotebookNode]:
         new_cells = [
             nbformat.v4.new_code_cell(
@@ -126,8 +134,9 @@ leda.show_std_output_toggle()"""
             ),
         ]
 
-    def modify(self, nb_contents: MutableMapping):
+    def modify(self, nb_contents: nbformat.NotebookNode):
         logger.info("Modifying notebook")
+        self._check_nb(nb_contents)
 
         new_cells_top = self._get_new_cells_top()
         new_cells_bottom = self._get_new_cells_bottom()
@@ -136,6 +145,23 @@ leda.show_std_output_toggle()"""
         )
 
         insert_toc(nb_contents["cells"])
+
+        # NB: Newer versions of nbformat (the Python library) automatically
+        # get the nb versions, but for the older versions, we need to get
+        # it manually.
+        nb_version = nb_contents["nbformat"]
+        nb_version_minor = nb_contents["nbformat_minor"]
+
+        # This will always upgrade the intermediate nb format to the
+        # current nbformat version, even if the original nb
+        # is older. E.g., it will add cell ids when upgrading
+        # from v4.4 to v4.5. See
+        # https://nbformat.readthedocs.io/en/latest/format_description.html
+        # for more. Note that this updates the nb inplace but leaves
+        # the original file untouched.
+        nbformat.v4.upgrade(
+            nb_contents, from_version=nb_version, from_minor=nb_version_minor
+        )
 
 
 @dataclasses.dataclass()
@@ -147,7 +173,8 @@ class StaticPanelReportModifier(StaticReportModifier):
 
 @dataclasses.dataclass()
 class _StaticIpywidgetsReportModifier:
-    local_dir_path: pathlib.Path
+    # Set to None to use inline images
+    local_dir_path: Optional[pathlib.Path]
 
 
 @dataclasses.dataclass()
@@ -159,11 +186,23 @@ class StaticIpywidgetsReportModifier(
     ] = "StaticIpywidgetsInteractMode"
 
     def __post_init__(self):
-        local_img_dir_path = self.local_dir_path / "images"
-        local_img_dir_path.mkdir(parents=True, exist_ok=True)
+        if self.local_dir_path:
+            local_img_dir_path = self.local_dir_path / "images"
+            local_img_dir_path.mkdir(parents=True, exist_ok=True)
 
     def _get_new_cells_top(self) -> List[nbformat.NotebookNode]:
         new_cells = super()._get_new_cells_top()
+
+        if self.local_dir_path:
+            set_image_manager_str = f"""
+static_interact.IMAGE_MANAGER = static_interact.FileImageManager(
+    path=os.path.join({str(self.local_dir_path)!r}, "images"),
+)
+"""
+        else:
+            set_image_manager_str = """
+static_interact.IMAGE_MANAGER = static_interact.InlineImageManager()
+"""
 
         new_cells.append(
             nbformat.v4.new_code_cell(
@@ -174,9 +213,7 @@ import os
 from leda.vendor.static_ipywidgets.static_ipywidgets \
     import interact as static_interact
 
-static_interact.IMAGE_MANAGER = static_interact.FileImageManager(
-    path=os.path.join({str(self.local_dir_path)!r}, "images"),
-)
+{set_image_manager_str}
 """
             ),
         )

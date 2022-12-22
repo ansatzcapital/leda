@@ -4,11 +4,13 @@ import dataclasses
 import datetime
 import logging
 import os
-from typing import Mapping, Optional, Tuple
+import pathlib
+from typing import Any, Dict, Optional, Tuple
 
 import jupyter_client.kernelspec
 import nbconvert
 import nbformat
+import packaging.version
 import termcolor
 import tqdm
 import traitlets
@@ -24,7 +26,9 @@ class ExecutePreprocessorWithProgressBar(
 ):
     """Small extension to provide progress bar."""
 
-    progress = traitlets.Bool(default_value=False).tag(config=True)
+    progress = traitlets.Bool(default_value=False).tag(  # pyright: ignore
+        config=True,
+    )
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -35,9 +39,9 @@ class ExecutePreprocessorWithProgressBar(
     def preprocess(
         self,
         nb: nbformat.NotebookNode,
-        resources: Optional[Mapping] = None,
-        km: Optional[jupyter_client.KernelManager] = None,
-    ) -> Tuple[nbformat.NotebookNode, Mapping]:
+        resources: Optional[Dict] = None,
+        km: Optional[jupyter_client.KernelManager] = None,  # pyright: ignore
+    ) -> Tuple[nbformat.NotebookNode, Dict]:
         self._num_cells = len(nb["cells"])
 
         result = super(ExecutePreprocessorWithProgressBar, self).preprocess(
@@ -46,15 +50,16 @@ class ExecutePreprocessorWithProgressBar(
         if self._pbar is not None:
             self._pbar.close()
 
+        # noinspection PyTypeChecker
         return result
 
     def preprocess_cell(
         self,
         cell: nbformat.NotebookNode,
-        resources: Mapping,
+        resources: Dict,
         cell_index: int,
         store_history: bool = True,
-    ) -> Tuple[nbformat.NotebookNode, Mapping]:
+    ) -> Tuple[nbformat.NotebookNode, Dict]:
         if self._pbar is None:
             self._pbar = tqdm.tqdm(
                 desc="Executing notebook",
@@ -84,8 +89,24 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
     kernel_name: Optional[str] = None
     progress: bool = False
 
+    template_name: Optional[str] = None
+    theme: Optional[str] = None
+
+    def __post_init__(self):
+        is_classic = self.template_name == "classic" or (
+            not self.template_name
+            and packaging.version.parse(nbconvert.__version__).major < 6
+        )
+        if is_classic and self.theme == "dark":
+            raise ValueError(
+                f"Unsupported theme in 'classic' template: {self.theme!r}"
+            )
+
+        if self.theme not in (None, "light", "dark"):
+            raise ValueError(f"Unsupported theme: {self.theme!r}")
+
     def _get_preprocessor(self) -> nbconvert.preprocessors.ExecutePreprocessor:
-        kwargs = {}
+        kwargs: Dict[str, Any] = {}
 
         if self.cell_timeout:
             kwargs["timeout"] = int(self.cell_timeout.total_seconds())
@@ -104,9 +125,25 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
             progress=self.progress, **kwargs
         )
 
+    def _get_exporter_kwargs(self) -> Dict:
+        # See https://nbconvert.readthedocs.io/en/latest/customizing.html#adding-additional-template-paths  # noqa
+        exporter_kwargs = {
+            "extra_template_basedirs": str(
+                pathlib.Path(__file__).parent.parent / "templates"
+            )
+        }
+
+        if self.template_name:
+            exporter_kwargs["template_name"] = self.template_name
+
+        if self.theme:
+            exporter_kwargs["theme"] = self.theme
+
+        return exporter_kwargs
+
     def generate(
         self,
-        nb_contents: Mapping,
+        nb_contents: nbformat.NotebookNode,
         nb_name: Optional[str] = None,
     ) -> bytes:
         logger.info("Generating notebook")
@@ -116,7 +153,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
         )
 
         logger.info("Generating HTML")
-        exporter = nbconvert.HTMLExporter()
+        exporter = nbconvert.HTMLExporter(**self._get_exporter_kwargs())
         body, _ = exporter.from_notebook_node(nb_contents)
 
         logger.info("Modifying HTML")

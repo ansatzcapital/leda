@@ -4,7 +4,6 @@ Note that this can only be imported in an IPython/Jupyter session.
 
 See https://ipython.readthedocs.io/en/stable/config/custommagics.html.
 """
-import uuid
 from typing import Any
 
 import IPython.core.magic
