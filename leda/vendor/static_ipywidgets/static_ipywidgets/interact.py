@@ -101,15 +101,16 @@ def _get_html(
         return markdown2.Markdown().convert(obj._repr_markdown_())
 
     ip = IPython.get_ipython()
+    ip_display_formatter = ip.display_formatter  # pyright: ignore
 
-    png_rep = ip.display_formatter.formatters["image/png"](obj)
+    png_rep = ip_display_formatter.formatters["image/png"](obj)
     if png_rep is not None:
         if isinstance(obj, plt.Figure):
             plt.close(obj)  # Keep from displaying twice
         img_tag = img_manager.add_image(div_name, png_rep, disp=disp)
         return img_tag
 
-    html_rep = ip.display_formatter.formatters["text/html"](obj)
+    html_rep = ip_display_formatter.formatters["text/html"](obj)
     if html_rep is not None:
         return html_rep
 
