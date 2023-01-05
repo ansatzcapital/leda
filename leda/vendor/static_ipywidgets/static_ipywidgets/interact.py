@@ -102,14 +102,14 @@ def _get_html(
 
     ip = IPython.get_ipython()
 
-    png_rep = ip.display_formatter.formatters["image/png"](obj)
+    png_rep = ip.display_formatter.formatters["image/png"](obj)  # pyright: ignore  # noqa
     if png_rep is not None:
         if isinstance(obj, plt.Figure):
             plt.close(obj)  # Keep from displaying twice
         img_tag = img_manager.add_image(div_name, png_rep, disp=disp)
         return img_tag
 
-    html_rep = ip.display_formatter.formatters["text/html"](obj)
+    html_rep = ip.display_formatter.formatters["text/html"](obj)  # pyright: ignore  # noqa
     if html_rep is not None:
         return html_rep
 
