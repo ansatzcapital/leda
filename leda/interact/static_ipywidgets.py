@@ -38,15 +38,18 @@ class StaticIpywidgetsInteractMode(leda.interact.base.InteractMode):
         for key, value in kwargs.items():
             if isinstance(value, ipywidgets.widgets.IntSlider):
                 new_value = static_ipywidgets.widgets.RangeWidget(
-                    min=value.min,
-                    max=value.max,
-                    step=value.step,
+                    min=value.min,  # pyright: ignore
+                    max=value.max,  # pyright: ignore
+                    step=value.step,  # pyright: ignore
                 )
             elif isinstance(value, ipywidgets.widgets.Dropdown):
-                labels = [html.escape(v[0]) for v in value._options_full]
-                values = [v[1] for v in value._options_full]
+                labels = [
+                    html.escape(v[0])
+                    for v in value._options_full  # pyright: ignore
+                ]
+                values = [v[1] for v in value._options_full]  # pyright: ignore
                 new_value = static_ipywidgets.widgets.DropDownWidget(
-                    values=values,
+                    values=values,  # pyright: ignore
                     labels=labels,
                 )
             else:

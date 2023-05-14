@@ -130,6 +130,7 @@ def generate_test_report(
 
 def clean_report_lines(lines: Sequence[str]) -> Sequence[str]:
     """Clean report of randomly-generated strs, e.g., tmp dir."""
+    # Importing locally because this is only needed for testing
     import bs4
 
     text = "\n".join(lines)
