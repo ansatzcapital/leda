@@ -51,10 +51,12 @@ class MainReportRunner(leda.gen.base.ReportRunner):
         modifier: leda.gen.base.ReportModifier
         if static_interact_mode_alias == "static_ipywidgets":
             modifier = leda.gen.modifiers.StaticIpywidgetsReportModifier(
-                output_dir_path
+                output_dir_path, inject_code=report.inject_code
             )
         elif static_interact_mode_alias == "panel":
-            modifier = leda.gen.modifiers.StaticPanelReportModifier()
+            modifier = leda.gen.modifiers.StaticPanelReportModifier(
+                inject_code=report.inject_code
+            )
         else:
             raise ValueError(
                 f"Unknown static interact mode: {static_interact_mode_alias!r}"
