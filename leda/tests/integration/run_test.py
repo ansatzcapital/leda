@@ -200,7 +200,7 @@ def _handle_diffs(
 
     if generate_html_diffs:
         logger.info("Generating HTML diff")
-        with (pathlib.Path.cwd() / f"{tag}-diff.html") as diff_html_path:
+        with pathlib.Path.cwd() / f"{tag}-diff.html" as diff_html_path:
             html = difflib.HtmlDiff(wrapcolumn=79).make_file(
                 ref_result_lines,
                 test_result_lines,
