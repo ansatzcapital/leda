@@ -39,6 +39,10 @@ being served by GitHub Pages.
 but static, with no need for live kernels
 - [`nbconvert`](https://github.com/jupyter/nbconvert)/
 [`nbviewer`](https://nbviewer.org/), but with interactive widgets
+- [`quarto`](https://quarto.org/), 
+but with interactive widgets
+- [`papermill`](https://papermill.readthedocs.io/en/latest/),
+but with interactive widgets
 - [`pretty-jupyter`](https://github.com/JanPalasek/pretty-jupyter), 
 but with interactive widgets
 
