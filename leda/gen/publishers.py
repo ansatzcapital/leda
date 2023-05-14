@@ -35,7 +35,7 @@ class FileReportPublisher(leda.gen.base.ReportPublisher):
         self,
         report: leda.gen.base.Report,
         artifact: leda.gen.base.ReportArtifact,
-    ):
+    ) -> Optional[str]:
         logger.info("Publishing %r to %s", report.name, self.output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         index_path = self.output_dir / "index.html"

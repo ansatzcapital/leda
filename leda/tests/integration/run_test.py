@@ -130,6 +130,7 @@ def generate_test_report(
 
 def clean_report_lines(lines: Sequence[str]) -> Sequence[str]:
     """Clean report of randomly-generated strs, e.g., tmp dir."""
+    # Importing locally because this is only needed for testing
     import bs4
 
     text = "\n".join(lines)
@@ -200,7 +201,7 @@ def _handle_diffs(
 
     if generate_html_diffs:
         logger.info("Generating HTML diff")
-        with (pathlib.Path.cwd() / f"{tag}-diff.html") as diff_html_path:
+        with pathlib.Path.cwd() / f"{tag}-diff.html" as diff_html_path:
             html = difflib.HtmlDiff(wrapcolumn=79).make_file(
                 ref_result_lines,
                 test_result_lines,

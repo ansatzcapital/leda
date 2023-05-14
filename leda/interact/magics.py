@@ -2,7 +2,8 @@
 
 Note that this can only be imported in an IPython/Jupyter session.
 
-See https://ipython.readthedocs.io/en/stable/config/custommagics.html.
+See
+https://ipython.readthedocs.io/en/stable/config/custommagics.html.
 """
 from typing import Any
 
