@@ -13,7 +13,7 @@ INPUT_SELECTORS_CLASSIC: Selectors = ["div.input"]
 # In 'lab' templates, the input cell and prompt are included in "jp-InputArea",
 # but that would also include Markdown output, so we select the
 # editor and prompt separately, to match the behavior of the "input"
-# class in the 'classic" template.
+# class in the "classic" template.
 INPUT_SELECTORS_LAB: Selectors = [
     "div.jp-InputArea-editor",
     "div.jp-InputArea-prompt",

@@ -83,7 +83,7 @@ class ReportSet:
 
 @dataclasses.dataclass()
 class ReportModifier:
-    def modify(self, nb_contents: nbformat.NotebookNode):
+    def modify(self, nb_contents: nbformat.NotebookNode) -> None:
         raise NotImplementedError
 
 
@@ -117,5 +117,5 @@ class ReportRunner:
 
 @dataclasses.dataclass()
 class ReportSetRunner:
-    def run(self, report_set: ReportSet):
+    def run(self, report_set: ReportSet) -> None:
         raise NotImplementedError

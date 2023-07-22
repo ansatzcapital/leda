@@ -15,7 +15,7 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
     def dynamic(self) -> bool:
         return False
 
-    def init(self, plot_lib: str):
+    def init(self, plot_lib: str) -> None:
         self._plot_lib = plot_lib.lower()
         if self._plot_lib == "matplotlib":
             pn_extension = "ipywidgets"
@@ -39,7 +39,7 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
 
         pn.extension(pn_extension, safe_embed=True)  # pyright: ignore
 
-    def interact(self, func: Callable, **kwargs) -> Any:
+    def interact(self, func: Callable, **kwargs: Any) -> Any:
         import panel as pn
 
         if self._plot_lib == "matplotlib":

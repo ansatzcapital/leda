@@ -15,7 +15,7 @@ logger.addHandler(logging.NullHandler())
 TOC_LEVELS = ["I", "A", "1", "a", "i"]
 
 
-def insert_toc(cells: list[nbformat.NotebookNode]):  # noqa: C901
+def insert_toc(cells: list[nbformat.NotebookNode]) -> None:  # noqa: C901
     """Inserts table of contents in-place."""
     toc_cell = None
     for cell in cells:
@@ -82,7 +82,7 @@ class StaticReportModifier(leda.gen.base.ReportModifier):
 
     inject_code: str | None = None
 
-    def _check_nb(self, nb_contents: nbformat.NotebookNode):
+    def _check_nb(self, nb_contents: nbformat.NotebookNode) -> None:
         nb_version = nb_contents["nbformat"]
         if nb_version != 4:
             raise RuntimeError(
@@ -134,7 +134,7 @@ leda.show_std_output_toggle()"""
             ),
         ]
 
-    def modify(self, nb_contents: nbformat.NotebookNode):
+    def modify(self, nb_contents: nbformat.NotebookNode) -> None:
         logger.info("Modifying notebook")
         self._check_nb(nb_contents)
 
@@ -185,7 +185,7 @@ class StaticIpywidgetsReportModifier(
         str
     ] = "StaticIpywidgetsInteractMode"
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.local_dir_path:
             local_img_dir_path = self.local_dir_path / "images"
             local_img_dir_path.mkdir(parents=True, exist_ok=True)

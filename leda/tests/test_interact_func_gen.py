@@ -13,7 +13,7 @@ class MockIPy:
         return eval(value, self.space)
 
 
-def test_gen_kwargs():
+def test_gen_kwargs() -> None:
     mock_ipy = cast(IPython.InteractiveShell, MockIPy())
     assert leda.interact.func_gen.gen_kwargs("", ipy=mock_ipy) == {}
     assert leda.interact.func_gen.gen_kwargs(
@@ -27,7 +27,7 @@ def test_gen_kwargs():
     ) == {"foo_val": ["a", "b"], "mult": (1, 2)}
 
 
-def test_gen_func_cell():
+def test_gen_func_cell() -> None:
     new_cell = leda.interact.func_gen.gen_func_cell(
         "fig", {"foo_val": ["a", "b"], "mult": (1, 2)}, func_name="foo"
     )[1]
@@ -43,7 +43,7 @@ def foo(foo_val, mult):
     )
 
 
-def test_gen_func_cell_indents():
+def test_gen_func_cell_indents() -> None:
     cell = """
 fig = px.histogram(df,
                    nbins=100)

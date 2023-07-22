@@ -26,5 +26,5 @@ def interact(line: str, cell: str) -> Any:
 
 
 @IPython.core.magic.register_line_magic
-def toc(_) -> Any:
+def toc(_: str) -> Any:
     return "Table of contents will be placed here in static mode."

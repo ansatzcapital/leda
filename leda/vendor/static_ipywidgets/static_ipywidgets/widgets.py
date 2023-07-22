@@ -60,8 +60,8 @@ class RangeWidget(StaticWidget):
 
     def __init__(
         self,
-        min: int,
-        max: int,
+        min: int,  # noqa
+        max: int,  # noqa
         step: int = 1,
         name: str | None = None,
         default: int | None = None,
@@ -79,7 +79,7 @@ class RangeWidget(StaticWidget):
             self.default = default
 
     def values(self) -> Sequence[float]:
-        min, max, step = self.datarange
+        min, max, step = self.datarange  # noqa
         return list(np.arange(min, max + step, step))
 
     def html(self) -> str:
@@ -114,9 +114,9 @@ class DropDownWidget(StaticWidget):
         self,
         values: Sequence[str | int],
         name: str | None = None,
-        labels=None,
-        default=None,
-        divclass=None,
+        labels: list[str] | None = None,
+        default: Any = None,
+        divclass: str | None = None,
         delimiter: str = "      ",
     ) -> None:
         super().__init__(name, divclass)

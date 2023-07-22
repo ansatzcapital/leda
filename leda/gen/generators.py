@@ -30,7 +30,7 @@ class ExecutePreprocessorWithProgressBar(
         config=True,
     )
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         # Progress bar state
         self._num_cells: int | None = None
@@ -88,7 +88,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
     template_name: str | None = None
     theme: str | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         is_classic = self.template_name == "classic" or (
             not self.template_name
             and packaging.version.parse(nbconvert.__version__).major < 6
