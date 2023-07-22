@@ -6,7 +6,7 @@ import leda.interact.func_gen
 
 
 class MockIPy:
-    def __init__(self):
+    def __init__(self) -> None:
         self.space = {"foo_vals": ["a", "b"]}
 
     def ev(self, value: str) -> Any:

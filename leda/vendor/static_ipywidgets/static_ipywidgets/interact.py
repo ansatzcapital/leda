@@ -46,7 +46,7 @@ class InlineImageManager(ImageManager):
 
 
 class FileImageManager(ImageManager):
-    def __init__(self, path: str):
+    def __init__(self, path: str) -> None:
         self.path = path
 
     def _get_bytes(self, obj: Union[bytes, str]) -> bytes:
@@ -250,7 +250,7 @@ class StaticInteract:
     </div>
     """
 
-    def __init__(self, function, **kwargs):
+    def __init__(self, function, **kwargs) -> None:
         # TODO: implement *args (difficult because of the name thing)
         # update names
         for name in kwargs:

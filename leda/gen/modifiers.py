@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 import logging
 import pathlib
-from typing import ClassVar, List, Optional
+from typing import ClassVar
 
 import nbformat
 
@@ -15,7 +15,7 @@ logger.addHandler(logging.NullHandler())
 TOC_LEVELS = ["I", "A", "1", "a", "i"]
 
 
-def insert_toc(cells: List[nbformat.NotebookNode]):  # noqa: C901
+def insert_toc(cells: list[nbformat.NotebookNode]):  # noqa: C901
     """Inserts table of contents in-place."""
     toc_cell = None
     for cell in cells:
@@ -80,7 +80,7 @@ def insert_toc(cells: List[nbformat.NotebookNode]):  # noqa: C901
 class StaticReportModifier(leda.gen.base.ReportModifier):
     static_interact_mode_cls_name: ClassVar[str]
 
-    inject_code: Optional[str] = None
+    inject_code: str | None = None
 
     def _check_nb(self, nb_contents: nbformat.NotebookNode):
         nb_version = nb_contents["nbformat"]
@@ -90,7 +90,7 @@ class StaticReportModifier(leda.gen.base.ReportModifier):
                 "Use, e.g., nbformat.v4.upgrade() to upgrade from v3 to v4."
             )
 
-    def _get_new_cells_top(self) -> List[nbformat.NotebookNode]:
+    def _get_new_cells_top(self) -> list[nbformat.NotebookNode]:
         new_cells = [
             nbformat.v4.new_code_cell(
                 f"""
@@ -113,7 +113,7 @@ leda.set_interact_mode(leda.{self.static_interact_mode_cls_name}())"""
 
         return new_cells
 
-    def _get_new_cells_bottom(self) -> List[nbformat.NotebookNode]:
+    def _get_new_cells_bottom(self) -> list[nbformat.NotebookNode]:
         return [
             nbformat.v4.new_markdown_cell("---"),
             nbformat.v4.new_code_cell(
@@ -168,13 +168,13 @@ leda.show_std_output_toggle()"""
 class StaticPanelReportModifier(StaticReportModifier):
     static_interact_mode_cls_name: ClassVar[str] = "StaticPanelInteractMode"
 
-    inject_code: Optional[str] = None
+    inject_code: str | None = None
 
 
 @dataclasses.dataclass()
 class _StaticIpywidgetsReportModifier:
     # Set to None to use inline images
-    local_dir_path: Optional[pathlib.Path]
+    local_dir_path: pathlib.Path | None
 
 
 @dataclasses.dataclass()
@@ -190,7 +190,7 @@ class StaticIpywidgetsReportModifier(
             local_img_dir_path = self.local_dir_path / "images"
             local_img_dir_path.mkdir(parents=True, exist_ok=True)
 
-    def _get_new_cells_top(self) -> List[nbformat.NotebookNode]:
+    def _get_new_cells_top(self) -> list[nbformat.NotebookNode]:
         new_cells = super()._get_new_cells_top()
 
         if self.local_dir_path:

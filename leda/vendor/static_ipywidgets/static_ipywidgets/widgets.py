@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Sequence
 
 import numpy as np
 
@@ -19,8 +19,8 @@ class StaticWidget:
     """Base Class for Static Widgets."""
 
     def __init__(
-        self, name: Optional[str] = None, divclass: Optional[str] = None
-    ):
+        self, name: str | None = None, divclass: str | None = None
+    ) -> None:
         self.name = name
         if divclass is None:
             self.divargs = ""
@@ -63,12 +63,12 @@ class RangeWidget(StaticWidget):
         min: int,
         max: int,
         step: int = 1,
-        name: Optional[str] = None,
-        default: Optional[int] = None,
+        name: str | None = None,
+        default: int | None = None,
         width: int = 350,
-        divclass: Optional[str] = None,
+        divclass: str | None = None,
         show_range: bool = False,
-    ):
+    ) -> None:
         StaticWidget.__init__(self, name, divclass)
         self.datarange = (min, max, step)
         self.width = width
@@ -112,13 +112,13 @@ class DropDownWidget(StaticWidget):
 
     def __init__(
         self,
-        values: Sequence[Union[str, int]],
-        name: Optional[str] = None,
+        values: Sequence[str | int],
+        name: str | None = None,
         labels=None,
         default=None,
         divclass=None,
         delimiter: str = "      ",
-    ):
+    ) -> None:
         super().__init__(name, divclass)
         self._values = values
         self.delimiter = delimiter
@@ -137,7 +137,7 @@ class DropDownWidget(StaticWidget):
         else:
             raise ValueError("if specified, default must be in values")
 
-    def _single_option(self, label: str, value: Union[str, int]) -> str:
+    def _single_option(self, label: str, value: str | int) -> str:
         if value == self.default:
             selected = " selected "
         else:
@@ -146,7 +146,7 @@ class DropDownWidget(StaticWidget):
             label=label, value=get_choice_value_str(value), selected=selected
         )
 
-    def values(self) -> Sequence[Union[str, int]]:
+    def values(self) -> Sequence[str | int]:
         return self._values
 
     def html(self) -> str:
@@ -169,12 +169,12 @@ class RadioWidget(StaticWidget):
     def __init__(
         self,
         values: Sequence[str],
-        name: Optional[str] = None,
-        labels: Optional[Sequence[str]] = None,
-        default: Optional[str] = None,
-        divclass: Optional[str] = None,
+        name: str | None = None,
+        labels: Sequence[str] | None = None,
+        default: str | None = None,
+        divclass: str | None = None,
         delimiter: str = "      ",
-    ):
+    ) -> None:
         super().__init__(name, divclass)
         self._values = values
         self.delimiter = delimiter

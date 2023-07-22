@@ -1,6 +1,6 @@
 import textwrap
-import uuid
 from typing import Any, Callable, Mapping, Optional, Tuple
+import uuid
 
 import IPython
 

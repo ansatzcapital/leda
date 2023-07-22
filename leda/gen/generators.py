@@ -5,7 +5,7 @@ import datetime
 import logging
 import os
 import pathlib
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import jupyter_client.kernelspec
 import nbconvert
@@ -30,23 +30,21 @@ class ExecutePreprocessorWithProgressBar(
         config=True,
     )
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
         # Progress bar state
-        self._num_cells: Optional[int] = None
-        self._pbar: Optional[tqdm.tqdm] = None
+        self._num_cells: int | None = None
+        self._pbar: tqdm.tqdm | None = None
 
     def preprocess(
         self,
         nb: nbformat.NotebookNode,
-        resources: Optional[Dict] = None,
-        km: Optional[jupyter_client.KernelManager] = None,  # pyright: ignore
-    ) -> Tuple[nbformat.NotebookNode, Dict]:
+        resources: dict | None = None,
+        km: jupyter_client.KernelManager | None = None,  # pyright: ignore
+    ) -> tuple[nbformat.NotebookNode, dict]:
         self._num_cells = len(nb["cells"])
 
-        result = super(ExecutePreprocessorWithProgressBar, self).preprocess(
-            nb, resources, km=km
-        )
+        result = super().preprocess(nb, resources, km=km)
         if self._pbar is not None:
             self._pbar.close()
 
@@ -56,10 +54,10 @@ class ExecutePreprocessorWithProgressBar(
     def preprocess_cell(
         self,
         cell: nbformat.NotebookNode,
-        resources: Dict,
+        resources: dict,
         cell_index: int,
         store_history: bool = True,
-    ) -> Tuple[nbformat.NotebookNode, Dict]:
+    ) -> tuple[nbformat.NotebookNode, dict]:
         if self._pbar is None:
             self._pbar = tqdm.tqdm(
                 desc="Executing notebook",
@@ -75,9 +73,7 @@ class ExecutePreprocessorWithProgressBar(
         self._pbar.set_postfix_str(first_line)
 
         # Note that preprocess_cell() will actually run the cell
-        result = super(
-            ExecutePreprocessorWithProgressBar, self
-        ).preprocess_cell(cell, resources, cell_index)
+        result = super().preprocess_cell(cell, resources, cell_index)
         self._pbar.update(1)
 
         return result
@@ -85,12 +81,12 @@ class ExecutePreprocessorWithProgressBar(
 
 @dataclasses.dataclass()
 class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
-    cell_timeout: Optional[datetime.timedelta] = None
-    kernel_name: Optional[str] = None
+    cell_timeout: datetime.timedelta | None = None
+    kernel_name: str | None = None
     progress: bool = False
 
-    template_name: Optional[str] = None
-    theme: Optional[str] = None
+    template_name: str | None = None
+    theme: str | None = None
 
     def __post_init__(self):
         is_classic = self.template_name == "classic" or (
@@ -106,7 +102,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
             raise ValueError(f"Unsupported theme: {self.theme!r}")
 
     def _get_preprocessor(self) -> nbconvert.preprocessors.ExecutePreprocessor:
-        kwargs: Dict[str, Any] = {}
+        kwargs: dict[str, Any] = {}
 
         if self.cell_timeout:
             kwargs["timeout"] = int(self.cell_timeout.total_seconds())
@@ -125,7 +121,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
             progress=self.progress, **kwargs
         )
 
-    def _get_exporter_kwargs(self) -> Dict:
+    def _get_exporter_kwargs(self) -> dict:
         # See https://nbconvert.readthedocs.io/en/latest/customizing.html#adding-additional-template-paths  # noqa
         exporter_kwargs = {
             "extra_template_basedirs": str(
@@ -144,7 +140,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
     def generate(
         self,
         nb_contents: nbformat.NotebookNode,
-        nb_name: Optional[str] = None,
+        nb_name: str | None = None,
     ) -> bytes:
         logger.info("Generating notebook")
         preprocessor = self._get_preprocessor()

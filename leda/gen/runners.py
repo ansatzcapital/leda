@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 import logging
 import pathlib
-from typing import Optional, Union, cast
+from typing import Optional, cast
 
 import nbformat
 
@@ -22,7 +22,7 @@ class MainReportRunner(leda.gen.base.ReportRunner):
     generator: leda.gen.base.ReportGenerator
     publisher: leda.gen.base.ReportPublisher
 
-    def run(self, report: leda.gen.base.Report) -> Optional[str]:
+    def run(self, report: leda.gen.base.Report) -> str | None:
         nb_contents = nbformat.read(report.handle, as_version=4)
 
         self.modifier.modify(nb_contents)
@@ -35,13 +35,13 @@ class MainReportRunner(leda.gen.base.ReportRunner):
     @classmethod
     def get_default_runner(
         cls,
-        report: Union[pathlib.Path, leda.gen.base.Report],
+        report: pathlib.Path | leda.gen.base.Report,
         local_dir_path: pathlib.Path,
         static_interact_mode_alias: str,
-        kernel_name: Optional[str] = None,
+        kernel_name: str | None = None,
         progress: bool = False,
-        template_name: Optional[str] = None,
-        theme: Optional[str] = None,
+        template_name: str | None = None,
+        theme: str | None = None,
     ) -> MainReportRunner:
         if isinstance(report, pathlib.Path):
             report = leda.gen.base.FileReport(name=report.stem, nb_path=report)
