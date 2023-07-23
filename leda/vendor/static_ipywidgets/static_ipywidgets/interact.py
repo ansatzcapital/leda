@@ -288,7 +288,11 @@ class StaticInteract:
         for vals in tqdm.tqdm(
             all_values, total=len(all_values), desc="Generating results"
         ):
-            results.append(self.function(**dict(list(zip(names, vals)))))
+            results.append(
+                self.function(
+                    **dict(list(zip(names, vals)))  # pyright: ignore
+                )
+            )
 
         divnames = [
             "".join(
