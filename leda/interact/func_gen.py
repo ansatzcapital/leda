@@ -63,4 +63,4 @@ def gen_func(
 ) -> Callable:
     ipy = IPython.get_ipython() if not ipy else ipy
     ipy.ex(func_cell)  # pyright: ignore
-    return ipy.ev(func_name)  # pyright: ignore
+    return ipy.ev(func_name)  # type: ignore

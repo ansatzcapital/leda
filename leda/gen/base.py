@@ -12,6 +12,9 @@ import nbformat
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
+# TODO: When we drop support for python3.7, switch to properly-typed,
+#  built-in functools.cached_property.
+
 
 @dataclasses.dataclass(frozen=True)
 class Report:
@@ -24,7 +27,7 @@ class Report:
 
     cell_timeout: datetime.timedelta | None = None
 
-    @cached_property.cached_property
+    @cached_property.cached_property  # type: ignore[misc]
     def full_name(self) -> str:
         if self.tag:
             parts = [self.name, self.tag]
@@ -39,7 +42,7 @@ class Report:
     def handle(self) -> str | IO:
         raise NotImplementedError
 
-    @cached_property.cached_property
+    @cached_property.cached_property  # type: ignore[misc]
     def inject_code(self) -> str | None:
         if not self.params and not self.additional_inject_code:
             return None

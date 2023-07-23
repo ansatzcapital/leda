@@ -3,7 +3,7 @@ from __future__ import annotations
 import base64
 import itertools
 import os
-from typing import Any, Callable
+from typing import Any, Callable, cast
 
 import IPython
 import markdown2
@@ -100,10 +100,14 @@ def _get_html(
     # noinspection PyProtectedMember
     if hasattr(obj, "_repr_html_") and obj._repr_html_():
         # noinspection PyProtectedMember
-        return obj._repr_html_().replace("<div>", "").replace("</div>", "")
+        return (
+            cast(str, obj._repr_html_())
+            .replace("<div>", "")
+            .replace("</div>", "")
+        )
     elif hasattr(obj, "_repr_markdown_"):
         # noinspection PyProtectedMember
-        return markdown2.Markdown().convert(obj._repr_markdown_())
+        return cast(str, markdown2.Markdown().convert(obj._repr_markdown_()))
 
     ip = IPython.get_ipython()
     ip_display_formatter = ip.display_formatter  # pyright: ignore
@@ -117,7 +121,7 @@ def _get_html(
 
     html_rep = ip_display_formatter.formatters["text/html"](obj)
     if html_rep is not None:
-        return html_rep
+        return cast(str, html_rep)
 
     return f"<p> {str(obj)} </p>"
 

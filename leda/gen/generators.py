@@ -26,7 +26,7 @@ class ExecutePreprocessorWithProgressBar(
 ):
     """Small extension to provide progress bar."""
 
-    progress = traitlets.Bool(default_value=False).tag(  # pyright: ignore
+    progress = traitlets.Bool(default_value=False).tag(  # type: ignore
         config=True,
     )
 
@@ -48,8 +48,7 @@ class ExecutePreprocessorWithProgressBar(
         if self._pbar is not None:
             self._pbar.close()
 
-        # noinspection PyTypeChecker
-        return result
+        return result  # type: ignore[no-any-return]
 
     def preprocess_cell(
         self,
@@ -76,7 +75,7 @@ class ExecutePreprocessorWithProgressBar(
         result = super().preprocess_cell(cell, resources, cell_index)
         self._pbar.update(1)
 
-        return result
+        return result  # type: ignore[no-any-return]
 
 
 @dataclasses.dataclass()
@@ -150,6 +149,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
 
         logger.info("Generating HTML")
         exporter = nbconvert.HTMLExporter(**self._get_exporter_kwargs())
+        body: str
         body, _ = exporter.from_notebook_node(nb_contents)
 
         logger.info("Modifying HTML")

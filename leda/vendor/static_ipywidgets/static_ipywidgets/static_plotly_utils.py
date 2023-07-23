@@ -9,6 +9,7 @@ Template changes:
 from __future__ import annotations
 
 import os
+from typing import cast
 import uuid
 
 import jinja2
@@ -51,14 +52,19 @@ def figure_to_html(fig: go.Figure, display: bool = False) -> str:
         HTML that can be used in static widgets.
     """
     with open(TEMPLATE_PATH) as fh:
-        jinja_template = jinja2.Template(fh.read())
+        jinja_template = jinja2.Template(  # type: ignore[attr-defined]
+            fh.read()
+        )
 
     width, height = get_figure_size(fig)
 
-    return jinja_template.render(
-        unique_div_id=uuid.uuid4(),
-        figure=fig.to_json(),
-        width=width,
-        height=height,
-        display=display,
+    return cast(
+        str,
+        jinja_template.render(
+            unique_div_id=uuid.uuid4(),
+            figure=fig.to_json(),
+            width=width,
+            height=height,
+            display=display,
+        ),
     )
