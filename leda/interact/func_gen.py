@@ -6,9 +6,13 @@ import uuid
 
 import IPython
 
+IPythonInteractiveShell = (
+    IPython.InteractiveShell  # type: ignore[attr-defined]
+)
+
 
 def gen_kwargs(
-    line: str, ipy: IPython.InteractiveShell | None = None
+    line: str, ipy: IPythonInteractiveShell | None = None
 ) -> Mapping:
     """Evals line into kwargs."""
     if not line.strip():
@@ -59,8 +63,10 @@ def {func_name}({arg_names}):
 def gen_func(
     func_name: str,
     func_cell: str,
-    ipy: IPython.InteractiveShell | None = None,
+    ipy: IPythonInteractiveShell | None = None,
 ) -> Callable:
-    ipy = IPython.get_ipython() if not ipy else ipy
+    ipy = (
+        IPython.get_ipython() if not ipy else ipy  # type: ignore[attr-defined]
+    )
     ipy.ex(func_cell)  # pyright: ignore
     return ipy.ev(func_name)  # type: ignore

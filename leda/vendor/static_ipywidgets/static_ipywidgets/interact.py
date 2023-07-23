@@ -109,7 +109,7 @@ def _get_html(
         # noinspection PyProtectedMember
         return cast(str, markdown2.Markdown().convert(obj._repr_markdown_()))
 
-    ip = IPython.get_ipython()
+    ip = IPython.get_ipython()  # type: ignore[attr-defined]
     ip_display_formatter = ip.display_formatter  # pyright: ignore
 
     png_rep = ip_display_formatter.formatters["image/png"](obj)
