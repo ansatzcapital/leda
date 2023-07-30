@@ -5,9 +5,10 @@ from typing import Any, Callable, Mapping
 import uuid
 
 import IPython
+from typing_extensions import TypeAlias
 
-IPythonInteractiveShell = (
-    IPython.InteractiveShell  # type: ignore[attr-defined]
+IPythonInteractiveShell: TypeAlias = (
+    IPython.InteractiveShell  # type: ignore[attr-defined,name-defined]
 )
 
 
@@ -18,7 +19,9 @@ def gen_kwargs(
     if not line.strip():
         return {}
 
-    ipy = IPython.get_ipython() if not ipy else ipy
+    ipy = (
+        IPython.get_ipython() if not ipy else ipy  # type: ignore[attr-defined]
+    )
 
     kwargs = {}
     parts = line.split(";")

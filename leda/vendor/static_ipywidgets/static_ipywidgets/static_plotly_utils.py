@@ -56,9 +56,9 @@ def figure_to_html(fig: go.Figure, display: bool = False) -> str:
     width, height = get_figure_size(fig)
 
     return jinja_template.render(
-            unique_div_id=uuid.uuid4(),
-            figure=fig.to_json(),
-            width=width,
-            height=height,
-            display=display,
-        )
+        unique_div_id=uuid.uuid4(),
+        figure=fig.to_json(),
+        width=width,
+        height=height,
+        display=display,
+    )
