@@ -43,7 +43,7 @@ jobs:
 
       - name: Test with nox
         run: nox
-        if: ${{ (matrix.python-version != '3.7') && ! (matrix.platform == 'windows-latest' && matrix.python-version == '3.8') }}
+        if: ${{ (matrix.python-version != '3.7') && ! (matrix.platform == 'windows-latest' && matrix.python-version == 'pypy-3.8') }}
 
       # Skip type checkers on py3.7 because those package versions
       # yield different results
@@ -51,14 +51,14 @@ jobs:
         run: nox -s black pytest ruff
         if: ${{ matrix.python-version == '3.7' }}
 
-      # TODO: Test windows/pypy-3.8
+      # TODO: Run tests on windows/pypy-3.8
 
       - name: Integration test with nox
         run: nox -t integration_test --python ${{ matrix.python-version }}
         # Skip integration tests on Windows/py3.8 because
         # there are no pre-built Windows/py3.8/numpy1.6.6 wheels.
         # Skip py3.9 because none of the bundles are for it.
-        # TODO: Skip integration tests on pypy; investigate issues.
+        # TODO: Investigate issues on Windows and pypy.
         if: ${{ (matrix.python-version != '3.9') && ! (matrix.platform == 'windows-latest' && matrix.python-version == '3.8') && ! startsWith(matrix.python-version, 'pypy-') }}
 
       - name: Upload failed outputs
