@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import contextlib
 import datetime
@@ -8,7 +10,7 @@ import pathlib
 import subprocess
 import sys
 import tempfile
-from typing import ContextManager, List, Optional, Sequence, Tuple, Union, cast
+from typing import ContextManager, Sequence, cast
 
 import nbconvert
 import packaging.version
@@ -22,7 +24,7 @@ DEMO_DIR = pathlib.Path(leda.__file__).parent / "demos"
 REF_DIR = pathlib.Path(__file__).parent / "refs"
 
 
-def check_env(bundle_name: str):
+def check_env(bundle_name: str) -> None:
     logger.info("Checking env against %r", bundle_name)
     req_text = (
         pathlib.Path(leda.__file__).parent.parent
@@ -83,9 +85,9 @@ def generate_test_report(
     nb_path: pathlib.Path,
     output_dir: pathlib.Path,
     static_interact_mode_alias: str,
-    tag: Optional[str] = None,
-    template_name: Optional[str] = None,
-    theme: Optional[str] = None,
+    tag: str | None = None,
+    template_name: str | None = None,
+    theme: str | None = None,
 ) -> pathlib.Path:
     report = leda.FileReport(
         nb_path=nb_path,
@@ -137,7 +139,7 @@ def clean_report_lines(lines: Sequence[str]) -> Sequence[str]:
 
     soup = bs4.BeautifulSoup(text, "html.parser")
 
-    remove_divs: List[bs4.Tag] = []
+    remove_divs: list[bs4.Tag] = []
 
     # Remove stderr output in 'classic' template
     remove_divs.extend(soup.find_all("div", {"class": "output_stderr"}))
@@ -186,10 +188,10 @@ def _handle_diffs(
     ref_result_lines: Sequence[str],
     test_result_lines: Sequence[str],
     context_diffs: Sequence[str],
-    errors: List[str],
+    errors: list[str],
     generate_html_diffs: bool = False,
     verbose: bool = False,
-):
+) -> None:
     if not context_diffs:
         logger.info("Found no diffs")
         return
@@ -218,15 +220,15 @@ def _handle_diffs(
 def _run_test(
     output_dir: pathlib.Path,
     bundle_name: str,
-    errors: List[str],
+    errors: list[str],
     nb_name: str,
     static_interact_mode_alias: str,
-    template_name: Optional[str] = None,
-    theme: Optional[str] = None,
+    template_name: str | None = None,
+    theme: str | None = None,
     generate_html_diffs: bool = False,
     write_refs_mode: bool = False,
     verbose: bool = False,
-):
+) -> None:
     tag_parts = [nb_name, static_interact_mode_alias, bundle_name]
     if template_name or theme:
         tag_parts.extend(map(str, [template_name, theme]))
@@ -306,7 +308,7 @@ def run_tests(
     verbose: bool = False,
     generate_html_diffs: bool = False,
     write_refs_mode: bool = False,
-):
+) -> None:
     if generate_html_diffs and write_refs_mode:
         raise ValueError("Can't both compare and write")
 
@@ -317,7 +319,7 @@ def run_tests(
         for alias in leda.STATIC_INTERACT_MODE_ALIASES
         if alias != "panel"
     ]
-    template_options: List[Tuple[Optional[str], Optional[str]]]
+    template_options: list[tuple[str | None, str | None]]
     if packaging.version.parse(nbconvert.__version__).major < 6:
         template_options = [(None, None)]
     else:
@@ -327,7 +329,7 @@ def run_tests(
             ("lab_narrow", "dark"),
         ]
 
-    errors: List[str] = []
+    errors: list[str] = []
     for nb_name in nb_names:
         for static_interact_mode_alias in static_interact_mode_aliases:
             for template_name, theme in template_options:
@@ -353,7 +355,7 @@ def run_tests(
         logger.info("✅ Finished with no errors")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("bundle_name")
     parser.add_argument("--output-dir", default=None, type=pathlib.Path)
@@ -372,8 +374,8 @@ def main():
         # Suppress a log message that seems to have no effect
         logging.getLogger("traitlets").setLevel(logging.ERROR)
 
-    output_dir: Union[str, pathlib.Path]
-    ctxt: ContextManager[Union[str, pathlib.Path]]
+    output_dir: str | pathlib.Path
+    ctxt: ContextManager[str | pathlib.Path]
     if args.output_dir:
         if args.cleanup:
             raise ValueError("Can only clean up tmp dirs")

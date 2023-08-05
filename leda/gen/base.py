@@ -4,7 +4,7 @@ import dataclasses
 import datetime
 import logging
 import pathlib
-from typing import IO, Any, List, Mapping, Optional, Union
+from typing import IO, Any, Mapping
 
 import cached_property
 import nbformat
@@ -12,19 +12,22 @@ import nbformat
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
+# TODO: When we drop support for python3.7, switch to properly-typed,
+#  built-in functools.cached_property.
+
 
 @dataclasses.dataclass(frozen=True)
 class Report:
     name: str
 
-    tag: Optional[str] = None
+    tag: str | None = None
 
-    params: Optional[Mapping[str, Any]] = None
-    additional_inject_code: Optional[str] = None
+    params: Mapping[str, Any] | None = None
+    additional_inject_code: str | None = None
 
-    cell_timeout: Optional[datetime.timedelta] = None
+    cell_timeout: datetime.timedelta | None = None
 
-    @cached_property.cached_property
+    @cached_property.cached_property  # type: ignore[misc]
     def full_name(self) -> str:
         if self.tag:
             parts = [self.name, self.tag]
@@ -36,11 +39,11 @@ class Report:
         return "-".join(parts)
 
     @property
-    def handle(self) -> Union[str, IO]:
+    def handle(self) -> str | IO:
         raise NotImplementedError
 
-    @cached_property.cached_property
-    def inject_code(self) -> Optional[str]:
+    @cached_property.cached_property  # type: ignore[misc]
+    def inject_code(self) -> str | None:
         if not self.params and not self.additional_inject_code:
             return None
 
@@ -71,19 +74,19 @@ class _FileReport:
 @dataclasses.dataclass(frozen=True)
 class FileReport(Report, _FileReport):
     @property
-    def handle(self) -> Union[str, IO]:
+    def handle(self) -> str | IO:
         logger.info("Reading %s", self.nb_path)
         return str(self.nb_path.expanduser())
 
 
 @dataclasses.dataclass(frozen=True)
 class ReportSet:
-    reports: List[Report] = dataclasses.field(hash=False)
+    reports: list[Report] = dataclasses.field(hash=False)
 
 
 @dataclasses.dataclass()
 class ReportModifier:
-    def modify(self, nb_contents: nbformat.NotebookNode):
+    def modify(self, nb_contents: nbformat.NotebookNode) -> None:
         raise NotImplementedError
 
 
@@ -98,26 +101,24 @@ class ReportArtifact:
 @dataclasses.dataclass()
 class ReportGenerator:
     def generate(
-        self, nb_contents: nbformat.NotebookNode, nb_name: Optional[str] = None
+        self, nb_contents: nbformat.NotebookNode, nb_name: str | None = None
     ) -> bytes:
         raise NotImplementedError
 
 
 @dataclasses.dataclass()
 class ReportPublisher:
-    def publish(
-        self, report: Report, artifact: ReportArtifact
-    ) -> Optional[str]:
+    def publish(self, report: Report, artifact: ReportArtifact) -> str | None:
         raise NotImplementedError
 
 
 @dataclasses.dataclass()
 class ReportRunner:
-    def run(self, report: Report) -> Optional[str]:
+    def run(self, report: Report) -> str | None:
         raise NotImplementedError
 
 
 @dataclasses.dataclass()
 class ReportSetRunner:
-    def run(self, report_set: ReportSet):
+    def run(self, report_set: ReportSet) -> None:
         raise NotImplementedError

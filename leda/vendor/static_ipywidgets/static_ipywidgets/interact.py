@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import base64
 import itertools
 import os
-from typing import Any, Union
+from typing import Any, Callable, cast
 
 import IPython
 import markdown2
@@ -18,7 +20,7 @@ IMAGE_MANAGER = None
 
 class ImageManager:
     def add_image(
-        self, div_name: str, obj: Union[bytes, str], disp: bool = False
+        self, div_name: str, obj: bytes | str, disp: bool = False
     ) -> str:
         """Adds image and returns source to include in HTML.
 
@@ -35,7 +37,7 @@ class ImageManager:
 
 class InlineImageManager(ImageManager):
     def add_image(
-        self, div_name: str, obj: Union[bytes, str], disp: bool = False
+        self, div_name: str, obj: bytes | str, disp: bool = False
     ) -> str:
         if isinstance(obj, bytes):
             encoded = base64.standard_b64encode(obj).decode("ascii")
@@ -46,17 +48,17 @@ class InlineImageManager(ImageManager):
 
 
 class FileImageManager(ImageManager):
-    def __init__(self, path: str):
+    def __init__(self, path: str) -> None:
         self.path = path
 
-    def _get_bytes(self, obj: Union[bytes, str]) -> bytes:
+    def _get_bytes(self, obj: bytes | str) -> bytes:
         if isinstance(obj, bytes):
             return obj
         else:
             return base64.standard_b64decode(obj)
 
     def add_image(
-        self, div_name: str, obj: Union[bytes, str], disp: bool = False
+        self, div_name: str, obj: bytes | str, disp: bool = False
     ) -> str:
         # Get image bytes
         obj = self._get_bytes(obj)
@@ -95,10 +97,17 @@ def _get_html(
     # We want to short-circuit this function if we get e.g. a DataFrame
     # TODO: Note that the JS below isn't great because it hides all divs,
     #  so we just remove any divs in the obj's HTML, for now
+    # noinspection PyProtectedMember
     if hasattr(obj, "_repr_html_") and obj._repr_html_():
-        return obj._repr_html_().replace("<div>", "").replace("</div>", "")
+        # noinspection PyProtectedMember
+        return (
+            cast(str, obj._repr_html_())
+            .replace("<div>", "")
+            .replace("</div>", "")
+        )
     elif hasattr(obj, "_repr_markdown_"):
-        return markdown2.Markdown().convert(obj._repr_markdown_())
+        # noinspection PyProtectedMember
+        return cast(str, markdown2.Markdown().convert(obj._repr_markdown_()))
 
     ip = IPython.get_ipython()
     ip_display_formatter = ip.display_formatter  # pyright: ignore
@@ -112,7 +121,7 @@ def _get_html(
 
     html_rep = ip_display_formatter.formatters["text/html"](obj)
     if html_rep is not None:
-        return html_rep
+        return cast(str, html_rep)
 
     return f"<p> {str(obj)} </p>"
 
@@ -242,7 +251,7 @@ class StaticInteract:
       {outputs}
       {widgets}
     </div>
-    """
+    """  # noqa: E501
 
     subdiv_template = """
     <div name="subdiv-{name}" style="display:{display}">
@@ -250,7 +259,7 @@ class StaticInteract:
     </div>
     """
 
-    def __init__(self, function, **kwargs):
+    def __init__(self, function: Callable, **kwargs: Any) -> None:
         # TODO: implement *args (difficult because of the name thing)
         # update names
         for name in kwargs:
@@ -264,7 +273,7 @@ class StaticInteract:
             else InlineImageManager()
         )
 
-    def _output_html(self):
+    def _output_html(self) -> str:
         names = [name for name in self.widgets]
         values = [list(widget.values()) for widget in self.widgets.values()]
         defaults = tuple([widget.default for widget in self.widgets.values()])
@@ -279,12 +288,16 @@ class StaticInteract:
         for vals in tqdm.tqdm(
             all_values, total=len(all_values), desc="Generating results"
         ):
-            results.append(self.function(**dict(list(zip(names, vals)))))
+            results.append(
+                self.function(
+                    **dict(list(zip(names, vals)))  # pyright: ignore
+                )
+            )
 
         divnames = [
             "".join(
                 [
-                    f"{n}{widgets.get_choice_value_str((v))}"
+                    f"{n}{widgets.get_choice_value_str(v)}"
                     for n, v in zip(names, vals)
                 ]
             )
@@ -313,15 +326,15 @@ class StaticInteract:
             )
         return "".join(result_parts)
 
-    def _widget_html(self):
+    def _widget_html(self) -> str:
         return "\n<br>\n".join(
             [widget.html() for name, widget in sorted(self.widgets.items())]
         )
 
-    def html(self):
+    def html(self) -> str:
         return self.template.format(
             outputs=self._output_html(), widgets=self._widget_html()
         )
 
-    def _repr_html_(self):
+    def _repr_html_(self) -> str:
         return self.html()

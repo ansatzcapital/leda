@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import dataclasses
 import logging
 import pathlib
-from typing import Optional
 
 import leda.gen.base
 
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 
-def log_loudly(report_url: str):
+def log_loudly(report_url: str) -> None:
     logger.info("*****************************************************")
     logger.info("Report available at: %s", report_url)
     logger.info("*****************************************************")
@@ -17,13 +18,13 @@ def log_loudly(report_url: str):
 
 @dataclasses.dataclass()
 class InMemoryReportPublisher(leda.gen.base.ReportPublisher):
-    artifact: Optional[leda.gen.base.ReportArtifact] = None
+    artifact: leda.gen.base.ReportArtifact | None = None
 
     def publish(
         self,
         report: leda.gen.base.Report,
         artifact: leda.gen.base.ReportArtifact,
-    ):
+    ) -> None:
         self.artifact = artifact
 
 
@@ -35,7 +36,7 @@ class FileReportPublisher(leda.gen.base.ReportPublisher):
         self,
         report: leda.gen.base.Report,
         artifact: leda.gen.base.ReportArtifact,
-    ) -> Optional[str]:
+    ) -> str | None:
         logger.info("Publishing %r to %s", report.name, self.output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         index_path = self.output_dir / "index.html"

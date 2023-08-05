@@ -19,7 +19,7 @@ logger.addHandler(logging.NullHandler())
 DEFAULT_CELL_TIMEOUT = datetime.timedelta(minutes=10)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "nb_path",

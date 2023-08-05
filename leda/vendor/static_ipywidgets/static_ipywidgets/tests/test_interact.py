@@ -1,4 +1,5 @@
 import dataclasses
+from typing import Any
 from unittest import mock
 
 from leda.vendor.static_ipywidgets.static_ipywidgets import interact, widgets
@@ -8,15 +9,15 @@ from leda.vendor.static_ipywidgets.static_ipywidgets import interact, widgets
 class Obj:
     x: int
 
-    def _repr_html_(self):
+    def _repr_html_(self) -> str:
         return str(self.x)
 
 
-def func(x):
+def func(x: Any) -> Any:
     return Obj(2 * x)
 
 
-def test_simple():
+def test_simple() -> None:
     with mock.patch("IPython.get_ipython"):
         static_interact = interact.StaticInteract(
             func, x=widgets.DropDownWidget([1, 2])

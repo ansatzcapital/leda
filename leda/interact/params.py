@@ -12,7 +12,9 @@ def get_param(
     static_default: Any = dataclasses.MISSING,
     default: Any = dataclasses.MISSING,
 ) -> Any:
-    user_ns = IPython.get_ipython().user_ns  # pyright: ignore
+    ipython = IPython.get_ipython()
+    assert ipython is not None  # For typing
+    user_ns = ipython.user_ns
     if name in user_ns:
         return user_ns[name]
 

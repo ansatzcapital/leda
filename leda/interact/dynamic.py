@@ -1,11 +1,13 @@
-from typing import Any, Callable, Dict
+from __future__ import annotations
+
+from typing import Any, Callable
 
 import ipywidgets
 
 import leda.interact.base
 
 
-def to_dynamic_ipywidgets(values: Dict[str, Any]) -> Dict[str, Any]:
+def to_dynamic_ipywidgets(values: dict[str, Any]) -> dict[str, Any]:
     new_values = {}
     for key, value in values.items():
         widget = ipywidgets.widgets.interactive.widget_from_abbrev(value)
@@ -26,14 +28,14 @@ class DynamicIpywidgetsInteractMode(leda.interact.base.InteractMode):
     def dynamic(self) -> bool:
         return True
 
-    def init(self, plot_lib: str):
+    def init(self, plot_lib: str) -> None:
         if plot_lib.lower() == "matplotlib":
             import matplotlib.pyplot as plt
 
             # Turn on interactive mode
             plt.ion()
 
-    def interact(self, func: Callable, **kwargs) -> Any:
+    def interact(self, func: Callable, **kwargs: Any) -> Any:
         kwargs = to_dynamic_ipywidgets(kwargs)
 
         return ipywidgets.interact(func, **kwargs)

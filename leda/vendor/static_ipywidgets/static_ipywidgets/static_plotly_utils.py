@@ -6,9 +6,10 @@ used with the static widgets natively.
 Template changes:
   - Include unique_div_id in figure id
 """
+from __future__ import annotations
+
 import os
 import uuid
-from typing import Tuple
 
 import jinja2
 import plotly.graph_objects as go
@@ -16,7 +17,7 @@ import plotly.graph_objects as go
 TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), "plotly_figure.tpl")
 
 
-def get_figure_size(fig: go.Figure) -> Tuple[int, int]:
+def get_figure_size(fig: go.Figure) -> tuple[int, int]:
     """Get figure size based on traces.
 
     Args:
@@ -49,7 +50,7 @@ def figure_to_html(fig: go.Figure, display: bool = False) -> str:
     Returns:
         HTML that can be used in static widgets.
     """
-    with open(TEMPLATE_PATH, "r") as fh:
+    with open(TEMPLATE_PATH) as fh:
         jinja_template = jinja2.Template(fh.read())
 
     width, height = get_figure_size(fig)

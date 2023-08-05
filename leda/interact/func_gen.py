@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 import textwrap
+from typing import Any, Callable, Mapping
 import uuid
-from typing import Any, Callable, Mapping, Optional, Tuple
 
 import IPython
 
 
 def gen_kwargs(
-    line: str, ipy: Optional[IPython.InteractiveShell] = None
+    line: str, ipy: IPython.InteractiveShell | None = None
 ) -> Mapping:
     """Evals line into kwargs."""
     if not line.strip():
@@ -24,8 +26,8 @@ def gen_kwargs(
 
 
 def gen_func_cell(
-    cell: str, kwargs: Mapping[str, Any], func_name: Optional[str] = None
-) -> Tuple[str, str]:
+    cell: str, kwargs: Mapping[str, Any], func_name: str | None = None
+) -> tuple[str, str]:
     if not func_name:
         unique_id = uuid.uuid4().hex[:10]
         func_name = f"func_{unique_id}"
@@ -57,8 +59,8 @@ def {func_name}({arg_names}):
 def gen_func(
     func_name: str,
     func_cell: str,
-    ipy: Optional[IPython.InteractiveShell] = None,
+    ipy: IPython.InteractiveShell | None = None,
 ) -> Callable:
     ipy = IPython.get_ipython() if not ipy else ipy
     ipy.ex(func_cell)  # pyright: ignore
-    return ipy.ev(func_name)  # pyright: ignore
+    return ipy.ev(func_name)  # type: ignore

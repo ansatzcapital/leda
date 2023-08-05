@@ -36,13 +36,13 @@ class InteractMode:
     def dynamic(self) -> bool:
         raise NotImplementedError
 
-    def init(self, plot_lib: str):
+    def init(self, plot_lib: str) -> None:
         pass
 
-    def on_set(self):
+    def on_set(self) -> None:
         pass
 
-    def interact(self, func: Callable, **kwargs) -> Any:
+    def interact(self, func: Callable, **kwargs: Any) -> Any:
         raise NotImplementedError
 
     def process_result(self, obj: Any) -> Any:
