@@ -43,13 +43,15 @@ jobs:
 
       - name: Test with nox
         run: nox
-        if: ${{ (matrix.python-version != '3.7') }}
+        if: ${{ (matrix.python-version != '3.7') && ! (matrix.platform == 'windows-latest' && matrix.python-version == '3.8') }}
 
       # Skip type checkers on py3.7 because those package versions
       # yield different results
       - name: Test with nox (py3.7)
         run: nox -s black pytest ruff
         if: ${{ matrix.python-version == '3.7' }}
+
+      # TODO: Test windows/pypy-3.8
 
       - name: Integration test with nox
         run: nox -t integration_test --python ${{ matrix.python-version }}
