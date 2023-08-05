@@ -55,8 +55,9 @@ jobs:
         run: nox -t integration_test --python ${{ matrix.python-version }}
         # Skip integration tests on Windows/py3.8 because
         # there are no pre-built Windows/py3.8/numpy1.6.6 wheels.
-        # TODO: Skip integration tests on pypy; investigate issues
-        if: ${{ ! (matrix.platform == 'windows-latest' && matrix.python-version == '3.8') && ! startsWith(matrix.python-version, 'pypy-') }}
+        # Skip py3.9 because none of the bundles are for it.
+        # TODO: Skip integration tests on pypy; investigate issues.
+        if: ${{ (matrix.python-version != '3.9') && ! (matrix.platform == 'windows-latest' && matrix.python-version == '3.8') && ! startsWith(matrix.python-version, 'pypy-') }}
 
       - name: Upload failed outputs
         uses: actions/upload-artifact@v3
