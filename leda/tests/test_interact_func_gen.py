@@ -14,9 +14,7 @@ class MockIPy:
 
 
 def test_gen_kwargs() -> None:
-    mock_ipy = cast(
-        IPython.InteractiveShell, MockIPy()  # type: ignore[name-defined]
-    )
+    mock_ipy = cast(IPython.InteractiveShell, MockIPy())
     assert leda.interact.func_gen.gen_kwargs("", ipy=mock_ipy) == {}
     assert leda.interact.func_gen.gen_kwargs(
         "foo_val=foo_vals", ipy=mock_ipy

@@ -25,7 +25,7 @@ def set_interact_mode(interact_mode: leda.interact.base.InteractMode) -> None:
 def init(plot_lib: str) -> None:
     # Register cell magics (dynamically, because we need to check
     # that we're in an ipython session)
-    if IPython.get_ipython():  # type: ignore[attr-defined]
+    if IPython.get_ipython():
         import leda.interact.magics  # noqa: F401
 
     get_interact_mode().init(plot_lib)

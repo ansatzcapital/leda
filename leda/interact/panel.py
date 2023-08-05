@@ -64,13 +64,9 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
             # See https://panel.holoviz.org/reference/panes/Matplotlib.html
             import matplotlib.pyplot as plt
 
-            return pn.pane.Matplotlib(  # type: ignore[no-untyped-call]
-                plt.gcf()
-            )
+            return pn.pane.Matplotlib(plt.gcf())  # pyright: ignore
         elif leda.interact.base.is_plotly(obj):
             # See https://panel.holoviz.org/reference/panes/Plotly.html
-            return pn.pane.Plotly(  # type: ignore[no-untyped-call]
-                obj.to_dict()
-            )
+            return pn.pane.Plotly(obj.to_dict())  # pyright: ignore
 
         return super().process_result(obj)

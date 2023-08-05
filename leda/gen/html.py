@@ -40,7 +40,7 @@ STD_OUTPUT_SELECTORS: Selectors = (
 
 def show_toggle(
     name: str, selectors: Selectors, desc: str
-) -> IPython.display.HTML:  # type: ignore[name-defined]
+) -> IPython.display.HTML:
     """Show input toggle.
 
     Adapted from https://stackoverflow.com/a/40106659.
@@ -84,7 +84,7 @@ def show_toggle(
     )
 
     # Load jQuery, since it's only automatically loaded in "classic" template
-    return IPython.display.HTML(  # type: ignore[attr-defined]
+    return IPython.display.HTML(
         f"""
 <script
   src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js">
@@ -111,13 +111,11 @@ def show_toggle(
     )
 
 
-def show_input_toggle() -> IPython.display.HTML:  # type: ignore[name-defined]
+def show_input_toggle() -> IPython.display.HTML:
     """Show input toggle, which shows/hides input cells."""
     return show_toggle("code", INPUT_SELECTORS, "code")
 
 
-def show_std_output_toggle() -> (
-    IPython.display.HTML  # type: ignore[name-defined]
-):
+def show_std_output_toggle() -> IPython.display.HTML:
     """Show std output toggle, which shows/hides std output."""
     return show_toggle("std_output", STD_OUTPUT_SELECTORS, "std output")

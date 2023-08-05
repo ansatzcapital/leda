@@ -9,6 +9,7 @@ from typing import Any
 
 import jupyter_client.kernelspec
 import nbconvert
+from nbconvert import preprocessors
 import nbformat
 import packaging.version
 import termcolor
@@ -21,14 +22,12 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 
-class ExecutePreprocessorWithProgressBar(
-    nbconvert.preprocessors.ExecutePreprocessor
-):
+class ExecutePreprocessorWithProgressBar(preprocessors.ExecutePreprocessor):
     """Small extension to provide progress bar."""
 
-    progress = traitlets.Bool(default_value=False).tag(  # type: ignore
-        config=True,
-    )
+    progress = traitlets.Bool(
+        default_value=False  # pyright: ignore[reportGeneralTypeIssues]
+    ).tag(config=True)
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -40,7 +39,7 @@ class ExecutePreprocessorWithProgressBar(
         self,
         nb: nbformat.NotebookNode,
         resources: dict | None = None,
-        km: jupyter_client.KernelManager | None = None,  # pyright: ignore
+        km: jupyter_client.KernelManager | None = None,
     ) -> tuple[nbformat.NotebookNode, dict]:
         self._num_cells = len(nb["cells"])
 
@@ -48,7 +47,7 @@ class ExecutePreprocessorWithProgressBar(
         if self._pbar is not None:
             self._pbar.close()
 
-        return result  # type: ignore[no-any-return]
+        return result
 
     def preprocess_cell(
         self,
@@ -88,9 +87,9 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
     theme: str | None = None
 
     def __post_init__(self) -> None:
+        nbconvert_version = packaging.version.parse(nbconvert.__version__)
         is_classic = self.template_name == "classic" or (
-            not self.template_name
-            and packaging.version.parse(nbconvert.__version__).major < 6
+            not self.template_name and nbconvert_version.major < 6
         )
         if is_classic and self.theme == "dark":
             raise ValueError(
@@ -100,7 +99,9 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
         if self.theme not in (None, "light", "dark"):
             raise ValueError(f"Unsupported theme: {self.theme!r}")
 
-    def _get_preprocessor(self) -> nbconvert.preprocessors.ExecutePreprocessor:
+    def _get_preprocessor(
+        self,
+    ) -> preprocessors.ExecutePreprocessor:
         kwargs: dict[str, Any] = {}
 
         if self.cell_timeout:

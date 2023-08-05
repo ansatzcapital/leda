@@ -5,23 +5,16 @@ from typing import Any, Callable, Mapping
 import uuid
 
 import IPython
-from typing_extensions import TypeAlias
-
-IPythonInteractiveShell: TypeAlias = (
-    IPython.InteractiveShell  # type: ignore[attr-defined,name-defined]
-)
 
 
 def gen_kwargs(
-    line: str, ipy: IPythonInteractiveShell | None = None
+    line: str, ipy: IPython.InteractiveShell | None = None
 ) -> Mapping:
     """Evals line into kwargs."""
     if not line.strip():
         return {}
 
-    ipy = (
-        IPython.get_ipython() if not ipy else ipy  # type: ignore[attr-defined]
-    )
+    ipy = IPython.get_ipython() if not ipy else ipy
 
     kwargs = {}
     parts = line.split(";")
@@ -66,10 +59,8 @@ def {func_name}({arg_names}):
 def gen_func(
     func_name: str,
     func_cell: str,
-    ipy: IPythonInteractiveShell | None = None,
+    ipy: IPython.InteractiveShell | None = None,
 ) -> Callable:
-    ipy = (
-        IPython.get_ipython() if not ipy else ipy  # type: ignore[attr-defined]
-    )
+    ipy = IPython.get_ipython() if not ipy else ipy
     ipy.ex(func_cell)  # pyright: ignore
     return ipy.ev(func_name)  # type: ignore
