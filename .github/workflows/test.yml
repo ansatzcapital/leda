@@ -28,41 +28,42 @@ jobs:
         python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', 'pypy-3.8']
 
     steps:
-      - uses: actions/checkout@v3
-        if: ${{ ! startsWith(matrix.python-version, 'pypy-') }}
-      - uses: actions/checkout@v1
-        if: ${{ startsWith(matrix.python-version, 'pypy-') }}
-        # Using actions/checkout@v2 or later with pypy causes an error
-        # (see https://foss.heptapod.net/pypy/pypy/-/issues/3640)
+      - name: Check out code
+        uses: actions/checkout@v3
+
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade setuptools pip wheel
           python -m pip install nox
+
       - name: Test with nox
-        run: nox && nox -t integration_test
-        # Py3.7 versions of packages yield different results for type checkers
-        if: ${{ ! (matrix.platform == 'windows-latest' && matrix.python-version == '3.8') && (matrix.python-version != 'pypy-3.8') && (matrix.python-version != '3.7') }}
-      - name: Test with nox (Windows, py3.8)
-        # Skip integration tests on Windows/py3.8 because
-        # there are no pre-built Windows/py3.8/numpy1.6.6 wheels.
-        # TODO: Also skip pyright on Windows for now, but investigate later.
-        run: nox -s black mypy ruff pytest
-        if: ${{ matrix.platform == 'windows-latest' && matrix.python-version == '3.8' }}
-      - name: Test with nox (pypy3.8)
-        # TODO: Skip integration tests on pypy; investigate issues
         run: nox
-        if: ${{ matrix.python-version == 'pypy-3.8' }}
+        if: ${{ (matrix.python-version != '3.7') }}
+
+      # Skip type checkers on py3.7 because those package versions
+      # yield different results
       - name: Test with nox (py3.7)
         run: nox -s black pytest ruff
         if: ${{ matrix.python-version == '3.7' }}
+
+      - name: Integration test with nox
+        run: nox -t integration_test --python {{ matrix.python-version }}
+        # Skip integration tests on Windows/py3.8 because
+        # there are no pre-built Windows/py3.8/numpy1.6.6 wheels.
+        # TODO: Skip integration tests on pypy; investigate issues
+        if: |
+          ${{ ! (matrix.platform == 'windows-latest' && matrix.python-version == '3.8') \
+            && ! startsWith(matrix.python-version, 'pypy-') }}
+
       - name: Upload failed outputs
         uses: actions/upload-artifact@v3
         with:
-          name: leda-outputs-${{ matrix.platform }}-${{ matrix.python-version}}
+          name: leda-outputs-${{ matrix.platform }}-${{ matrix.python-version }}
           path: ~/leda_outputs/
           retention-days: 1
         if: ${{ failure() }}
@@ -88,14 +89,18 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
         # Grab entire history for setuptools_scm
         fetch-depth: 0
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade build twine
+
     - name: Create packages
       run: python -m build
+
     - name: Run twine check
       run: twine check dist/*
