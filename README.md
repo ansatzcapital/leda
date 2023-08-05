@@ -65,9 +65,15 @@ and static modes, e.g.:
 # In[ ]:
 
 
-import leda  # Loads `interact` magic when running in Jupyter notebook
+import leda
 import numpy as np
 import pandas as pd
+
+
+# In[ ]:
+
+
+leda.init("matplotlib")  # Loads `interact` magic when running in Jupyter notebook
 
 
 # In[ ]:
