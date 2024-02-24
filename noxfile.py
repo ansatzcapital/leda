@@ -30,6 +30,9 @@ To do an editable install into your current env:
 
 See https://nox.thea.codes/en/stable/index.html for more.
 """
+from __future__ import annotations
+
+import pathlib
 import sys
 
 import nox
@@ -120,28 +123,43 @@ def develop(session: nox.Session) -> None:
     )
 
 
-def _run_integration_test(
-    session: nox.Session,
-    bundle_name: str,
-    numpy_version: str,
-    matplotlib_version: str,
-) -> None:
+def _get_requirements_versions(
+    requirements_path: pathlib.Path
+) -> dict[str, str]:
+    versions = {}
+    for line in pathlib.Path(requirements_path).read_text().splitlines():
+        if "==" not in line or line.startswith("#"):
+            continue
+
+        name, version = map(str.strip, line.split("=="))
+        if "#" in version:
+            version = version.split("#")[0].strip()
+
+        versions[name] = version
+    return versions
+
+
+def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
     if not is_isolated_venv(session):
         raise ValueError("Must be in isolated env mode")
 
     requirements_filename = f"requirements-{bundle_name}.txt"
 
     # In some cases, the cached versions of matplotlib and numpy are
-    # incompatible, so we force them to rebuild in this order.
+    # incompatible, so we force them to rebuild in this specific order.
+    requirements_versions = _get_requirements_versions(
+        pathlib.Path(requirements_filename)
+    )
+
     session.install(
-        f"numpy=={numpy_version}",
+        f"numpy=={requirements_versions['numpy']}",
         "--force",
         "--no-cache",
         "-c",
         requirements_filename,
     )
     session.install(
-        f"matplotlib=={matplotlib_version}",
+        f"matplotlib=={requirements_versions['matplotlib']}",
         "--force",
         "--no-cache",
         "-c",
@@ -162,36 +180,30 @@ def _run_integration_test(
     )
 
 
-@nox.session(python="3.7", tags=["integration_test"])
+# Remember to update the python versions when we remove
+# and update bundles. Note that the integration test will do a env
+# check in the beginning if we have a mismatch between the nox
+# config and the requirements bundles.
+@nox.session(python="3.8", tags=["integration_test"])
 def integration_test_bundle0(session: nox.Session) -> None:
-    _run_integration_test(
-        session, "bundle0", numpy_version="1.16.6", matplotlib_version="2.2.5"
-    )
+    _run_integration_test(session, "bundle0")
 
 
 @nox.session(python="3.8", tags=["integration_test"])
 def integration_test_bundle1(session: nox.Session) -> None:
-    _run_integration_test(
-        session, "bundle1", numpy_version="1.16.6", matplotlib_version="2.2.5"
-    )
-
-
-@nox.session(python="3.8", tags=["integration_test"])
-def integration_test_bundle2(session: nox.Session) -> None:
-    _run_integration_test(
-        session, "bundle2", numpy_version="1.16.6", matplotlib_version="3.1.3"
-    )
+    _run_integration_test(session, "bundle1")
 
 
 @nox.session(python="3.10", tags=["integration_test"])
-def integration_test_bundle3(session: nox.Session) -> None:
-    _run_integration_test(
-        session, "bundle3", numpy_version="1.22.4", matplotlib_version="3.5.3"
-    )
+def integration_test_bundle2(session: nox.Session) -> None:
+    _run_integration_test(session, "bundle2")
 
 
 @nox.session(python="3.11", tags=["integration_test"])
+def integration_test_bundle3(session: nox.Session) -> None:
+    _run_integration_test(session, "bundle3")
+
+
+@nox.session(python="3.12", tags=["integration_test"])
 def integration_test_bundle4(session: nox.Session) -> None:
-    _run_integration_test(
-        session, "bundle4", numpy_version="1.24.0", matplotlib_version="3.6.2"
-    )
+    _run_integration_test(session, "bundle4")
