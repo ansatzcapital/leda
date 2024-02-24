@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import abc
 import dataclasses
 import datetime
 import logging
@@ -8,6 +9,7 @@ from typing import IO, Any, Mapping
 
 import cached_property
 import nbformat
+from typing_extensions import override
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -74,6 +76,7 @@ class _FileReport:
 @dataclasses.dataclass(frozen=True)
 class FileReport(Report, _FileReport):
     @property
+    @override
     def handle(self) -> str | IO:
         logger.info("Reading %s", self.nb_path)
         return str(self.nb_path.expanduser())
@@ -100,25 +103,29 @@ class ReportArtifact:
 
 @dataclasses.dataclass()
 class ReportGenerator:
+    @abc.abstractmethod
     def generate(
         self, nb_contents: nbformat.NotebookNode, nb_name: str | None = None
     ) -> bytes:
-        raise NotImplementedError
+        ...
 
 
 @dataclasses.dataclass()
 class ReportPublisher:
+    @abc.abstractmethod
     def publish(self, report: Report, artifact: ReportArtifact) -> str | None:
-        raise NotImplementedError
+        ...
 
 
 @dataclasses.dataclass()
 class ReportRunner:
+    @abc.abstractmethod
     def run(self, report: Report) -> str | None:
-        raise NotImplementedError
+        ...
 
 
 @dataclasses.dataclass()
 class ReportSetRunner:
+    @abc.abstractmethod
     def run(self, report_set: ReportSet) -> None:
-        raise NotImplementedError
+        ...

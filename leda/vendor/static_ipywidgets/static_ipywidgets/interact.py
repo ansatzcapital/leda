@@ -1,14 +1,16 @@
 from __future__ import annotations
 
+import abc
 import base64
 import itertools
 import os
-from typing import Any, Callable, cast
+from typing import Any, Callable, Sequence, cast
 
 import IPython
 import markdown2
 import plotly.graph_objects as go
 import tqdm
+from typing_extensions import override
 
 from leda.vendor.static_ipywidgets.static_ipywidgets import (
     static_plotly_utils,
@@ -19,6 +21,7 @@ IMAGE_MANAGER = None
 
 
 class ImageManager:
+    @abc.abstractmethod
     def add_image(
         self, div_name: str, obj: bytes | str, disp: bool = False
     ) -> str:
@@ -32,10 +35,11 @@ class ImageManager:
         Returns:
             Image tag.
         """
-        raise NotImplementedError()
+        ...
 
 
 class InlineImageManager(ImageManager):
+    @override
     def add_image(
         self, div_name: str, obj: bytes | str, disp: bool = False
     ) -> str:
@@ -57,6 +61,7 @@ class FileImageManager(ImageManager):
         else:
             return base64.standard_b64decode(obj)
 
+    @override
     def add_image(
         self, div_name: str, obj: bytes | str, disp: bool = False
     ) -> str:
@@ -111,15 +116,16 @@ def _get_html(
 
     ip = IPython.get_ipython()
     ip_display_formatter = ip.display_formatter  # pyright: ignore
+    formatters = ip_display_formatter.formatters  # pyright: ignore
 
-    png_rep = ip_display_formatter.formatters["image/png"](obj)
+    png_rep = formatters["image/png"](obj)  # pyright: ignore
     if png_rep is not None:
-        if isinstance(obj, plt.Figure):
+        if isinstance(obj, plt.Figure):  # pyright: ignore
             plt.close(obj)  # Keep from displaying twice
         img_tag = img_manager.add_image(div_name, png_rep, disp=disp)
         return img_tag
 
-    html_rep = ip_display_formatter.formatters["text/html"](obj)
+    html_rep = formatters["text/html"](obj)  # pyright: ignore
     if html_rep is not None:
         return cast(str, html_rep)
 
@@ -274,9 +280,13 @@ class StaticInteract:
         )
 
     def _output_html(self) -> str:
-        names = [name for name in self.widgets]
-        values = [list(widget.values()) for widget in self.widgets.values()]
-        defaults = tuple([widget.default for widget in self.widgets.values()])
+        names: Sequence = [name for name in self.widgets]
+        values: Sequence = [
+            list(widget.values()) for widget in self.widgets.values()
+        ]
+        defaults: Sequence = tuple(
+            [widget.default for widget in self.widgets.values()]
+        )
 
         # Now reorder alphabetically by names so divnames match javascript
         names, values, defaults = list(

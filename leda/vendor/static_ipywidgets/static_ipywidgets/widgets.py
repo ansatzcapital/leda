@@ -4,6 +4,7 @@ import copy
 from typing import Any, Sequence
 
 import numpy as np
+from typing_extensions import override
 
 
 def get_choice_value_str(val: Any) -> str:
@@ -30,6 +31,7 @@ class StaticWidget:
     def html(self) -> str:
         raise NotImplementedError
 
+    @override
     def __repr__(self) -> str:
         return self.html()
 
@@ -82,6 +84,7 @@ class RangeWidget(StaticWidget):
         min, max, step = self.datarange  # noqa
         return list(np.arange(min, max + step, step))
 
+    @override
     def html(self) -> str:
         style = ""
 
@@ -149,6 +152,7 @@ class DropDownWidget(StaticWidget):
     def values(self) -> Sequence[str | int]:
         return self._values
 
+    @override
     def html(self) -> str:
         options = self.delimiter.join(
             [
@@ -206,6 +210,7 @@ class RadioWidget(StaticWidget):
     def values(self) -> Sequence[str]:
         return self._values
 
+    @override
     def html(self) -> str:
         preface = f"<b>{self.name}:</b> "
         return preface + self.delimiter.join(

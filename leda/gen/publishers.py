@@ -4,6 +4,8 @@ import dataclasses
 import logging
 import pathlib
 
+from typing_extensions import override
+
 import leda.gen.base
 
 logger = logging.getLogger(__name__)
@@ -20,6 +22,7 @@ def log_loudly(report_url: str) -> None:
 class InMemoryReportPublisher(leda.gen.base.ReportPublisher):
     artifact: leda.gen.base.ReportArtifact | None = None
 
+    @override
     def publish(
         self,
         report: leda.gen.base.Report,
@@ -32,6 +35,7 @@ class InMemoryReportPublisher(leda.gen.base.ReportPublisher):
 class FileReportPublisher(leda.gen.base.ReportPublisher):
     output_dir: pathlib.Path
 
+    @override
     def publish(
         self,
         report: leda.gen.base.Report,

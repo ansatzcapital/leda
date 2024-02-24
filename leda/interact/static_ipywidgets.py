@@ -3,6 +3,7 @@ import html
 from typing import Any, Callable, Optional
 
 import ipywidgets
+from typing_extensions import override
 
 import leda.interact.base
 import leda.interact.core
@@ -14,9 +15,11 @@ class StaticIpywidgetsInteractMode(leda.interact.base.InteractMode):
     _plot_lib: Optional[str] = dataclasses.field(default=None, init=False)
 
     @property
+    @override
     def dynamic(self) -> bool:
         return False
 
+    @override
     def init(self, plot_lib: str) -> None:
         self._plot_lib = plot_lib.lower()
         if self._plot_lib == "matplotlib":
@@ -30,6 +33,7 @@ class StaticIpywidgetsInteractMode(leda.interact.base.InteractMode):
             raise ValueError(self._plot_lib)
 
     # noinspection PyProtectedMember
+    @override
     def interact(self, func: Callable, **kwargs: Any) -> Any:
         new_value: static_ipywidgets.widgets.StaticWidget
 
@@ -59,6 +63,7 @@ class StaticIpywidgetsInteractMode(leda.interact.base.InteractMode):
 
         return static_ipywidgets.interact.StaticInteract(func, **kwargs)
 
+    @override
     def process_result(self, obj: Any) -> Any:
         if leda.interact.base.is_matplotlib(obj):
             import matplotlib.pyplot as plt
