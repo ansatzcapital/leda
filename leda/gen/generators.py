@@ -56,7 +56,7 @@ class ExecutePreprocessorWithProgressBar(preprocessors.ExecutePreprocessor):
         self,
         cell: nbformat.NotebookNode,
         resources: dict,
-        cell_index: int,
+        index: int,
         store_history: bool = True,
     ) -> tuple[nbformat.NotebookNode, dict]:
         if self._pbar is None:
@@ -74,7 +74,7 @@ class ExecutePreprocessorWithProgressBar(preprocessors.ExecutePreprocessor):
         self._pbar.set_postfix_str(first_line)
 
         # Note that preprocess_cell() will actually run the cell
-        result = super().preprocess_cell(cell, resources, cell_index)
+        result = super().preprocess_cell(cell, resources, index)
         self._pbar.update(1)
 
         return result  # type: ignore[no-any-return]
