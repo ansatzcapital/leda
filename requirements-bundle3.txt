@@ -14,6 +14,6 @@ numpy == 1.24.0  # For demos
 pandas == 1.5.2  # For demos
 panel == 0.14.2  # For panel static interact mode
 plotly == 5.11.0
-pygments == 2.15.1
+Pygments == 2.15.1
 termcolor == 2.1.1
 tqdm == 4.64.1
