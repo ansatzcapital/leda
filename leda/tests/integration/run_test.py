@@ -143,7 +143,7 @@ def generate_test_report(
     return pathlib.Path(report_url.replace("file://", ""))
 
 
-def clean_report_lines(lines: Sequence[str]) -> Sequence[str]:
+def clean_report_lines(lines: Sequence[str]) -> Sequence[str]:  # noqa: C901
     """Clean report of randomly-generated strs, e.g., tmp dir."""
     # Importing locally because this is only needed for testing
     import bs4
@@ -189,6 +189,61 @@ def clean_report_lines(lines: Sequence[str]) -> Sequence[str]:
         for idx, plotly_id in enumerate(plotly_ids):
             text = text.replace(plotly_id, f"plotly_fig{idx}")
 
+    # Fx random cell ids (first appeared in py3.12 bundle 4)
+    cell_divs = soup.find_all("div", attrs={"class": "cell"}) + soup.find_all(
+        "div", attrs={"class": "jp-Cell"}
+    )
+    if cell_divs:
+        cell_ids = [
+            cell_div.attrs["id"].split("=")[1]
+            for cell_div in cell_divs
+            if cell_div.attrs["id"].startswith("cell-id=")
+        ]
+
+        # Replace random ids with deterministic ones (the order of the
+        # figures should be the same each time)
+        for idx, cell_id in enumerate(cell_ids):
+            text = text.replace(cell_id, str(idx))
+
+    # Second pass
+    remove_divs_second_pass = []
+
+    soup = bs4.BeautifulSoup(text, "html.parser")
+
+    # Remove seemingly random number of empty output divs, after first pass
+    # cleaning (first appeared in py3.12 bundle 4)
+    output_divs = soup.find_all("div", {"class": "jp-OutputArea-child"})
+    for output_div in output_divs:
+        if (
+            len(output_div.attrs["class"]) == 1
+            and len(list(output_div.children)) == 3
+            and not output_div.text.strip()
+            and str(list(output_div.children)[1])
+            == '<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>'
+        ):
+            remove_divs_second_pass.append(output_div)
+
+    # Remove seemingly random number of empty prompt divs, after first pass
+    # cleaning (first appeared in py3.12 bundle 4)
+    prompt_divs = soup.find_all("div", {"class": "output_area"})
+    for prompt_div in prompt_divs:
+        if (
+            len(prompt_div.attrs["class"]) == 1
+            and len(list(prompt_div.children)) == 3
+            and not prompt_div.text.strip()
+            and str(list(prompt_div.children)[1])
+            == '<div class="prompt"></div>'
+        ):
+            print("removed")
+            remove_divs_second_pass.append(prompt_div)
+
+    # Extract and dispose of them in soup
+    for div in remove_divs_second_pass:
+        div.extract()
+
+    text = str(soup)
+
+    # Return stripped lines
     return [line for line in text.splitlines() if line.strip()]
 
 
@@ -210,7 +265,7 @@ def _handle_diffs(
         return
 
     logger.error(
-        "Found some diffs. Use --gen-html-diffs to "
+        "❌ Found some diffs. Use --gen-html-diffs to "
         "generate an HTML report of these diffs."
     )
     errors.append(tag)
@@ -219,18 +274,19 @@ def _handle_diffs(
 
     if generate_html_diffs:
         logger.info("Generating HTML diff")
-        with pathlib.Path.cwd() / f"{tag}-diff.html" as diff_html_path:
-            html = difflib.HtmlDiff(wrapcolumn=79).make_file(
-                ref_result_lines,
-                test_result_lines,
-                context=True,
-            )
-            diff_html_path.write_text(html, encoding="utf-8")
-            logger.info(
-                "Generated HTML diff: file://%s",
-                diff_html_path,
-            )
-            print(f"file://{diff_html_path}")
+        diff_html_path = pathlib.Path.cwd() / f"{tag}-diff.html"
+        html = difflib.HtmlDiff(wrapcolumn=79).make_file(
+            ref_result_lines,
+            test_result_lines,
+            context=True,
+            numlines=10,
+        )
+        diff_html_path.write_text(html, encoding="utf-8")
+        logger.info(
+            "Generated HTML diff: file://%s",
+            diff_html_path,
+        )
+        print(f"file://{diff_html_path}")
 
 
 def _run_test(
