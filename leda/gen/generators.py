@@ -144,7 +144,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
     def generate(
         self,
         nb_contents: nbformat.NotebookNode,
-        nb_name: str | None = None,
+        html_title: str | None = None,
     ) -> bytes:
         logger.info("Generating notebook")
         preprocessor = self._get_preprocessor()
@@ -158,9 +158,9 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
         body, _ = exporter.from_notebook_node(nb_contents)
 
         logger.info("Modifying HTML")
-        if nb_name:
+        if html_title:
             body = body.replace(
-                "<title>Notebook</title>", f"<title>{nb_name}</title>"
+                "<title>Notebook</title>", f"<title>{html_title}</title>"
             )
 
         return body.encode(errors="ignore")

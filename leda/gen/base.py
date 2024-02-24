@@ -22,6 +22,7 @@ logger.addHandler(logging.NullHandler())
 class Report:
     name: str
 
+    html_title: str | None = None
     tag: str | None = None
 
     params: Mapping[str, Any] | None = None
@@ -105,7 +106,7 @@ class ReportArtifact:
 class ReportGenerator:
     @abc.abstractmethod
     def generate(
-        self, nb_contents: nbformat.NotebookNode, nb_name: str | None = None
+        self, nb_contents: nbformat.NotebookNode, html_title: str | None = None
     ) -> bytes:
         ...
 

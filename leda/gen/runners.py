@@ -29,7 +29,9 @@ class MainReportRunner(leda.gen.base.ReportRunner):
 
         self.modifier.modify(nb_contents)
 
-        body = self.generator.generate(nb_contents, nb_name=report.name)
+        html_title = report.html_title if report.html_title else report.name
+
+        body = self.generator.generate(nb_contents, html_title=html_title)
         artifact = leda.gen.base.ReportArtifact(body)
 
         return self.publisher.publish(report, artifact)
