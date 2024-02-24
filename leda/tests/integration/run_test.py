@@ -235,7 +235,6 @@ def clean_report_lines(lines: Sequence[str]) -> Sequence[str]:  # noqa: C901
             and str(list(prompt_div.children)[1])
             == '<div class="prompt"></div>'
         ):
-            print("removed")
             remove_divs_second_pass.append(prompt_div)
 
     # Extract and dispose of them in soup
