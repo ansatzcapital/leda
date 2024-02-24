@@ -6,6 +6,7 @@ import pathlib
 from typing import Optional, cast
 
 import nbformat
+from typing_extensions import override
 
 import leda.gen.base
 import leda.gen.generators
@@ -22,6 +23,7 @@ class MainReportRunner(leda.gen.base.ReportRunner):
     generator: leda.gen.base.ReportGenerator
     publisher: leda.gen.base.ReportPublisher
 
+    @override
     def run(self, report: leda.gen.base.Report) -> str | None:
         nb_contents = nbformat.read(report.handle, as_version=4)
 

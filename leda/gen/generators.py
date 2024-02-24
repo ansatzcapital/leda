@@ -15,6 +15,7 @@ import packaging.version
 import termcolor
 import tqdm
 import traitlets
+from typing_extensions import override
 
 import leda.gen.base
 
@@ -35,6 +36,7 @@ class ExecutePreprocessorWithProgressBar(preprocessors.ExecutePreprocessor):
         self._num_cells: int | None = None
         self._pbar: tqdm.tqdm | None = None
 
+    @override
     def preprocess(
         self,
         nb: nbformat.NotebookNode,
@@ -49,11 +51,12 @@ class ExecutePreprocessorWithProgressBar(preprocessors.ExecutePreprocessor):
 
         return result
 
+    @override
     def preprocess_cell(
         self,
         cell: nbformat.NotebookNode,
         resources: dict,
-        cell_index: int,
+        index: int,
         store_history: bool = True,
     ) -> tuple[nbformat.NotebookNode, dict]:
         if self._pbar is None:
@@ -71,7 +74,7 @@ class ExecutePreprocessorWithProgressBar(preprocessors.ExecutePreprocessor):
         self._pbar.set_postfix_str(first_line)
 
         # Note that preprocess_cell() will actually run the cell
-        result = super().preprocess_cell(cell, resources, cell_index)
+        result = super().preprocess_cell(cell, resources, index)
         self._pbar.update(1)
 
         return result  # type: ignore[no-any-return]
@@ -137,6 +140,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
 
         return exporter_kwargs
 
+    @override
     def generate(
         self,
         nb_contents: nbformat.NotebookNode,

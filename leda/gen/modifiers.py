@@ -6,6 +6,7 @@ import pathlib
 from typing import ClassVar
 
 import nbformat
+from typing_extensions import override
 
 import leda.gen.base
 
@@ -134,6 +135,7 @@ leda.show_std_output_toggle()"""
             ),
         ]
 
+    @override
     def modify(self, nb_contents: nbformat.NotebookNode) -> None:
         logger.info("Modifying notebook")
         self._check_nb(nb_contents)
@@ -190,6 +192,7 @@ class StaticIpywidgetsReportModifier(
             local_img_dir_path = self.local_dir_path / "images"
             local_img_dir_path.mkdir(parents=True, exist_ok=True)
 
+    @override
     def _get_new_cells_top(self) -> list[nbformat.NotebookNode]:
         new_cells = super()._get_new_cells_top()
 

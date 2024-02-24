@@ -1,6 +1,8 @@
 import dataclasses
 from typing import Any, Callable, Optional
 
+from typing_extensions import override
+
 import leda.interact.base
 import leda.interact.core
 
@@ -12,9 +14,11 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
     _plot_lib: Optional[str] = dataclasses.field(default=None, init=False)
 
     @property
+    @override
     def dynamic(self) -> bool:
         return False
 
+    @override
     def init(self, plot_lib: str) -> None:
         self._plot_lib = plot_lib.lower()
         if self._plot_lib == "matplotlib":
@@ -39,6 +43,7 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
 
         pn.extension(pn_extension, safe_embed=True)  # pyright: ignore
 
+    @override
     def interact(self, func: Callable, **kwargs: Any) -> Any:
         import panel as pn
 
@@ -57,6 +62,7 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
             max_states=500, max_opts=500, progress=self.progress
         )
 
+    @override
     def process_result(self, obj: Any) -> Any:
         import panel as pn
 
