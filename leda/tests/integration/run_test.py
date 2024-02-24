@@ -209,7 +209,7 @@ def _handle_diffs(
         logger.info("Found no diffs")
         return
 
-    logger.info(
+    logger.error(
         "Found some diffs. Use --gen-html-diffs to "
         "generate an HTML report of these diffs."
     )
