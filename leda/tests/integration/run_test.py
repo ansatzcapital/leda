@@ -1,3 +1,16 @@
+"""Run integration tests in either check or write mode.
+
+See also `noxfile.py` integration test sessions.
+
+E.g.:
+```bash
+# Check against reference output
+python ./leda/tests/integration/run_test.py bundle0 --write --log INFO
+
+# Write new references
+python ./leda/tests/integration/run_test.py bundle4 --write --log INFO
+```
+"""
 from __future__ import annotations
 
 import argparse

@@ -114,7 +114,7 @@ def develop(session: nox.Session) -> None:
         "pip",
         "install",
         "-e",
-        ".[setup,test]",
+        ".[demos,setup,test]",
         "--config-settings",
         "editable_mode=compat",
     )
