@@ -31,8 +31,6 @@ def test_simple() -> None:
     # noqa: W293
     <div name="subdiv-x2" style="display:none">
       4
-    </div>""".replace(
-                "# noqa: W293", ""
-            )
+    </div>""".replace("# noqa: W293", "")
             in html
         )

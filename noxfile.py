@@ -19,7 +19,7 @@ To run all static linters and checkers:
 
 To pick a particular session, e.g.:
     nox --list
-    nox -s fix_black
+    nox -s fix_ruff
     nox -s pytest -- -k test_name
 
 To run all integration tests:
@@ -38,7 +38,7 @@ import nox.virtualenv
 # Hack to fix tags for non-defaulted sessions (otherwise, running
 # `nox -t fix` won't pick up any sessions)
 if any(arg.startswith("fix") for arg in sys.argv):
-    nox.options.sessions = ["fix_black", "fix_ruff"]
+    nox.options.sessions = ["fix_ruff"]
 elif any(arg.startswith("integration_test") for arg in sys.argv):
     nox.options.sessions = [
         "integration_test_bundle0",
@@ -48,7 +48,7 @@ elif any(arg.startswith("integration_test") for arg in sys.argv):
         "integration_test_bundle4",
     ]
 else:
-    nox.options.sessions = ["black", "mypy", "pyright", "pytest", "ruff"]
+    nox.options.sessions = ["ruff", "mypy", "pyright", "pytest"]
 
 
 def is_isolated_venv(session: nox.Session) -> bool:
@@ -62,20 +62,6 @@ def is_isolated_venv(session: nox.Session) -> bool:
     return not isinstance(session.virtualenv, nox.virtualenv.PassthroughEnv)
 
 
-@nox.session(tags=["lint", "static"])
-def black(session: nox.Session) -> None:
-    if is_isolated_venv(session):
-        session.install("-e", ".[test]")
-    session.run("black", "--check", "leda")
-
-
-@nox.session(tags=["fix"])
-def fix_black(session: nox.Session) -> None:
-    if is_isolated_venv(session):
-        session.install("-e", ".[test]")
-    session.run("black", "leda")
-
-
 @nox.session(tags=["static", "typecheck"])
 def mypy(session: nox.Session) -> None:
     if is_isolated_venv(session):
@@ -87,11 +73,13 @@ def mypy(session: nox.Session) -> None:
 def pyright(session: nox.Session) -> None:
     if is_isolated_venv(session):
         session.install("-e", ".[test]")
-    session.run(
-        "pyright",
-        "leda",
-        env={"PYRIGHT_PYTHON_DEBUG": "1", "PYRIGHT_PYTHON_VERBOSE": "1"},
-    )
+
+    env = {"PYRIGHT_PYTHON_VERBOSE": "1"}
+    # Enable for debugging
+    if False:
+        env["PYRIGHT_PYTHON_DEBUG"] = "1"
+
+    session.run("pyright", "leda", env=env)
 
 
 @nox.session(tags=["test"])
@@ -105,6 +93,7 @@ def pytest(session: nox.Session) -> None:
 def ruff(session: nox.Session) -> None:
     if is_isolated_venv(session):
         session.install("-e", ".[test]")
+    session.run("ruff", "format", "leda", "--check")
     session.run("ruff", "check", "leda")
 
 
@@ -112,6 +101,7 @@ def ruff(session: nox.Session) -> None:
 def fix_ruff(session: nox.Session) -> None:
     if is_isolated_venv(session):
         session.install("-e", ".[test]")
+    session.run("ruff", "format", "leda")
     session.run("ruff", "check", "leda", "--fix")
 
 
