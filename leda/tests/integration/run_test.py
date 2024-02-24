@@ -197,7 +197,8 @@ def clean_report_lines(lines: Sequence[str]) -> Sequence[str]:  # noqa: C901
         cell_ids = [
             cell_div.attrs["id"].split("=")[1]
             for cell_div in cell_divs
-            if cell_div.attrs["id"].startswith("cell-id=")
+            if "id" in cell_div.attrs
+            and cell_div.attrs["id"].startswith("cell-id=")
         ]
 
         # Replace random ids with deterministic ones (the order of the
