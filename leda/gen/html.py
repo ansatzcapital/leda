@@ -1,4 +1,5 @@
 """HTML functions."""
+
 from typing import List, Tuple, Union
 
 import IPython.display

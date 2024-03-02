@@ -107,26 +107,24 @@ class ReportGenerator:
     @abc.abstractmethod
     def generate(
         self, nb_contents: nbformat.NotebookNode, html_title: str | None = None
-    ) -> bytes:
-        ...
+    ) -> bytes: ...
 
 
 @dataclasses.dataclass()
 class ReportPublisher:
     @abc.abstractmethod
-    def publish(self, report: Report, artifact: ReportArtifact) -> str | None:
-        ...
+    def publish(
+        self, report: Report, artifact: ReportArtifact
+    ) -> str | None: ...
 
 
 @dataclasses.dataclass()
 class ReportRunner:
     @abc.abstractmethod
-    def run(self, report: Report) -> str | None:
-        ...
+    def run(self, report: Report) -> str | None: ...
 
 
 @dataclasses.dataclass()
 class ReportSetRunner:
     @abc.abstractmethod
-    def run(self, report_set: ReportSet) -> None:
-        ...
+    def run(self, report_set: ReportSet) -> None: ...

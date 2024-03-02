@@ -37,9 +37,9 @@ def gen_func_cell(
     cell_lines = cell.strip().split("\n")
 
     # Add return line
-    cell_lines[
-        -1
-    ] = f"return leda.get_interact_mode().process_result({cell_lines[-1]})"
+    cell_lines[-1] = (
+        f"return leda.get_interact_mode().process_result({cell_lines[-1]})"
+    )
 
     # Add indents
     func_body = textwrap.indent("\n".join(cell_lines), "    ")
