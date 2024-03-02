@@ -6,6 +6,7 @@ used with the static widgets natively.
 Template changes:
   - Include unique_div_id in figure id
 """
+
 from __future__ import annotations
 
 import os

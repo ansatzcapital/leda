@@ -183,9 +183,9 @@ class _StaticIpywidgetsReportModifier:
 class StaticIpywidgetsReportModifier(
     StaticReportModifier, _StaticIpywidgetsReportModifier
 ):
-    static_interact_mode_cls_name: ClassVar[
-        str
-    ] = "StaticIpywidgetsInteractMode"
+    static_interact_mode_cls_name: ClassVar[str] = (
+        "StaticIpywidgetsInteractMode"
+    )
 
     def __post_init__(self) -> None:
         if self.local_dir_path:

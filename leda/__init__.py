@@ -1,4 +1,5 @@
 """Leda API."""
+
 # flake8: noqa
 from leda.gen.base import FileReport as FileReport
 from leda.gen.base import Report as Report
