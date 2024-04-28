@@ -18,6 +18,7 @@ jobs:
 
     env:
       LEDA_TEST_OUTPUT_DIR: ~/leda_outputs/
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
 
     strategy:
       fail-fast: false
