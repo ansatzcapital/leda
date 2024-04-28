@@ -31,10 +31,10 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -58,7 +58,7 @@ jobs:
         if: ${{ (matrix.python-version != '3.9') && ! (matrix.platform == 'windows-latest' && matrix.python-version == '3.8') && ! startsWith(matrix.python-version, 'pypy-') }}
 
       - name: Upload failed outputs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: leda-outputs-${{ matrix.platform }}-${{ matrix.python-version }}
           path: ~/leda_outputs/
@@ -80,7 +80,7 @@ jobs:
         python-version: ['3.8']
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         # See https://github.com/actions/checkout/issues/261
         ref: ${{ github.event.pull_request.head.sha }}
@@ -88,7 +88,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 
