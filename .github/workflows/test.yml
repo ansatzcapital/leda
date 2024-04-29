@@ -26,16 +26,9 @@ jobs:
         # See https://help.github.com/articles/virtual-environments-for-github-actions
         os:
           - ubuntu-latest
-          - macos-latest
+          - macos-latest-large
           - windows-latest
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', 'pypy-3.8']
-        # TODO: Fix macOS-14/3.8 issues
-        exclude:
-          - os: macos-latest
-            python-version: '3.8'
-        incude:
-          - os: macos-13
-            python-version: '3.8'
 
     steps:
       - name: Check out code
