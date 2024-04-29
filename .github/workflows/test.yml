@@ -31,7 +31,7 @@ jobs:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', 'pypy-3.8']
         # TODO: Fix macOS-14/3.8 issues
         incude:
-          - platform: 'macos-12:20240418.1'
+          - platform: macos-12
             python-version: '3.8'
         exclude:
           - platform: macos-latest
