@@ -14,27 +14,29 @@ permissions:
 jobs:
   # Run tests, linters, and checkers via nox
   test:
-    runs-on: ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
 
     env:
       LEDA_TEST_OUTPUT_DIR: ~/leda_outputs/
+      PIP_DISABLE_PIP_VERSION_CHECK: '1'
 
     strategy:
       fail-fast: false
       matrix:
         # See https://help.github.com/articles/virtual-environments-for-github-actions
-        platform:
+        os:
           - ubuntu-latest
-          - macos-latest
+          # TODO: Switch back to `macos-latest` when we fix small issues with macOS 14 ARM
+          - macos-13
           - windows-latest
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', 'pypy-3.8']
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -45,7 +47,7 @@ jobs:
 
       - name: Test with nox
         run: nox
-        if: ${{ ! (matrix.platform == 'windows-latest' && matrix.python-version == 'pypy-3.8') }}
+        if: ${{ ! (matrix.os == 'windows-latest' && matrix.python-version == 'pypy-3.8') }}
 
       # TODO: Run tests on windows/pypy-3.8
 
@@ -55,12 +57,12 @@ jobs:
         # there are no pre-built Windows/py3.8/numpy1.6.6 wheels.
         # Skip py3.9 because none of the bundles are for it.
         # TODO: Investigate issues on Windows and pypy.
-        if: ${{ (matrix.python-version != '3.9') && ! (matrix.platform == 'windows-latest' && matrix.python-version == '3.8') && ! startsWith(matrix.python-version, 'pypy-') }}
+        if: ${{ (matrix.python-version != '3.9') && ! (matrix.os == 'windows-latest' && matrix.python-version == '3.8') && ! startsWith(matrix.python-version, 'pypy-') }}
 
       - name: Upload failed outputs
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: leda-outputs-${{ matrix.platform }}-${{ matrix.python-version }}
+          name: leda-outputs-${{ matrix.os }}-${{ matrix.python-version }}
           path: ~/leda_outputs/
           retention-days: 1
         if: ${{ failure() }}
@@ -80,7 +82,7 @@ jobs:
         python-version: ['3.8']
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         # See https://github.com/actions/checkout/issues/261
         ref: ${{ github.event.pull_request.head.sha }}
@@ -88,7 +90,7 @@ jobs:
         fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
 

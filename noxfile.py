@@ -30,6 +30,7 @@ To do an editable install into your current env:
 
 See https://nox.thea.codes/en/stable/index.html for more.
 """
+
 from __future__ import annotations
 
 import pathlib
@@ -69,6 +70,7 @@ def is_isolated_venv(session: nox.Session) -> bool:
 def mypy(session: nox.Session) -> None:
     if is_isolated_venv(session):
         session.install("-e", ".[test]")
+
     session.run("mypy", "leda")
 
 
@@ -96,6 +98,7 @@ def pytest(session: nox.Session) -> None:
 def ruff(session: nox.Session) -> None:
     if is_isolated_venv(session):
         session.install("-e", ".[test]")
+
     session.run("ruff", "format", "leda", "--check")
     session.run("ruff", "check", "leda")
 
@@ -104,6 +107,7 @@ def ruff(session: nox.Session) -> None:
 def fix_ruff(session: nox.Session) -> None:
     if is_isolated_venv(session):
         session.install("-e", ".[test]")
+
     session.run("ruff", "format", "leda")
     session.run("ruff", "check", "leda", "--fix")
 
@@ -124,7 +128,7 @@ def develop(session: nox.Session) -> None:
 
 
 def _get_requirements_versions(
-    requirements_path: pathlib.Path
+    requirements_path: pathlib.Path,
 ) -> dict[str, str]:
     versions = {}
     for line in pathlib.Path(requirements_path).read_text().splitlines():
@@ -170,6 +174,10 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
     session.install("-r", requirements_filename, "-c", requirements_filename)
     session.install("-e", ".[demos,test]")
 
+    args = []
+    if "--gen-html-diffs" in session.posargs:
+        args.append("--gen-html-diffs")
+
     session.run(
         "python",
         "-m",
@@ -177,6 +185,7 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
         bundle_name,
         "--log",
         "INFO",
+        *args,
     )
 
 
