@@ -81,6 +81,9 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
+    # TODO: Regenerate baselines with new ruff format
+    # and remove this exclude
+    "*.ipynb",
 ]
 
 [tool.ruff.format]
