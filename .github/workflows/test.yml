@@ -30,6 +30,17 @@ jobs:
           - macos-13
           - windows-latest
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', 'pypy-3.8']
+        exclude:
+          # It looks like the issue with with macos-13/python3.8 is that the
+          # GitHub image for macos-13 switched from gcc 11 to 12, and this makes
+          # the old matplotlib package fail.
+          # TODO: Remove when we remove support for python3.8 entirely.
+          # See:
+          #   - https://github.com/actions/runner-images/issues/10213
+          #   - https://github.com/actions/runner-images/blob/releases/macos-13/20240811/images/macos/macos-13-Readme.md
+          #   - https://github.com/actions/runner-images/discussions/7521
+          - os: macos-13
+            python-version: 3.8
 
     steps:
       - name: Check out code
