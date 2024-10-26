@@ -29,7 +29,7 @@ jobs:
           # TODO: Switch back to `macos-latest` when we fix small issues with macOS 14 ARM
           - macos-13
           - windows-latest
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', 'pypy-3.8']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', 'pypy-3.8']
         exclude:
           # It looks like the issue with with macos-13/python3.8 is that the
           # GitHub image for macos-13 switched from gcc 11 to 12, and this makes
@@ -71,11 +71,12 @@ jobs:
 
       - name: Integration test with nox
         run: nox -t integration_test --python ${{ matrix.python-version }}
-        # Skip integration tests on Windows/py3.8 because
-        # there are no pre-built Windows/py3.8/numpy1.6.6 wheels.
-        # Skip py3.9 because none of the bundles are for it.
-        # TODO: Investigate issues on Windows and pypy.
-        if: ${{ (matrix.python-version != '3.9') && ! (matrix.os == 'windows-latest' && matrix.python-version == '3.8') && ! startsWith(matrix.python-version, 'pypy-') }}
+        # Notes:
+        #   - Skip py3.9 and py3.13 because none of the bundles are for it.
+        #   - Skip integration tests on Windows/py3.8 because
+        #   there are no pre-built Windows/py3.8/numpy1.6.6 wheels.
+        #   - TODO: Investigate issues on Windows and pypy.
+        if: ${{ (matrix.python-version != '3.9') && (matrix.python-version != '3.13') && ! (matrix.os == 'windows-latest' && matrix.python-version == '3.8') && ! startsWith(matrix.python-version, 'pypy-') }}
 
       - name: Upload failed outputs
         uses: actions/upload-artifact@v4
