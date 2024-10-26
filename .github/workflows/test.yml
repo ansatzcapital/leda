@@ -29,7 +29,7 @@ jobs:
           # TODO: Switch back to `macos-latest` when we fix small issues with macOS 14 ARM
           - macos-13
           - windows-latest
-        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', 'pypy-3.8']
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13', 'pypy-3.8']
         exclude:
           # It looks like the issue with with macos-13/python3.8 is that the
           # GitHub image for macos-13 switched from gcc 11 to 12, and this makes
