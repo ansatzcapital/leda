@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Any, Sequence
+from typing import Any, Sequence, cast
 
 import numpy as np
 from typing_extensions import override
@@ -82,7 +82,7 @@ class RangeWidget(StaticWidget):
 
     def values(self) -> Sequence[float]:
         min, max, step = self.datarange  # noqa
-        return list(np.arange(min, max + step, step))
+        return cast(Sequence[float], list(np.arange(min, max + step, step)))
 
     @override
     def html(self) -> str:
