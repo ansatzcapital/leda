@@ -6,6 +6,7 @@ jupyter-client == 8.6.0  # For dynamic mode
 jupyter-core == 5.7.1  # For dynamic mode
 markdown2 == 2.4.12
 matplotlib == 3.8.3
+mistune == 3.0.2  # Not directly used
 nbclient == 0.9.0  # Not directly used
 nbconvert == 7.16.1
 nbformat == 5.9.2
