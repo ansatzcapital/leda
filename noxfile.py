@@ -181,7 +181,6 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
     session.install("-e", ".[demos,test]")
 
     # To help debugging
-    session.run("jupyter", "nbextension", "list")
     session.run("pip", "freeze")
 
     # Run test
