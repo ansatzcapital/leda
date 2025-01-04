@@ -180,7 +180,9 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
     session.install("-r", requirements_filename, "-c", requirements_filename)
     session.install("-e", ".[demos,test]")
 
-    # To ease debugging
+    # To help debugging
+    session.run("jupyter", "labextension", "list")
+    session.run("jupyter", "nbextension", "list")
     session.run("pip", "freeze")
 
     # Run test
