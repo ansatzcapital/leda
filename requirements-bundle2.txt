@@ -19,3 +19,4 @@ plotly == 5.5.0
 Pygments == 2.15.1
 termcolor == 2.1.1
 tqdm == 4.62.3
+virtualenv == 20.28.0
