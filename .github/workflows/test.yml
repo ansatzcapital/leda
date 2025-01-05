@@ -70,7 +70,7 @@ jobs:
       # TODO: Run tests on windows/pypy-3.8
 
       - name: Integration test with nox
-        run: nox -t integration_test --python ${{ matrix.python-version }}
+        run: nox -t integration_test --python ${{ matrix.python-version }} -- --gen-html-diffs
         # Notes:
         #   - Skip py3.9 and py3.13 because none of the bundles are for it.
         #   - Skip integration tests on Windows/py3.8 because

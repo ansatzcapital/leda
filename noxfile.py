@@ -180,6 +180,10 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
     session.install("-r", requirements_filename, "-c", requirements_filename)
     session.install("-e", ".[demos,test]")
 
+    # To help debugging
+    session.run("pip", "freeze")
+
+    # Run test
     args = []
     if "--gen-html-diffs" in session.posargs:
         args.append("--gen-html-diffs")

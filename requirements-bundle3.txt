@@ -13,6 +13,7 @@ notebook == 6.5.2  # For dynamic mode
 numpy == 1.24.0  # For demos
 pandas == 1.5.2  # For demos
 panel == 0.14.2  # For panel static interact mode
+pillow == 11.0.0
 plotly == 5.11.0
 Pygments == 2.15.1
 termcolor == 2.1.1

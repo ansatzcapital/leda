@@ -253,6 +253,7 @@ def clean_report(text: str) -> str:
 
 
 def _handle_diffs(
+    output_dir: pathlib.Path,
     tag: str,
     ref_result_lines: Sequence[str],
     test_result_lines: Sequence[str],
@@ -275,14 +276,17 @@ def _handle_diffs(
 
     if generate_html_diffs:
         logger.info("Generating HTML diff")
-        diff_html_path = pathlib.Path.cwd() / f"{tag}-diff.html"
         html = difflib.HtmlDiff(wrapcolumn=79).make_file(
             ref_result_lines,
             test_result_lines,
             context=True,
             numlines=10,
         )
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+        diff_html_path = output_dir / f"{tag}-diff.html"
         diff_html_path.write_text(html, encoding="utf-8")
+
         logger.info(
             "Generated HTML diff: file://%s",
             diff_html_path,
@@ -365,6 +369,7 @@ def _run_test(
         )
     )
     _handle_diffs(
+        output_dir=test_result_path.parent,
         tag=tag,
         ref_result_lines=ref_result_lines,
         test_result_lines=test_result_lines,
