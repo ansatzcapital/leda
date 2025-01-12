@@ -13,8 +13,10 @@ from leda.gen.base import ReportSetRunner as ReportSetRunner
 from leda.gen.generators import (
     MainStaticReportGenerator as MainStaticReportGenerator,
 )
-from leda.gen.html import show_input_toggle as show_input_toggle
-from leda.gen.html import show_std_output_toggle as show_std_output_toggle
+from leda.gen.html_utils import show_input_toggle as show_input_toggle
+from leda.gen.html_utils import (
+    show_std_output_toggle as show_std_output_toggle,
+)
 from leda.gen.modifiers import (
     StaticIpywidgetsReportModifier as StaticIpywidgetsReportModifier,
 )
