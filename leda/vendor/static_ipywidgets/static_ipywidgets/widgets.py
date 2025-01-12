@@ -111,7 +111,7 @@ class DropDownWidget(StaticWidget):
         "{options}"
         "</select>"
     )
-    option_html = '<option value="{value}" ' "{selected}>{label}</option>"
+    option_html = '<option value="{value}" {selected}>{label}</option>'
 
     def __init__(
         self,
