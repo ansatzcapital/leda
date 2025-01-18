@@ -53,6 +53,8 @@ jobs:
 
       - name: Install dependencies (ubuntu-latest, py3.8)
         run: |
+          # See https://github.com/matplotlib/matplotlib/issues/22113
+          sudo apt install libfreetype-dev
           python -m pip install --upgrade "setuptools<74" "virtualenv<=20.26.3" pip wheel
           python -m pip install nox
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
