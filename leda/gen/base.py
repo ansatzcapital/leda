@@ -37,7 +37,7 @@ class Report:
         else:
             parts = [self.name]
 
-        parts.append(datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S"))
+        parts.append(datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S.%f"))
 
         return "-".join(parts)
 
