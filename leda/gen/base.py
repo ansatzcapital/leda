@@ -6,6 +6,7 @@ import datetime
 import logging
 import pathlib
 from typing import IO, Any, Mapping
+import uuid
 
 import cached_property
 import nbformat
@@ -37,7 +38,8 @@ class Report:
         else:
             parts = [self.name]
 
-        parts.append(datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S.%f"))
+        parts.append(datetime.datetime.utcnow().strftime("%Y%m%d_%H%M%S"))
+        parts.append(str(uuid.uuid4())[-8:])
 
         return "-".join(parts)
 
