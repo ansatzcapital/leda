@@ -66,6 +66,21 @@ def is_isolated_venv(session: nox.Session) -> bool:
     return not isinstance(session.virtualenv, nox.virtualenv.PassthroughEnv)
 
 
+def prepare(session: nox.Session, extras: str = "all") -> None:
+    """Help debugging in CI context."""
+    if is_isolated_venv(session):
+        session.install("-e", f".[{extras}]")
+
+
+@nox.session()
+def print_env(session: nox.Session) -> None:
+    """Print env info for debugging."""
+    prepare(session)
+
+    session.run("python", "--version")
+    session.run("uv", "pip", "list")
+
+
 @nox.session(tags=["static", "typecheck"])
 def mypy(session: nox.Session) -> None:
     if is_isolated_venv(session):
