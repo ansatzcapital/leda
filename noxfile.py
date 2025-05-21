@@ -66,6 +66,22 @@ def is_isolated_venv(session: nox.Session) -> bool:
     return not isinstance(session.virtualenv, nox.virtualenv.PassthroughEnv)
 
 
+def prepare(session: nox.Session, extras: str = "all") -> None:
+    """Help debugging in CI context."""
+    if is_isolated_venv(session):
+        session.install("-e", f".[{extras}]")
+
+
+@nox.session()
+def print_env(session: nox.Session) -> None:
+    """Print env info for debugging."""
+    prepare(session)
+
+    session.run("python", "--version")
+    # TODO: Switch to `uv pip list`
+    session.run("pip", "list")
+
+
 @nox.session(tags=["static", "typecheck"])
 def mypy(session: nox.Session) -> None:
     if is_isolated_venv(session):
@@ -76,12 +92,6 @@ def mypy(session: nox.Session) -> None:
 
 @nox.session(tags=["static", "typecheck"])
 def pyright(session: nox.Session) -> None:
-    # TODO: Remove once pyright >= 1.1.387 is available. See:
-    #   - https://github.com/microsoft/pyright/issues/9296
-    #   - https://docs.python.org/3/library/sys.html#sys.platform
-    if sys.platform == "win32":
-        session.install("pyright <= 1.1.385")
-
     if is_isolated_venv(session):
         session.install("-e", ".[test]")
 

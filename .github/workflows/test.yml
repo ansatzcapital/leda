@@ -71,7 +71,7 @@ jobs:
 
       # TODO: Run tests on windows/pypy-3.10
       - name: Test with nox
-        run: nox
+        run: nox -s print_env && nox
         if: ${{ ! (matrix.os == 'windows-latest' && matrix.python-version == 'pypy-3.10') }}
 
       - name: Integration test with nox
