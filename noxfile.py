@@ -78,7 +78,8 @@ def print_env(session: nox.Session) -> None:
     prepare(session)
 
     session.run("python", "--version")
-    session.run("uv", "pip", "list")
+    # TODO: Switch to `uv pip list`
+    session.run("pip", "list")
 
 
 @nox.session(tags=["static", "typecheck"])
