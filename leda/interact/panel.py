@@ -40,7 +40,7 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
 
         import panel as pn
 
-        pn.extension(pn_extension, safe_embed=True)  # pyright: ignore
+        pn.extension(pn_extension, safe_embed=True)  # type: ignore[unused-ignore]
 
     @override
     def interact(self, func: Callable, **kwargs: Any) -> Any:
