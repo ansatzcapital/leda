@@ -31,7 +31,7 @@ class Report:
 
     cell_timeout: datetime.timedelta | None = None
 
-    @cached_property.cached_property  # type: ignore[misc]
+    @cached_property.cached_property
     def full_name(self) -> str:
         if self.tag:
             parts = [self.name, self.tag]
@@ -47,7 +47,7 @@ class Report:
     def handle(self) -> str | IO:
         raise NotImplementedError
 
-    @cached_property.cached_property  # type: ignore[misc]
+    @cached_property.cached_property
     def inject_code(self) -> str | None:
         if not self.params and not self.additional_inject_code:
             return None

@@ -21,11 +21,11 @@ def _interact(line: str, cell: str) -> Any:
     return leda.interact.core.get_interact_mode().interact(func, **kwargs)
 
 
-@IPython.core.magic.register_line_cell_magic  # type: ignore[misc]
+@IPython.core.magic.register_line_cell_magic
 def interact(line: str, cell: str) -> Any:
     return _interact(line, cell)
 
 
-@IPython.core.magic.register_line_magic  # type: ignore[misc]
+@IPython.core.magic.register_line_magic
 def toc(_: str) -> Any:
     return "Table of contents will be placed here in static mode."
