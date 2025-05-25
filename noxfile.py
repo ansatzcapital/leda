@@ -228,7 +228,7 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
     session.install("-e", ".[demos,test]")
 
     # To help debugging
-    session.run("pip", "freeze")
+    session.run("uv", "pip", "freeze")
 
     # Run test
     args = []
