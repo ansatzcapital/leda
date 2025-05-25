@@ -6,7 +6,7 @@ See
 https://ipython.readthedocs.io/en/stable/config/custommagics.html.
 """
 
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 import IPython.core
 import IPython.core.magic
