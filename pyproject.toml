@@ -50,7 +50,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-build = ["build>=1.0.3", "twine>=4.0.2"]
+build = ["build>=1.0.3", "twine>=4.0.2", "wheel >= 0.38.0"]
 demos = ["numpy >= 1.16.0", "pandas >= 1.0.0", "panel >= 0.14.1"]
 panel = ["panel >= 0.14.1"]
 setup = [
@@ -59,7 +59,6 @@ setup = [
     "setuptools < 75; python_version == '3.8'",
     "setuptools >= 75; python_version >= '3.9'",
     "setuptools_scm[toml] >= 3.4",
-    "wheel >= 0.38.0",
 ]
 test = [
     "beautifulsoup4 >= 4.11.1",
