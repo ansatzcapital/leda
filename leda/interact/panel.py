@@ -1,4 +1,5 @@
 import dataclasses
+import sys
 from typing import Any, Callable, Optional
 
 from typing_extensions import override
@@ -40,7 +41,14 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
 
         import panel as pn
 
-        pn.extension(pn_extension, safe_embed=True)  # type: ignore[unused-ignore]
+        if sys.version_info >= (3, 9):
+            set_pn_extension = pn.extension
+        else:
+
+            def set_pn_extension(value: str, safe_embed: bool) -> None:
+                pn.extension(value, safe_embed=safe_embed)  # type: ignore[unused-ignore]
+
+        set_pn_extension(pn_extension, safe_embed=True)
 
     @override
     def interact(self, func: Callable, **kwargs: Any) -> Any:
