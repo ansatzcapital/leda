@@ -31,7 +31,6 @@ classifiers = [
 dependencies = [
     # See also `requirements-bundle*.txt`.
     # NB: `requirements-bundle0` is used as a min constraint.
-    "cached-property >= 1.5.2",
     "ipython >= 7.16.1",
     "ipywidgets >= 7.5.1",
     "markdown2 >= 2.3.9",
@@ -114,7 +113,6 @@ enable_error_code = ["explicit-override"]
 
 [[tool.mypy.overrides]]
 module = [
-    "cached_property.*",
     "IPython.*",
     "ipywidgets.*",
     "jinja2.*",
