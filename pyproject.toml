@@ -2,8 +2,86 @@
 requires = ["setuptools >= 42", "setuptools_scm[toml] >= 3.4", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "leda"
+dynamic = ["version"]
+description = "Generate static reports from Jupyter notebooks"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+keywords = ["reports", "Jupyter", "notebooks", "data", "visualization"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Framework :: Jupyter",
+    "Framework :: Matplotlib",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+
+dependencies = [
+    # See also `requirements-bundle*.txt`.
+    # NB: `requirements-bundle0` is used as a min constraint.
+    "cached-property >= 1.5.2",
+    "ipython >= 7.16.1",
+    "ipywidgets >= 7.5.1",
+    "markdown2 >= 2.3.9",
+    "matplotlib >= 2.2.5",
+    "nbconvert >= 5.6.1",
+    "nbformat >= 5.0.4",
+    "packaging >= 19.0.0",
+    "plotly >= 4.6.0",
+    "termcolor >= 1.1.0",
+    "tqdm >= 4.48.2",
+    "typing_extensions >= 4.4.0",
+]
+
+[project.optional-dependencies]
+build = ["build>=1.0.3", "twine>=4.0.2"]
+demos = ["numpy >= 1.16.0", "pandas >= 1.0.0", "panel >= 0.14.1"]
+panel = ["panel >= 0.14.1"]
+setup = ["build >= 0.6.0", "setuptools_scm[toml] >= 3.4", "wheel >= 0.38.0"]
+test = [
+    "beautifulsoup4 >= 4.11.1",
+    "mypy >= 1.7.1",
+    "nox >= 2023.4.22",
+    "pytest >= 6.2.5",
+    "pytest-cov >=2, <3",
+    "pyright >= 1.1.284",
+    "ruff >= 0.3.0",
+    "types-beautifulsoup4 >= 4.11.1",
+    "types-termcolor >= 1.1.0",
+    "types-tqdm >= 4.48.2",
+]
+# See https://github.com/astral-sh/uv/issues/4762#issuecomment-2207423858
+# regarding `all` trick
+all = ["leda[build]", "leda[demos]", "leda[panel]", "leda[setup]", "leda[test]"]
+
+[project.urls]
+"Homepage" = "https://github.com/ansatzcapital/leda"
+"Packaging" = "https://pypi.org/project/leda"
+"Source" = "https://github.com/ansatzcapital/leda"
+"Tracker" = "https://github.com/ansatzcapital/leda/issues"
+
+[tool.setuptools.packages.find]
+# where = ["python/"]
+
+[tool.setuptools.package-data]
+"*" = ["*.tpl", "*.json", "*.html.j2"]
+"leda" = ["py.typed"]
+
 [tool.setuptools_scm]
 write_to = "leda/version.py"
+
 # Using default version scheme
 
 [tool.mypy]
@@ -15,18 +93,22 @@ no_implicit_optional = true
 warn_return_any = true
 show_error_codes = true
 warn_unused_ignores = true
-#disallow_any_generics = true
+disallow_any_generics = true
 disallow_incomplete_defs = true
-#disallow_untyped_calls = true
-disallow_untyped_decorators = true
+# Many third-party libraries are not properly typed
+# disallow_untyped_calls = true
+# disallow_untyped_decorators = true
 follow_imports = "normal"
 ignore_missing_imports = true
 # Many third-party libraries don't explicitly export public API
-#no_implicit_reexport = true
-#show_error_context = true
+# no_implicit_reexport = true
+# Aesthetic preference
+# show_error_context = true
 strict_equality = true
 strict_optional = true
 warn_redundant_casts = true
+
+# See https://mypy-lang.blogspot.com/2023/08/mypy-15-released.html
 enable_error_code = ["explicit-override"]
 
 [[tool.mypy.overrides]]
@@ -53,6 +135,13 @@ exclude = ["**/__pycache__", "**/.*"]
 #strict = ["**/*.py"]
 # Many third-party libraries don't explicitly export public API
 reportPrivateImportUsage = "none"
+# TODO!
+# reportUnnecessaryTypeIgnoreComment = true
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules --durations 10 -s"
+filterwarnings = []
+markers = ["slow"]
 
 [tool.ruff]
 target-version = "py38"
@@ -81,6 +170,7 @@ exclude = [
     "dist",
     "node_modules",
     "venv",
+    "version.py",
     # TODO: Regenerate baselines with new ruff format
     # and remove this exclude
     "*.ipynb",
@@ -117,23 +207,35 @@ select = [
     # https://beta.ruff.rs/docs/rules/#flake8-builtins-a
     "A",
 ]
+
 ignore = [
-    "D100", "D101", "D102", "D103", "D104", "D105", "D107", "D417",
-    "ANN101", "ANN102", "ANN401",
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D107",
+    "D417",
+    "ANN401",
 ]
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-[tool.ruff.lint.mccabe]
-max-complexity = 10
-
 [tool.ruff.lint.isort]
 force-sort-within-sections = true
 section-order = [
-    "future", "standard-library", "third-party", "first-party", "local-folder"
+    "future",
+    "standard-library",
+    "third-party",
+    "first-party",
+    "local-folder",
 ]
 single-line-exclusions = ["collections.abc", "typing", "typing_extensions"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

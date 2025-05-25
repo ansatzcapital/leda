@@ -15,7 +15,7 @@ import functools
 import logging
 import pathlib
 from typing import TypeVar, cast
-import xml.etree.ElementTree as xml_etree
+import xml.etree.ElementTree as xml_etree  # noqa: N813
 
 import pandas as pd
 import requests
