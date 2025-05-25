@@ -57,7 +57,7 @@ def check_env(bundle_name: str) -> None:
 
     installed_pkgs = {}
     pip_freeze_lines = (
-        subprocess.check_output(["pip", "freeze"]).decode().splitlines()
+        subprocess.check_output(["uv", "pip", "freeze"]).decode().splitlines()
     )
     for pip_freeze_line in pip_freeze_lines:
         # Skip editable and wheel installs
