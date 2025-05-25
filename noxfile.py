@@ -210,7 +210,7 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
 
     session.install(
         f"numpy=={requirements_versions['numpy']}",
-        "--force-install",
+        "--force-reinstall",
         "--no-cache",
         "-c",
         requirements_filename,
