@@ -1,7 +1,7 @@
 [build-system]
 requires = [
-    "setuptools < 71; python_version == '3.8'",
-    "setuptools >= 71; python_version >= '3.9'",
+    "setuptools < 70.2; python_version == '3.8'",
+    "setuptools >= 70.2; python_version >= '3.9'",
     "setuptools_scm[toml] >= 3.4",
     "wheel",
 ]
@@ -56,8 +56,8 @@ panel = ["panel >= 0.14.1"]
 setup = [
     "build >= 0.6.0",
     "nox >= 2023.4.22",
-    "setuptools < 71; python_version == '3.8'",
-    "setuptools >= 71; python_version >= '3.9'",
+    "setuptools < 70.2; python_version == '3.8'",
+    "setuptools >= 70.2; python_version >= '3.9'",
     "setuptools_scm[toml] >= 3.4",
 ]
 test = [
