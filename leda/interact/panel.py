@@ -41,7 +41,7 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
 
         import panel as pn
 
-        if sys.version_info >= (3, 9):
+        if sys.version_info >= (3, 10):
             set_pn_extension = pn.extension
         else:
 
