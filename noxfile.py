@@ -210,14 +210,14 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
 
     session.install(
         f"numpy=={requirements_versions['numpy']}",
-        "--force",
+        "--force-install",
         "--no-cache",
         "-c",
         requirements_filename,
     )
     session.install(
         f"matplotlib=={requirements_versions['matplotlib']}",
-        "--force",
+        "--force-reinstall",
         "--no-cache",
         "-c",
         requirements_filename,
