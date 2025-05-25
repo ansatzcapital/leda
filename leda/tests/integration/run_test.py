@@ -77,6 +77,7 @@ def check_env(bundle_name: str) -> None:
         installed_version = None
         for req_name_alias in [
             req_name,
+            req_name.lower(),
             req_name.replace("-", "_"),
             req_name.replace("_", "-"),
         ]:
