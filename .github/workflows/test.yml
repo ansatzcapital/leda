@@ -47,6 +47,12 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      - name: Install apt dependencies (ubuntu-latest, py3.8)
+        run: |
+          # See https://github.com/matplotlib/matplotlib/issues/22113
+          sudo apt install libfreetype-dev python3.8-distutils
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
+
       # See https://docs.astral.sh/uv/guides/integration/github/#setting-up-python
       - name: Install uv and set the Python version
         uses: astral-sh/setup-uv@v5
@@ -57,12 +63,6 @@ jobs:
           enable-cache: false
           # TODO: Remove once https://github.com/astral-sh/setup-uv/issues/226 is fixed
           prune-cache: false
-
-      - name: Install apt dependencies (ubuntu-latest, py3.8)
-        run: |
-          # See https://github.com/matplotlib/matplotlib/issues/22113
-          sudo apt install libfreetype-dev
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
 
       - name: Install pip dependencies
         run: |
