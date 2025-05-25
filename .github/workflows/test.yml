@@ -64,16 +64,9 @@ jobs:
           sudo apt install libfreetype-dev
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
 
-      - name: Install pip dependencies (ubuntu-latest, py3.8)
-        run: |
-          uv pip install --upgrade "setuptools<74" "virtualenv<=20.26.3" pip wheel
-          uv pip install nox
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
-
       - name: Install pip dependencies
         run: |
           uv pip install -e .[setup,test]
-        if: ${{ ! (matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8') }}
 
       # TODO: Run tests on windows/pypy-3.10
       - name: Test with nox
