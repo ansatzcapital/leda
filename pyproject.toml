@@ -55,7 +55,8 @@ test = [
     "nox >= 2023.4.22",
     "pytest >= 6.2.5",
     "pytest-cov >=2, <3",
-    "pyright >= 1.1.284",
+    # TODO: Remove max version when this is released: https://github.com/microsoft/pyright/pull/10494
+    "pyright>=1.1.344,<1.1.401",
     "ruff >= 0.3.0",
     "types-beautifulsoup4 >= 4.11.1",
     "types-termcolor >= 1.1.0",
@@ -134,8 +135,7 @@ exclude = ["**/__pycache__", "**/.*"]
 #strict = ["**/*.py"]
 # Many third-party libraries don't explicitly export public API
 reportPrivateImportUsage = "none"
-# TODO!
-# reportUnnecessaryTypeIgnoreComment = true
+reportUnnecessaryTypeIgnoreComment = true
 
 [tool.pytest.ini_options]
 addopts = "--doctest-modules --durations 10 -s"

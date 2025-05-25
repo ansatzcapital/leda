@@ -5,7 +5,7 @@ import datetime
 import logging
 import os
 import pathlib
-from typing import Any
+from typing import Any, cast
 
 import jupyter_client.kernelspec
 import nbconvert
@@ -26,9 +26,7 @@ logger.addHandler(logging.NullHandler())
 class ExecutePreprocessorWithProgressBar(preprocessors.ExecutePreprocessor):
     """Small extension to provide progress bar."""
 
-    progress = traitlets.Bool(
-        default_value=False  # pyright: ignore[reportGeneralTypeIssues]
-    ).tag(config=True)
+    progress = traitlets.Bool(default_value=False).tag(config=True)
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
@@ -77,7 +75,7 @@ class ExecutePreprocessorWithProgressBar(preprocessors.ExecutePreprocessor):
         result = super().preprocess_cell(cell, resources, index)
         self._pbar.update(1)
 
-        return result  # type: ignore[no-any-return]
+        return cast("tuple[nbformat.NotebookNode, dict]", result)
 
 
 @dataclasses.dataclass()

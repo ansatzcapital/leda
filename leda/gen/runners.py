@@ -3,7 +3,6 @@ from __future__ import annotations
 import dataclasses
 import logging
 import pathlib
-from typing import Optional, cast
 
 import nbformat
 from typing_extensions import override

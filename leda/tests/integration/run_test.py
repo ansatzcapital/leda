@@ -24,7 +24,7 @@ import pathlib
 import subprocess
 import sys
 import tempfile
-from typing import ContextManager, Sequence, cast
+from typing import ContextManager, Sequence
 
 import nbconvert
 import packaging.version
@@ -111,7 +111,7 @@ def generate_test_report(
         cell_timeout=datetime.timedelta(minutes=5),
     )
 
-    output_dir = output_dir / cast(str, report.full_name)
+    output_dir = output_dir / report.full_name
 
     modifier: leda.ReportModifier
     if static_interact_mode_alias == "static_ipywidgets":

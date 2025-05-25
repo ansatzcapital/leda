@@ -118,14 +118,14 @@ def _get_html(
     ip_display_formatter = ip.display_formatter  # pyright: ignore
     formatters = ip_display_formatter.formatters  # pyright: ignore
 
-    png_rep = formatters["image/png"](obj)  # pyright: ignore
+    png_rep = formatters["image/png"](obj)
     if png_rep is not None:
         if isinstance(obj, plt.Figure):  # pyright: ignore
             plt.close(obj)  # Keep from displaying twice
         img_tag = img_manager.add_image(div_name, png_rep, disp=disp)
         return img_tag
 
-    html_rep = formatters["text/html"](obj)  # pyright: ignore
+    html_rep = formatters["text/html"](obj)
     if html_rep is not None:
         return cast(str, html_rep)
 
@@ -298,11 +298,7 @@ class StaticInteract:
         for vals in tqdm.tqdm(
             all_values, total=len(all_values), desc="Generating results"
         ):
-            results.append(
-                self.function(
-                    **dict(list(zip(names, vals)))  # pyright: ignore
-                )
-            )
+            results.append(self.function(**dict(list(zip(names, vals)))))
 
         divnames = [
             "".join(

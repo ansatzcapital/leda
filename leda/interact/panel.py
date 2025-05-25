@@ -4,7 +4,6 @@ from typing import Any, Callable, Optional
 from typing_extensions import override
 
 import leda.interact.base
-import leda.interact.core
 
 
 @dataclasses.dataclass()
@@ -57,7 +56,7 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
                     "*before* calling leda.init())"
                 )
 
-        interact_view = pn.interact(func, **kwargs)  # pyright: ignore
+        interact_view = pn.interact(func, **kwargs)
         return interact_view.embed(  # pyright: ignore
             max_states=500, max_opts=500, progress=self.progress
         )
@@ -70,9 +69,9 @@ class StaticPanelInteractMode(leda.interact.base.InteractMode):
             # See https://panel.holoviz.org/reference/panes/Matplotlib.html
             import matplotlib.pyplot as plt
 
-            return pn.pane.Matplotlib(plt.gcf())  # pyright: ignore
+            return pn.pane.Matplotlib(plt.gcf())
         elif leda.interact.base.is_plotly(obj):
             # See https://panel.holoviz.org/reference/panes/Plotly.html
-            return pn.pane.Plotly(obj.to_dict())  # pyright: ignore
+            return pn.pane.Plotly(obj.to_dict())
 
         return super().process_result(obj)
