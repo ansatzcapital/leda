@@ -1,5 +1,4 @@
 # python 3.8
-cached-property == 1.5.2
 ipython == 7.16.1
 ipywidgets == 7.5.1
 jedi == 0.17.1  # Fix compatibility issue
