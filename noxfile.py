@@ -112,7 +112,7 @@ def mypy(session: nox.Session) -> None:
     """Run mypy type checker."""
     prepare(session)
 
-    session.run("mypy", "leda")
+    session.run("mypy", ".")
 
 
 @nox.session(tags=["static", "typecheck"])
