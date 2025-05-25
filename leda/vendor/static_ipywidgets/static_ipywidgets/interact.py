@@ -92,6 +92,7 @@ def _get_html(
 ) -> str:
     """Get the HTML representation of an object."""
     # Prevent trying to load Tkinter at import time
+    import matplotlib.figure
     import matplotlib.pyplot as plt
 
     # Note that figures in plotly>=4.8.0 do have _repr_html_()
@@ -120,7 +121,7 @@ def _get_html(
 
     png_rep = formatters["image/png"](obj)
     if png_rep is not None:
-        if isinstance(obj, plt.Figure):  # pyright: ignore
+        if isinstance(obj, matplotlib.figure.Figure):
             plt.close(obj)  # Keep from displaying twice
         img_tag = img_manager.add_image(div_name, png_rep, disp=disp)
         return img_tag
