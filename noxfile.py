@@ -233,13 +233,16 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
 
     # To help debugging
     # TODO: Remove pip support when we remove support for python3.8
-    args = ["pip"] if "--use-pip" in session.posargs else ["uv", "pip"]
-    session.run(*args, "freeze")
+    pip_args = ["pip"] if "--use-pip" in session.posargs else ["uv", "pip"]
+    session.run(*pip_args, "freeze")
 
     # Run test
-    args = []
+    extra_test_args = []
+    # TODO: Remove pip support when we remove support for python3.8
+    if "--use-pip" in session.posargs:
+        extra_test_args.append("--use-pip")
     if "--gen-html-diffs" in session.posargs:
-        args.append("--gen-html-diffs")
+        extra_test_args.append("--gen-html-diffs")
 
     session.run(
         "python",
@@ -248,7 +251,7 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
         bundle_name,
         "--log",
         "INFO",
-        *args,
+        *extra_test_args,
     )
 
 
