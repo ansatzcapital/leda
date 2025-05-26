@@ -63,7 +63,9 @@ import sys
 import nox
 import nox.virtualenv
 
-nox.options.default_venv_backend = "uv"
+# TODO: Remove pip support when we remove support for python3.8
+if sys.version_info >= (3, 9):
+    nox.options.default_venv_backend = "uv"
 
 # Hack to fix tags for non-defaulted sessions (otherwise, running
 # `nox -t fix` won't pick up any sessions)
@@ -228,7 +230,9 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
     session.install("-e", ".[demos,test]")
 
     # To help debugging
-    session.run("uv", "pip", "freeze")
+    # TODO: Remove pip support when we remove support for python3.8
+    args = ["pip"] if "--use-pip" in session.posargs else ["uv", "pip"]
+    session.run(*args, "freeze")
 
     # Run test
     args = []

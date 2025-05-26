@@ -29,29 +29,11 @@ jobs:
           # TODO: Switch back to `macos-latest` when we fix small issues with macOS 14 ARM
           - macos-13
           - windows-latest
-        python-version:
-          ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "pypy-3.10"]
-        exclude:
-          # It looks like the issue with with macos-13/python3.8 is that the
-          # GitHub image for macos-13 switched from gcc 11 to 12, and this makes
-          # the old matplotlib package fail.
-          # TODO: Remove when we remove support for python3.8 entirely.
-          # See:
-          #   - https://github.com/actions/runner-images/issues/10213
-          #   - https://github.com/actions/runner-images/blob/releases/macos-13/20240811/images/macos/macos-13-Readme.md
-          #   - https://github.com/actions/runner-images/discussions/7521
-          - os: macos-13
-            python-version: 3.8
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "pypy-3.10"]
 
     steps:
       - name: Check out code
         uses: actions/checkout@v4
-
-      - name: Install apt dependencies (ubuntu-latest, py3.8)
-        run: |
-          # See https://github.com/matplotlib/matplotlib/issues/22113
-          sudo apt install libfreetype-dev
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.python-version == '3.8' }}
 
       # See https://docs.astral.sh/uv/guides/integration/github/#setting-up-python
       - name: Install uv and set the Python version
@@ -80,7 +62,54 @@ jobs:
         #   - Skip integration tests on windows/py3.8 because
         #     there are no pre-built windows/py3.8/numpy1.6.6 wheels.
         #   - TODO: Investigate issues on windows and pypy.
-        if: ${{ (matrix.python-version != '3.9') && (matrix.python-version != '3.13') && ! (matrix.os == 'windows-latest' && matrix.python-version == '3.8') && ! startsWith(matrix.python-version, 'pypy-') }}
+        if: ${{ (matrix.python-version != '3.9') && (matrix.python-version != '3.13') && ! startsWith(matrix.python-version, 'pypy-') }}
+
+      - name: Upload failed outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: leda-outputs-${{ matrix.os }}-${{ matrix.python-version }}
+          path: ~/leda_outputs/
+          retention-days: 1
+        if: ${{ failure() }}
+
+  test-py38:
+    runs-on: ${{ matrix.os }}
+
+    env:
+      LEDA_TEST_OUTPUT_DIR: ~/leda_outputs/
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # See https://help.github.com/articles/virtual-environments-for-github-actions
+        os:
+          - ubuntu-latest
+        python-version: ["3.8"]
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Install apt dependencies
+        run: |
+          # See https://github.com/matplotlib/matplotlib/issues/22113
+          sudo apt install -y libfreetype-dev
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install pip dependencies
+        run: |
+          pip install -e .[setup]
+
+      - name: Test with nox
+        run: nox -s print_env && nox
+
+      - name: Integration test with nox
+        run: nox -t integration_test --python ${{ matrix.python-version }} -- --gen-html-diffs --use-pip
 
       - name: Upload failed outputs
         uses: actions/upload-artifact@v4

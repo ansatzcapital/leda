@@ -38,7 +38,7 @@ DEMO_DIR = pathlib.Path(leda.__file__).parent / "demos"
 REF_DIR = pathlib.Path(__file__).parent / "refs"
 
 
-def check_env(bundle_name: str) -> None:
+def check_env(bundle_name: str, *, use_pip: bool) -> None:
     logger.info("Checking env against %r", bundle_name)
     req_text = (
         pathlib.Path(leda.__file__).parent.parent
@@ -57,7 +57,12 @@ def check_env(bundle_name: str) -> None:
 
     installed_pkgs = {}
     pip_freeze_lines = (
-        subprocess.check_output(["uv", "pip", "freeze"]).decode().splitlines()
+        subprocess.check_output(
+            # TODO: Remove pip support when we remove support for python3.8
+            ([] if use_pip else ["uv"]) + ["pip", "freeze"]
+        )
+        .decode()
+        .splitlines()
     )
     for pip_freeze_line in pip_freeze_lines:
         # Skip editable and wheel installs
@@ -443,6 +448,10 @@ def main() -> None:
     parser.add_argument("--gen-html-diffs", action="store_true")
     parser.add_argument("--write-refs-mode", action="store_true")
     parser.add_argument("--cleanup", action="store_true")
+    # TODO: Remove pip support when we remove support for python3.8
+    parser.add_argument(
+        "--use-pip", action="store_true", help="Only needed for ubuntu/py3.8"
+    )
     args = parser.parse_args()
 
     if args.log_level:
@@ -474,7 +483,7 @@ def main() -> None:
             tempfile.mkdtemp(prefix="leda_integration_test_")
         )
 
-    check_env(args.bundle_name)
+    check_env(args.bundle_name, use_pip=args.use_pip)
 
     with ctxt as output_dir:
         logger.info("Using output dir: %s", output_dir)
