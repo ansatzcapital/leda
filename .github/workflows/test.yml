@@ -57,8 +57,10 @@ jobs:
 
       - name: Integration test with nox
         run: nox -t integration_test --python ${{ matrix.python-version }} -- --gen-html-diffs
-        # TODO: Investigate issues with pypy
-        if: ${{ ! startsWith(matrix.python-version, 'pypy-') }}
+        # Notes:
+        #   - Skip py3.9 and py3.13 because none of the bundles are for it, and nox will complain that no sessions were chosen.
+        #   - TODO: Investigate issues with pypy.
+        if: ${{ (matrix.python-version != '3.9') && (matrix.python-version != '3.13') && ! startsWith(matrix.python-version, 'pypy-') }}
 
       - name: Upload failed outputs
         uses: actions/upload-artifact@v4
