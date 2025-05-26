@@ -91,19 +91,20 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Install apt dependencies
-        run: |
-          # See https://github.com/matplotlib/matplotlib/issues/22113
-          sudo apt install -y libfreetype-dev
-
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install apt dependencies
+        run: |
+          # See https://github.com/matplotlib/matplotlib/issues/22113
+          sudo apt install libfreetype-dev
+
       - name: Install pip dependencies
         run: |
-          pip install -e .[setup]
+          python -m pip install --upgrade "setuptools<74" "virtualenv<=20.26.3" pip wheel
+          python -m pip install nox
 
       - name: Test with nox
         run: nox -s print_env -- --use-pip && nox
