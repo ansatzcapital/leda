@@ -1,5 +1,4 @@
 # python 3.11
-cached-property == 1.5.2
 ipython == 8.7.0
 ipywidgets == 8.0.3
 jupyter-client == 7.4.8  # For dynamic mode

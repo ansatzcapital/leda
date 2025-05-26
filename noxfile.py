@@ -1,32 +1,56 @@
 """Nox setup.
 
 To run all linters, checkers, and tests:
-    nox
+
+```bash
+nox
+```
 
 To run all fixers:
-    nox -t fix
+
+```bash
+nox -t fix
+```
 
 By default, nox will set up venvs for each session. To use your current
 env instead, add `--no-venv` to any command:
-    nox --no-venv
+
+```bash
+nox --no-venv
+```
 
 By default, nox will recreate venvs for each session. To reuse your existing
 env instead, add `--reuse`/`-r` to any command:
-    nox --reuse
+
+```bash
+nox --reuse
+```
 
 To run all static linters and checkers:
-    nox -t static
+
+```
+nox -t static
+```
 
 To pick a particular session, e.g.:
-    nox --list
-    nox -s fix_ruff
-    nox -s pytest -- -k test_name
+
+```bash
+nox --list
+nox -s fix_ruff
+nox -s pytest -- -k test_name
+```
 
 To run all integration tests:
-    nox -t integration_test
+
+```bash
+nox -t integration_test
+```
 
 To do an editable install into your current env:
-    nox -s develop
+
+```bash
+nox -s develop
+```
 
 See https://nox.thea.codes/en/stable/index.html for more.
 """
@@ -38,6 +62,10 @@ import sys
 
 import nox
 import nox.virtualenv
+
+# TODO: Remove pip support when we remove support for python3.8
+if sys.version_info >= (3, 9):
+    nox.options.default_venv_backend = "uv"
 
 # Hack to fix tags for non-defaulted sessions (otherwise, running
 # `nox -t fix` won't pick up any sessions)
@@ -78,66 +106,79 @@ def print_env(session: nox.Session) -> None:
     prepare(session)
 
     session.run("python", "--version")
-    # TODO: Switch to `uv pip list`
-    session.run("pip", "list")
+    # TODO: Remove pip support when we remove support for python3.8
+    args = ["pip"] if "--use-pip" in session.posargs else ["uv", "pip"]
+    session.run(*args, "list")
 
 
 @nox.session(tags=["static", "typecheck"])
 def mypy(session: nox.Session) -> None:
-    if is_isolated_venv(session):
-        session.install("-e", ".[test]")
+    """Run mypy type checker."""
+    prepare(session)
 
-    session.run("mypy", "leda")
+    session.run("mypy", ".")
 
 
 @nox.session(tags=["static", "typecheck"])
 def pyright(session: nox.Session) -> None:
-    if is_isolated_venv(session):
-        session.install("-e", ".[test]")
+    """Run pyright type checker."""
+    prepare(session)
 
     env = {"PYRIGHT_PYTHON_VERBOSE": "1"}
     # Enable for debugging
     if False:
         env["PYRIGHT_PYTHON_DEBUG"] = "1"
 
-    session.run("pyright", "leda", env=env)
+    session.run("pyright", ".", env=env)
 
 
 @nox.session(tags=["test"])
 def pytest(session: nox.Session) -> None:
-    if is_isolated_venv(session):
-        session.install("-e", ".[test]")
-    session.run("pytest", "leda", *session.posargs)
+    """Run pytest."""
+    prepare(session)
+
+    session.run("pytest", ".", *session.posargs)
 
 
 @nox.session(tags=["lint", "static"])
 def ruff(session: nox.Session) -> None:
-    if is_isolated_venv(session):
-        session.install("-e", ".[test]")
+    """Run ruff formatter and linter checks."""
+    prepare(session)
 
-    session.run("ruff", "format", "leda", "--check")
-    session.run("ruff", "check", "leda")
+    session.run("ruff", "format", ".", "--check")
+    session.run("ruff", "check", ".")
 
 
 @nox.session(tags=["fix"])
 def fix_ruff(session: nox.Session) -> None:
-    if is_isolated_venv(session):
-        session.install("-e", ".[test]")
+    """Fix some ruff formatter and linter issues."""
+    prepare(session)
 
-    session.run("ruff", "format", "leda")
-    session.run("ruff", "check", "leda", "--fix")
+    session.run("ruff", "format", ".")
+    session.run("ruff", "check", ".", "--fix")
+
+
+@nox.session()
+def build(session: nox.Session) -> None:
+    """Build Python wheel."""
+    prepare(session)
+
+    session.run("python", "-m", "build", "--wheel")
+    session.run("twine", "check", "dist/*")
 
 
 @nox.session(venv_backend="none")
 def develop(session: nox.Session) -> None:
+    """Install local dir into activated env using editable installs."""
     # We install using compatibility mode for VS Code
     # to pick up the installation correctly.
     # See https://setuptools.pypa.io/en/latest/userguide/development_mode.html#legacy-behavior.
     session.run(
+        "uv",
         "pip",
         "install",
         "-e",
-        ".[demos,setup,test]",
+        ".[all]",
         "--config-settings",
         "editable_mode=compat",
     )
@@ -173,14 +214,14 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
 
     session.install(
         f"numpy=={requirements_versions['numpy']}",
-        "--force",
+        "--force-reinstall",
         "--no-cache",
         "-c",
         requirements_filename,
     )
     session.install(
         f"matplotlib=={requirements_versions['matplotlib']}",
-        "--force",
+        "--force-reinstall",
         "--no-cache",
         "-c",
         requirements_filename,
@@ -191,12 +232,17 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
     session.install("-e", ".[demos,test]")
 
     # To help debugging
-    session.run("pip", "freeze")
+    # TODO: Remove pip support when we remove support for python3.8
+    pip_args = ["pip"] if "--use-pip" in session.posargs else ["uv", "pip"]
+    session.run(*pip_args, "freeze")
 
     # Run test
-    args = []
+    extra_test_args = []
+    # TODO: Remove pip support when we remove support for python3.8
+    if "--use-pip" in session.posargs:
+        extra_test_args.append("--use-pip")
     if "--gen-html-diffs" in session.posargs:
-        args.append("--gen-html-diffs")
+        extra_test_args.append("--gen-html-diffs")
 
     session.run(
         "python",
@@ -205,7 +251,7 @@ def _run_integration_test(session: nox.Session, bundle_name: str) -> None:
         bundle_name,
         "--log",
         "INFO",
-        *args,
+        *extra_test_args,
     )
 
 

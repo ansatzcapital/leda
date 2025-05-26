@@ -3,20 +3,17 @@ from __future__ import annotations
 import abc
 import dataclasses
 import datetime
+import functools
 import logging
 import pathlib
 from typing import IO, Any, Mapping
 import uuid
 
-import cached_property
 import nbformat
 from typing_extensions import override
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
-
-# TODO: When we drop support for python3.7, switch to properly-typed,
-#  built-in functools.cached_property.
 
 
 @dataclasses.dataclass(frozen=True)
@@ -31,7 +28,7 @@ class Report:
 
     cell_timeout: datetime.timedelta | None = None
 
-    @cached_property.cached_property  # type: ignore[misc]
+    @functools.cached_property
     def full_name(self) -> str:
         if self.tag:
             parts = [self.name, self.tag]
@@ -47,7 +44,7 @@ class Report:
     def handle(self) -> str | IO:
         raise NotImplementedError
 
-    @cached_property.cached_property  # type: ignore[misc]
+    @functools.cached_property
     def inject_code(self) -> str | None:
         if not self.params and not self.additional_inject_code:
             return None

@@ -6,7 +6,6 @@ import ipywidgets
 from typing_extensions import override
 
 import leda.interact.base
-import leda.interact.core
 import leda.interact.dynamic
 from leda.vendor.static_ipywidgets import static_ipywidgets
 
@@ -42,9 +41,7 @@ class StaticIpywidgetsInteractMode(leda.interact.base.InteractMode):
         for key, value in kwargs.items():
             if isinstance(value, ipywidgets.widgets.IntSlider):
                 new_value = static_ipywidgets.widgets.RangeWidget(
-                    min=value.min,  # pyright: ignore
-                    max=value.max,  # pyright: ignore
-                    step=value.step,  # pyright: ignore
+                    min=value.min, max=value.max, step=value.step
                 )
             elif isinstance(value, ipywidgets.widgets.Dropdown):
                 labels = [
