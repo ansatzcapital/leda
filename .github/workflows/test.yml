@@ -50,19 +50,15 @@ jobs:
         run: |
           uv pip install -e .[setup]
 
-      # TODO: Run tests on windows/pypy-3.10
       - name: Test with nox
         run: nox -s print_env && nox
+        # TODO: Investigate issues with windows/pypy
         if: ${{ ! (matrix.os == 'windows-latest' && matrix.python-version == 'pypy-3.10') }}
 
       - name: Integration test with nox
         run: nox -t integration_test --python ${{ matrix.python-version }} -- --gen-html-diffs
-        # Notes:
-        #   - Skip py3.9 and py3.13 because none of the bundles are for it.
-        #   - Skip integration tests on windows/py3.8 because
-        #     there are no pre-built windows/py3.8/numpy1.6.6 wheels.
-        #   - TODO: Investigate issues on windows and pypy.
-        if: ${{ (matrix.python-version != '3.9') && (matrix.python-version != '3.13') && ! startsWith(matrix.python-version, 'pypy-') }}
+        # TODO: Investigate issues with pypy
+        if: ${{ ! startsWith(matrix.python-version, 'pypy-') }}
 
       - name: Upload failed outputs
         uses: actions/upload-artifact@v4
