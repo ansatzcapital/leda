@@ -106,7 +106,7 @@ jobs:
           pip install -e .[setup]
 
       - name: Test with nox
-        run: nox -s print_env && nox
+        run: nox -s print_env -- --use-pip && nox
 
       - name: Integration test with nox
         run: nox -t integration_test --python ${{ matrix.python-version }} -- --gen-html-diffs --use-pip

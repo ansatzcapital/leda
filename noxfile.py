@@ -106,7 +106,9 @@ def print_env(session: nox.Session) -> None:
     prepare(session)
 
     session.run("python", "--version")
-    session.run("uv", "pip", "list")
+    # TODO: Remove pip support when we remove support for python3.8
+    args = ["pip"] if "--use-pip" in session.posargs else ["uv", "pip"]
+    session.run(*args, "list")
 
 
 @nox.session(tags=["static", "typecheck"])
