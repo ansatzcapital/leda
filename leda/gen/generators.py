@@ -30,7 +30,7 @@ class ExecutePreprocessorWithProgressBar(preprocessors.ExecutePreprocessor):
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        # Progress bar state
+        # Manage progress bar state.
         self._num_cells: int | None = None
         self._pbar: tqdm.tqdm | None = None
 
@@ -71,7 +71,7 @@ class ExecutePreprocessorWithProgressBar(preprocessors.ExecutePreprocessor):
             first_line = ""
         self._pbar.set_postfix_str(first_line)
 
-        # Note that preprocess_cell() will actually run the cell
+        # Note that `preprocess_cell()` will actually run the cell.
         result = super().preprocess_cell(cell, resources, index)
         self._pbar.update(1)
 
@@ -123,7 +123,7 @@ class MainStaticReportGenerator(leda.gen.base.ReportGenerator):
         )
 
     def _get_exporter_kwargs(self) -> dict:
-        # See https://nbconvert.readthedocs.io/en/latest/customizing.html#adding-additional-template-paths  # noqa
+        # See https://nbconvert.readthedocs.io/en/latest/customizing.html#adding-additional-template-paths.
         exporter_kwargs = {
             "extra_template_basedirs": str(
                 pathlib.Path(__file__).parent.parent / "templates"

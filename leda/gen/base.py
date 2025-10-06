@@ -17,7 +17,7 @@ logger.addHandler(logging.NullHandler())
 
 
 @dataclasses.dataclass(frozen=True)
-class Report:
+class Report(abc.ABC):
     name: str
 
     html_title: str | None = None
@@ -41,8 +41,8 @@ class Report:
         return "-".join(parts)
 
     @property
-    def handle(self) -> str | IO:
-        raise NotImplementedError
+    @abc.abstractmethod
+    def handle(self) -> str | IO: ...
 
     @functools.cached_property
     def inject_code(self) -> str | None:
@@ -88,9 +88,9 @@ class ReportSet:
 
 
 @dataclasses.dataclass()
-class ReportModifier:
-    def modify(self, nb_contents: nbformat.NotebookNode) -> None:
-        raise NotImplementedError
+class ReportModifier(abc.ABC):
+    @abc.abstractmethod
+    def modify(self, nb_contents: nbformat.NotebookNode) -> None: ...
 
 
 @dataclasses.dataclass(frozen=True)
@@ -102,7 +102,7 @@ class ReportArtifact:
 
 
 @dataclasses.dataclass()
-class ReportGenerator:
+class ReportGenerator(abc.ABC):
     @abc.abstractmethod
     def generate(
         self, nb_contents: nbformat.NotebookNode, html_title: str | None = None
@@ -110,7 +110,7 @@ class ReportGenerator:
 
 
 @dataclasses.dataclass()
-class ReportPublisher:
+class ReportPublisher(abc.ABC):
     @abc.abstractmethod
     def publish(
         self, report: Report, artifact: ReportArtifact
@@ -118,12 +118,12 @@ class ReportPublisher:
 
 
 @dataclasses.dataclass()
-class ReportRunner:
+class ReportRunner(abc.ABC):
     @abc.abstractmethod
     def run(self, report: Report) -> str | None: ...
 
 
 @dataclasses.dataclass()
-class ReportSetRunner:
+class ReportSetRunner(abc.ABC):
     @abc.abstractmethod
     def run(self, report_set: ReportSet) -> None: ...

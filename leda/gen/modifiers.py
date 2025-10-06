@@ -175,7 +175,7 @@ class StaticPanelReportModifier(StaticReportModifier):
 
 @dataclasses.dataclass()
 class _StaticIpywidgetsReportModifier:
-    # Set to None to use inline images
+    # Set to `None` to use inline images.
     local_dir_path: pathlib.Path | None
 
 

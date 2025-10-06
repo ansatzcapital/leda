@@ -35,6 +35,14 @@ class InMemoryReportPublisher(leda.gen.base.ReportPublisher):
 class FileReportPublisher(leda.gen.base.ReportPublisher):
     output_dir: pathlib.Path
 
+    def _log_loudly(self, report_url: str) -> None:
+        """Log final report URL loudly to user.
+
+        Child classes may find it useful to override this method to,
+        e.g., set a different default URL protocol and prefix.
+        """
+        log_loudly("file://" + report_url)
+
     @override
     def publish(
         self,
@@ -51,5 +59,5 @@ class FileReportPublisher(leda.gen.base.ReportPublisher):
             (image_path / image_filename).write_bytes(image_body)
 
         report_url = str(index_path)
-        log_loudly("file://" + report_url)
+        self._log_loudly(report_url)
         return report_url

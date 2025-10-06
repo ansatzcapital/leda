@@ -12,7 +12,7 @@ import pathlib
 
 import leda.gen.base
 import leda.gen.runners
-import leda.interact.helpers
+import leda.interacting.helpers
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -58,12 +58,12 @@ def main() -> None:
         help="Timeout for each cell in secs",
     )
     static_interact_mode_aliases_str = ",".join(
-        leda.interact.helpers.STATIC_INTERACT_MODE_ALIASES
+        leda.interacting.helpers.STATIC_INTERACT_MODE_ALIASES
     )
     parser.add_argument(
         "--static-interact-mode",
         default="static_ipywidgets",
-        choices=leda.interact.helpers.STATIC_INTERACT_MODE_ALIASES,
+        choices=leda.interacting.helpers.STATIC_INTERACT_MODE_ALIASES,
         help=f"Set static interact mode. "
         f"Choices: {static_interact_mode_aliases_str}",
     )
