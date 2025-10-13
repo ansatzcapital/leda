@@ -89,7 +89,7 @@ dev = [
     { include-group = "common" },
     { include-group = "build" },
     { include-group = "examples" },
-    { include-group = "test" },
+    { include-group = "test-common" },
 ]
 
 [tool.hatch.version]
