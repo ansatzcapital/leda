@@ -1,4 +1,6 @@
 #!/bin/bash
+# E.g.:
+#   ./scripts/run_ctr.sh pixi run -e dev --frozen --locked just gen-integration-test3
 set -ex
 
 docker run --rm --platform linux/amd64 \
