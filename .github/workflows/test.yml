@@ -44,7 +44,7 @@ jobs:
           cache: false
 
       - name: Run checks and unit tests
-        run: pixi run -e test-py${{ env.CLEAN_PYTHON_VERSION }} --frozen --locked test
+        run: pixi run -e test-py${{ env.CLEAN_PYTHON_VERSION }} --frozen --locked just test
 
       - name: Run integration tests
         run: >
@@ -85,4 +85,4 @@ jobs:
           cache: false
 
       - name: Create packages
-        run: pixi run -e dev --frozen --locked build
+        run: pixi run -e dev --frozen --locked just build
