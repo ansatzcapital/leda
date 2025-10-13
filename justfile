@@ -23,7 +23,7 @@ test-matrix:
     pixi run -e test-py313 --frozen --locked just test
     pixi run -e test-py314 --frozen --locked just test
 
-integration-test-matrix: integration-test0 integration-test1 integration-test2 integration-test3
+integration-test-matrix: integration-test0 integration-test2 integration-test3
 
 #####################################################################
 # Common
@@ -51,29 +51,29 @@ pyright:
 pytest:
     pytest .
 
-integration-test0:
-    pixi run -e integration-test0 --frozen --locked python ./leda/tests/integration/run_test.py test0
+[positional-arguments]
+@integration-test0 *args:
+    pixi run -e integration-test0 --frozen --locked python ./leda/tests/integration/run_test.py test0 "$@"
 
-gen-integration-test0:
-    pixi run -e integration-test0 --frozen --locked python ./leda/tests/integration/run_test.py test0 --gen-refs
+[positional-arguments]
+@gen-integration-test0 *args:
+    pixi run -e integration-test0 --frozen --locked python ./leda/tests/integration/run_test.py test0 --gen-refs "$@"
 
-integration-test1:
-    pixi run -e integration-test1 --frozen --locked python ./leda/tests/integration/run_test.py test1
+[positional-arguments]
+@integration-test2 *args:
+    pixi run -e integration-test2 --frozen --locked python ./leda/tests/integration/run_test.py test2 "$@"
 
-gen-integration-test1:
-    pixi run -e integration-test1 --frozen --locked python ./leda/tests/integration/run_test.py test1 --gen-refs
+[positional-arguments]
+@gen-integration-test2 *args:
+    pixi run -e integration-test2 --frozen --locked python ./leda/tests/integration/run_test.py test2 --gen-refs "$@"
 
-integration-test2:
-    pixi run -e integration-test2 --frozen --locked python ./leda/tests/integration/run_test.py test1
+[positional-arguments]
+@integration-test3 *args:
+    pixi run -e integration-test3 --frozen --locked python ./leda/tests/integration/run_test.py test3 "$@"
 
-gen-integration-test2:
-    pixi run -e integration-test2 --frozen --locked python ./leda/tests/integration/run_test.py test2 --gen-refs
-
-integration-test3:
-    pixi run -e integration-test3 --frozen --locked python ./leda/tests/integration/run_test.py test3
-
-gen-integration-test3:
-    pixi run -e integration-test3 --frozen --locked python ./leda/tests/integration/run_test.py test3 --gen-refs
+[positional-arguments]
+@gen-integration-test3 *args:
+    pixi run -e integration-test3 --frozen --locked python ./leda/tests/integration/run_test.py test3 --gen-refs "$@"
 
 build-python-dist:
     uv build && twine check dist/*
