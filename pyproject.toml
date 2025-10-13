@@ -137,6 +137,7 @@ python = "~=3.13.0"
 python = "~=3.14.0"
 
 [tool.pixi.feature.integration-test0.dependencies]
+python = "~=3.8.0"
 ipython = "==7.16.1"
 ipywidgets = "==7.5.1"
 # jedi = "==0.17.1"          # Fix compatibility issue.
