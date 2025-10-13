@@ -82,7 +82,7 @@ test-common = [
 test = [{ include-group = "common" }, { include-group = "test-common" }]
 integration-test = [
     "beautifulsoup4>=4.11.1",
-    "tomli>=2.2.1;python_version<'3.11'",
+    "tomli>=2.0.2;python_version<'3.11'",
     "types-beautifulsoup4>=4.11.1",
 ]
 dev = [
