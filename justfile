@@ -75,5 +75,13 @@ pytest:
 @gen-integration-test3 *args:
     pixi run -e integration-test3 --frozen --locked python ./leda/tests/integration/run_test.py test3 --gen-refs "$@"
 
+[positional-arguments]
+@integration-test4 *args:
+    pixi run -e integration-test4 --frozen --locked python ./leda/tests/integration/run_test.py test4 "$@"
+
+[positional-arguments]
+@gen-integration-test4 *args:
+    pixi run -e integration-test4 --frozen --locked python ./leda/tests/integration/run_test.py test4 --gen-refs "$@"
+
 build-python-dist:
     uv build && twine check dist/*
