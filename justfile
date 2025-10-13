@@ -10,9 +10,9 @@ fix: fix-ruff
 
 unit-test: pytest
 
-test: static unit-test
-
 build: build-python-dist
+
+test: static unit-test
 
 test-matrix:
     pixi run -e test-py38 --frozen --locked just test
