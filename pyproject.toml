@@ -68,7 +68,9 @@ examples = [
     # is released.
     # "panel>=0.14.1",
 ]
-test = [
+# Collapse to `test` when https://github.com/prefix-dev/pixi/pull/4729
+# is released.
+test-common = [
     "mypy>=1.14.0,<1.15",
     "panel>=0.14.1",
     "pytest>=6.2.5",
@@ -77,6 +79,7 @@ test = [
     "types-termcolor>=1.1.0",
     "types-tqdm>=4.48.2",
 ]
+test = [{ include-group = "common" }, { include-group = "test-common" }]
 integration-test = [
     "beautifulsoup4>=4.11.1",
     "tomli>=2.2.1;python_version<'3.11'",
