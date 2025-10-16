@@ -28,7 +28,7 @@ python -m leda ./examples/input_nbs/${NAME}.ipynb \
 |----------------------------------------------------------------------------|------------|-------|
 | [Static Report](basic_demo-static_ipywidgets-test4-classic-light.html)     | classic    | light |
 | [Static Report](basic_demo-static_ipywidgets-test4-lab-light.html)         | lab        | light |
-| [Static Report](basic_demo-static_ipywidgets-test4-lab_narrow-dark.html).  | lab_narrow | dark  |
+| [Static Report](basic_demo-static_ipywidgets-test4-lab_narrow-dark.html)   | lab_narrow | dark  |
 
 ### matplotlib_demo.ipynb
 
@@ -38,7 +38,7 @@ python -m leda ./examples/input_nbs/${NAME}.ipynb \
 |---------------------------------------------------------------------------------|------------|-------|
 | [Static Report](matplotlib_demo-static_ipywidgets-test4-classic-light.html)     | classic    | light |
 | [Static Report](matplotlib_demo-static_ipywidgets-test4-lab-light.html)         | lab        | light |
-| [Static Report](matplotlib_demo-static_ipywidgets-test4-lab_narrow-dark.html).  | lab_narrow | dark  |
+| [Static Report](matplotlib_demo-static_ipywidgets-test4-lab_narrow-dark.html)   | lab_narrow | dark  |
 
 ### plotly_demo.ipynb
 
@@ -48,4 +48,4 @@ python -m leda ./examples/input_nbs/${NAME}.ipynb \
 |-----------------------------------------------------------------------------|------------|-------|
 | [Static Report](plotly_demo-static_ipywidgets-test4-classic-light.html)     | classic    | light |
 | [Static Report](plotly_demo-static_ipywidgets-test4-lab-light.html)         | lab        | light |
-| [Static Report](plotly_demo-static_ipywidgets-test4-lab_narrow-dark.html).  | lab_narrow | dark  |
+| [Static Report](plotly_demo-static_ipywidgets-test4-lab_narrow-dark.html)   | lab_narrow | dark  |
