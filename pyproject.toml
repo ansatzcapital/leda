@@ -1,11 +1,6 @@
 [build-system]
-requires = [
-    "setuptools < 65; python_version == '3.8'",
-    "setuptools >= 65; python_version >= '3.9'",
-    "setuptools_scm[toml] >= 3.4",
-    "wheel",
-]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "leda"
@@ -27,6 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Software Development :: Libraries",
@@ -34,47 +30,22 @@ classifiers = [
 ]
 
 dependencies = [
-    # See also `requirements-bundle*.txt`.
-    # NB: `requirements-bundle0` is used as a min constraint.
-    "ipython >= 7.16.1",
-    "ipywidgets >= 7.5.1",
-    "markdown2 >= 2.3.9",
-    "matplotlib >= 2.2.5",
-    "nbconvert >= 5.6.1",
-    "nbformat >= 5.0.4",
-    "packaging >= 19.0.0",
-    "plotly >= 4.6.0",
-    "termcolor >= 1.1.0",
-    "tqdm >= 4.48.2",
-    "typing_extensions >= 4.4.0",
+    # NB: Requirements for integration test 0 are used as min constraints.
+    "ipython>=7.16.1",
+    "ipywidgets>=7.5.1",
+    "markdown2>=2.3.9",
+    "matplotlib>=2.2.5",
+    "nbconvert>=5.6.1",
+    "nbformat>=5.0.4",
+    "packaging>=19.0.0",
+    "plotly>=4.6.0",
+    "termcolor>=1.1.0",
+    "tqdm>=4.48.2",
+    "typing_extensions>=4.4.0",
 ]
 
 [project.optional-dependencies]
-build = ["build>=1.0.3", "twine>=4.0.2", "wheel >= 0.38.0"]
-demos = ["numpy >= 1.16.0", "pandas >= 1.0.0", "panel >= 0.14.1"]
-panel = ["panel >= 0.14.1"]
-setup = [
-    "build >= 0.6.0",
-    "nox >= 2023.4.22",
-    "setuptools < 65; python_version == '3.8'",
-    "setuptools >= 65; python_version >= '3.9'",
-    "setuptools_scm[toml] >= 3.4",
-]
-test = [
-    "beautifulsoup4 >= 4.11.1",
-    "mypy >= 1.7.1",
-    "pytest >= 6.2.5",
-    "pytest-cov >=2, <3",
-    # TODO: Remove max version when this is released: https://github.com/microsoft/pyright/pull/10494
-    "pyright>=1.1.344,<1.1.401",
-    "ruff >= 0.3.0",
-    "types-beautifulsoup4 >= 4.11.1",
-    "types-termcolor >= 1.1.0",
-    "types-tqdm >= 4.48.2",
-]
-# See https://github.com/astral-sh/uv/issues/4762#issuecomment-2207423858
-# regarding `all` trick
-all = ["leda[build]", "leda[demos]", "leda[panel]", "leda[setup]", "leda[test]"]
+panel = ["panel>=0.14.1"]
 
 [project.urls]
 "Homepage" = "https://github.com/ansatzcapital/leda"
@@ -82,21 +53,274 @@ all = ["leda[build]", "leda[demos]", "leda[panel]", "leda[setup]", "leda[test]"]
 "Source" = "https://github.com/ansatzcapital/leda"
 "Tracker" = "https://github.com/ansatzcapital/leda/issues"
 
-[tool.setuptools.packages.find]
-# where = ["python/"]
+[dependency-groups]
+common = [
+    "hatch>=1.14.1,<2",
+    "hatchling>=1.27.0",
+    "hatch-vcs>=0.4.0",
+    "rust-just>=1.43.0,<2",
+]
+build = ["twine>=4.0.2", "uv>=0.8.0"]
+examples = [
+    "numpy>=1.16.0",
+    "pandas>=1.0.0",
+    # TODO: Re-enable when https://github.com/prefix-dev/pixi/pull/4729
+    # is released.
+    # "panel>=0.14.1",
+]
+# Collapse to `test` when https://github.com/prefix-dev/pixi/pull/4729
+# is released.
+test-common = [
+    "mypy>=1.14.0,<1.15",
+    "panel>=0.14.1",
+    "pytest>=6.2.5",
+    "pyright>=1.1.406,<1.1.407",
+    "ruff>=0.3.0",
+    "types-termcolor>=1.1.0",
+    "types-tqdm>=4.48.2",
+]
+test = [{ include-group = "common" }, { include-group = "test-common" }]
+integration-test = [
+    "beautifulsoup4>=4.11.1",
+    "tomli>=2.0.2;python_version<'3.11'",
+    "types-beautifulsoup4>=4.11.1",
+]
+dev = [
+    { include-group = "common" },
+    { include-group = "build" },
+    { include-group = "examples" },
+    { include-group = "test-common" },
+]
 
-[tool.setuptools.package-data]
-"*" = ["*.tpl", "*.json", "*.html.j2"]
-"leda" = ["py.typed"]
+[tool.hatch.version]
+# See https://github.com/ofek/hatch-vcs.
+source = "vcs"
 
-[tool.setuptools_scm]
-write_to = "leda/version.py"
+[tool.hatch.build.hooks.vcs]
+version-file = "leda/version.py"
 
-# Using default version scheme
+[tool.hatch.build.targets.wheel]
+packages = ["leda"]
+
+[tool.hatch.build]
+include = ["leda", "leda/py.typed", "examples/**"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
+
+[tool.pixi.dependencies]
+python = ">=3.8.0"
+
+[tool.pixi.feature.local-dev.pypi-dependencies]
+leda = { path = ".", editable = true }
+
+[tool.pixi.feature.py38.dependencies]
+python = "~=3.8.0"
+
+[tool.pixi.feature.py39.dependencies]
+python = "~=3.9.0"
+
+[tool.pixi.feature.py310.dependencies]
+python = "~=3.10.0"
+
+[tool.pixi.feature.py311.dependencies]
+python = "~=3.11.0"
+
+[tool.pixi.feature.py312.dependencies]
+python = "~=3.12.0"
+
+[tool.pixi.feature.py313.dependencies]
+python = "~=3.13.0"
+
+[tool.pixi.feature.py314.dependencies]
+python = "~=3.14.0"
+
+[tool.pixi.feature.integration-test0.dependencies]
+python = "~=3.8.0"
+ipython = "==7.16.1"
+ipywidgets = "==7.5.1"
+# jedi = "==0.17.1"          # Fix compatibility issue.
+# Jinja2 = "==3.0.0"         # Fix compatibility issue.
+# jupyter_client = "==6.0.0" # For dynamic mode.
+# jupyter_core = "==4.6.3"   # For dynamic mode.
+markdown2 = "==2.3.9"
+matplotlib = "==3.3.4" # Originally 2.2.5, but that's not compatible.
+nbconvert = "==5.6.1"
+nbformat = "==5.0.4"
+# notebook = "==6.0.3"   # For dynamic mode.
+numpy = "==1.21.2"    # For examples. Originally 1.16.6, but that's not compatible.
+pandas = "==1.2.5"    # For examples. Originally 1.0.1, but that's not compatible.
+panel = "==0.14.1"    # For panel static interact mode.
+plotly = "==4.6.0"
+Pygments = "==2.15.1"
+termcolor = "==1.1.0"
+tqdm = "==4.48.2"
+
+[tool.pixi.feature.integration-test0.tasks]
+
+gen-integration-test0 = "python ./leda/tests/integration/run_test.py test0 --gen-refs"
+
+# NB: `integration-test1` was removed because it was hard to support,
+# very similar to `integration-test0`, and on Python 3.8, which is already EOL.
+
+[tool.pixi.feature.integration-test2.dependencies]
+python = "~=3.10.0"
+ipython = "==8.0.1"
+ipywidgets = "==7.6.6"
+jedi = "==0.18.2"          # Fix compatibility issue.
+Jinja2 = "==3.0.3"         # Fix compatibility issue.
+jupyter_client = "==7.4.8" # For dynamic mode.
+jupyter_core = "==5.1.0"   # For dynamic mode.
+markdown2 = "==2.4.6"
+matplotlib = "==3.5.3"
+nbclient = "==0.5.13"      # Not directly used.
+nbconvert = "==6.4.5"
+nbformat = "==5.3.0"
+notebook = "==6.5.2"       # For dynamic mode.
+pandas = "==1.3.5"         # For examples.
+numpy = "==1.22.4"         # For examples.
+panel = "==0.14.1"         # For panel static interact mode.
+pillow = "==11.0.0"
+plotly = "==5.5.0"
+Pygments = "==2.15.1"
+termcolor = "==2.1.1"
+tqdm = "==4.62.3"
+
+[tool.pixi.feature.integration-test2.tasks]
+integration-test2 = "python ./leda/tests/integration/run_test.py test2"
+gen-integration-test2 = "python ./leda/tests/integration/run_test.py test2 --gen-refs"
+
+[tool.pixi.feature.integration-test3.dependencies]
+python = "~=3.11.0"
+ipython = "==8.7.0"
+ipywidgets = "==7.8.5"     # Originally 8.0.3, but that's not compatible.
+jupyter_client = "==7.4.8" # For dynamic mode.
+jupyter_core = "==5.1.0"   # For dynamic mode.
+markdown2 = "==2.4.6"
+matplotlib = "==3.6.2"
+nbclient = "==0.7.2"       # Not directly used.
+nbconvert = "==7.2.7"
+nbformat = "==5.7.1"
+notebook = "==6.5.2"       # For dynamic mode.
+numpy = "==1.24.0"         # For examples.
+pandas = "==1.5.2"         # For examples.
+panel = "==0.14.2"         # For panel static interact mode.
+pillow = "==11.0.0"
+plotly = "==5.11.0"
+Pygments = "==2.15.1"
+termcolor = "==2.1.1"
+tqdm = "==4.64.1"
+
+[tool.pixi.feature.integration-test3.tasks]
+integration-test3 = "python ./leda/tests/integration/run_test.py test3"
+gen-integration-test3 = "python ./leda/tests/integration/run_test.py test3 --gen-refs"
+
+[tool.pixi.feature.integration-test4.dependencies]
+python = "~=3.12.0"
+ipython = "==8.22.1"
+ipywidgets = "==8.1.2"
+jupyter_client = "==8.6.0" # For dynamic mode.
+jupyter_core = "==5.7.1"   # For dynamic mode.
+markdown2 = "==2.4.12"
+matplotlib = "==3.8.3"
+# mistune = "==3.0.2"        # Not directly used.
+# nbclient = "==0.9.0"       # Not directly used.
+nbconvert = "==7.16.1"
+nbformat = "==5.9.2"
+notebook = "==7.1.0"   # For dynamic mode.
+numpy = "==1.26.4"     # For examples.
+pandas = "==2.2.1"     # For examples.
+panel = "==1.3.8"      # For panel static interact mode.
+pillow = "==11.0.0"
+plotly = "==5.19.0"
+Pygments = "==2.17.2"
+termcolor = "==2.4.0"
+tqdm = "==4.66.2"
+
+[tool.pixi.feature.integration-test4.tasks]
+integration-test4 = "python ./leda/tests/integration/run_test.py test4"
+gen-integration-test4 = "python ./leda/tests/integration/run_test.py test4 --gen-refs"
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+
+dev = { features = [
+    "local-dev",
+    "dev",
+    "py313",
+    "panel",
+], solve-group = "default" }
+
+test-py38 = { features = [
+    "local-dev",
+    "test",
+    "py38",
+], solve-group = "test-py38" }
+
+test-py39 = { features = [
+    "local-dev",
+    "test",
+    "py39",
+], solve-group = "test-py39" }
+
+test-py310 = { features = [
+    "local-dev",
+    "test",
+    "py310",
+], solve-group = "test-py310" }
+
+test-py311 = { features = [
+    "local-dev",
+    "test",
+    "py311",
+], solve-group = "test-py311" }
+
+test-py312 = { features = [
+    "local-dev",
+    "test",
+    "py312",
+], solve-group = "test-py312" }
+
+test-py313 = { features = [
+    "local-dev",
+    "test",
+    "py313",
+], solve-group = "test-py313" }
+
+test-py314 = { features = [
+    "local-dev",
+    "test",
+    "py314",
+], solve-group = "test-py314" }
+
+integration-test0 = { features = [
+    "local-dev",
+    "integration-test",
+    "integration-test0",
+], solve-group = "integration-test0" }
+
+integration-test2 = { features = [
+    "local-dev",
+    "integration-test",
+    "integration-test2",
+], solve-group = "integration-test2" }
+
+integration-test3 = { features = [
+    "local-dev",
+    "integration-test",
+    "integration-test3",
+], solve-group = "integration-test3" }
+
+integration-test4 = { features = [
+    "local-dev",
+    "integration-test",
+    "integration-test4",
+], solve-group = "integration-test4" }
 
 [tool.mypy]
 # Adapted from https://careers.wolt.com/en/blog/tech/professional-grade-mypy-configuration
-# and https://justincaustin.com/blog/mypy-tips-and-tricks/
+# and https://justincaustin.com/blog/mypy-tips-and-tricks/.
 disallow_untyped_defs = true
 check_untyped_defs = true
 no_implicit_optional = true
@@ -106,21 +330,24 @@ warn_unused_ignores = true
 # TODO
 # disallow_any_generics = true
 disallow_incomplete_defs = true
-# Many third-party libraries are not properly typed
+# Many third-party libraries are not properly typed.
 # disallow_untyped_calls = true
 # disallow_untyped_decorators = true
 follow_imports = "normal"
 ignore_missing_imports = true
-# Many third-party libraries don't explicitly export public API
+# Many third-party libraries don't explicitly export public API.
 # no_implicit_reexport = true
-# Aesthetic preference
+# Aesthetic preference.
 # show_error_context = true
 strict_equality = true
 strict_optional = true
 warn_redundant_casts = true
 
-# See https://mypy-lang.blogspot.com/2023/08/mypy-15-released.html
+# See https://mypy-lang.blogspot.com/2023/08/mypy-15-released.html.
 enable_error_code = ["explicit-override"]
+
+# See https://mypy-lang.blogspot.com/2025/05/mypy-116-released.html.
+exclude_gitignore = true
 
 [[tool.mypy.overrides]]
 module = [
@@ -143,7 +370,7 @@ include = ["**/*.py"]
 exclude = ["**/__pycache__", "**/.*"]
 # To enable strict mode:
 #strict = ["**/*.py"]
-# Many third-party libraries don't explicitly export public API
+# Many third-party libraries don't explicitly export public API.
 reportPrivateImportUsage = "none"
 reportUnnecessaryTypeIgnoreComment = true
 
@@ -166,6 +393,7 @@ exclude = [
     ".mypy_cache",
     ".nox",
     ".pants.d",
+    ".pixi",
     ".pytest_cache",
     ".pytype",
     ".ruff_cache",
@@ -180,9 +408,6 @@ exclude = [
     "node_modules",
     "venv",
     "version.py",
-    # TODO: Regenerate baselines with new ruff format
-    # and remove this exclude
-    "*.ipynb",
 ]
 
 [tool.ruff.format]

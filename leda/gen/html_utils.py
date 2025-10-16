@@ -84,7 +84,7 @@ def show_toggle(
         ]
     )
 
-    # Load jQuery, since it's only automatically loaded in "classic" template
+    # Load jQuery, since it's only automatically loaded in "classic" template.
     return IPython.display.HTML(
         f"""
 <script

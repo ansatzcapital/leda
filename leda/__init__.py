@@ -29,23 +29,24 @@ from leda.gen.publishers import (
 )
 from leda.gen.publishers import log_loudly as log_loudly
 from leda.gen.runners import MainReportRunner as MainReportRunner
-from leda.interact.base import InteractMode as InteractMode
-from leda.interact.core import get_interact_mode as get_interact_mode
-from leda.interact.core import init as init
-from leda.interact.core import set_interact_mode as set_interact_mode
-from leda.interact.dynamic import (
+from leda.interacting.base import InteractMode as InteractMode
+from leda.interacting.core import get_interact_mode as get_interact_mode
+from leda.interacting.core import init as init
+from leda.interacting.core import interact as interact
+from leda.interacting.core import set_interact_mode as set_interact_mode
+from leda.interacting.dynamic import (
     DynamicIpywidgetsInteractMode as DynamicIpywidgetsInteractMode,
 )
-from leda.interact.dynamic import (
+from leda.interacting.dynamic import (
     to_dynamic_ipywidgets as to_dynamic_ipywidgets,
 )
-from leda.interact.helpers import (
+from leda.interacting.helpers import (
     STATIC_INTERACT_MODE_ALIASES as STATIC_INTERACT_MODE_ALIASES,
 )
-from leda.interact.panel import (
+from leda.interacting.panel import (
     StaticPanelInteractMode as StaticPanelInteractMode,
 )
-from leda.interact.params import get_param as get_param
-from leda.interact.static_ipywidgets import (
+from leda.interacting.params import get_param as get_param
+from leda.interacting.static_ipywidgets import (
     StaticIpywidgetsInteractMode as StaticIpywidgetsInteractMode,
 )
